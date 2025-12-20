@@ -27,7 +27,7 @@ class PaymentController extends Controller
             $query->where('booking_id', $request->booking_id);
         }
 
-        $payments = $query->latest()->paginate(15);
+        $payments = $query->latest()->get();
 
         return response()->json($payments);
     }

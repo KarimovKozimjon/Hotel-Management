@@ -24,7 +24,7 @@ class GuestController extends Controller
             });
         }
 
-        $guests = $query->withCount('bookings')->paginate(15);
+        $guests = $query->withCount('bookings')->get();
 
         return response()->json($guests);
     }

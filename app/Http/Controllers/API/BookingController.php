@@ -29,7 +29,7 @@ class BookingController extends Controller
             $query->whereBetween('check_in_date', [$request->start_date, $request->end_date]);
         }
 
-        $bookings = $query->latest()->paginate(15);
+        $bookings = $query->latest()->get();
 
         return response()->json($bookings);
     }
