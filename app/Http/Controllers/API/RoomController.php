@@ -27,7 +27,7 @@ class RoomController extends Controller
             $query->where('floor', $request->floor);
         }
 
-        $rooms = $query->paginate(15);
+        $rooms = $query->get();
 
         return response()->json($rooms);
     }

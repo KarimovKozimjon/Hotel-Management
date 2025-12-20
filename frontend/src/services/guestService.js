@@ -6,6 +6,11 @@ export const guestService = {
     return response.data;
   },
 
+  search: async (query) => {
+    const response = await api.get('/guests/search', { params: { q: query } });
+    return response.data;
+  },
+
   getById: async (id) => {
     const response = await api.get(`/guests/${id}`);
     return response.data;
