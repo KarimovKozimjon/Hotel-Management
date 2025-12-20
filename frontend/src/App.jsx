@@ -6,6 +6,7 @@ import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import RoomsPage from './pages/RoomsPage';
 import BookingsPage from './pages/BookingsPage';
+import GuestsPage from './pages/GuestsPage';
 import './index.css';
 
 function App() {
@@ -28,6 +29,11 @@ function App() {
           <Route path="/bookings" element={
             <PrivateRoute>
               <BookingsPage />
+            </PrivateRoute>
+          } />
+          <Route path="/guests" element={
+            <PrivateRoute>
+              <GuestsPage />
             </PrivateRoute>
           } />
           <Route path="/" element={<Navigate to="/dashboard" />} />
