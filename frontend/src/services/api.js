@@ -12,15 +12,17 @@ const api = axios.create({
 // Add token to requests
 api.interceptors.request.use(
   (config) => {
-    // Check staff token first
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      // Check guest token
+    // For guest routes, use guest token
+    if (config.url.startsWith('/guest/')) {
       const guestToken = localStorage.getItem('guestToken');
       if (guestToken) {
         config.headers.Authorization = `Bearer ${guestToken}`;
+      }
+    } else {
+      // For staff routes, use staff token
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;

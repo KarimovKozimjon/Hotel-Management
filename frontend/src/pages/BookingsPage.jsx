@@ -147,6 +147,18 @@ const BookingsPage = () => {
     }
   };
 
+  const handleConfirm = async (id) => {
+    if (window.confirm('Bronni tasdiqlashni xohlaysizmi?')) {
+      try {
+        await bookingService.update(id, { status: 'confirmed' });
+        toast.success('Bron tasdiqlandi');
+        fetchBookings();
+      } catch (error) {
+        toast.error('Bronni tasdiqlashda xatolik');
+      }
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       guest_id: '',
@@ -224,6 +236,22 @@ const BookingsPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">${booking.total_amount}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(booking.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {booking.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleConfirm(booking.id)}
+                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mr-2"
+                        >
+                          ✓ Tasdiqlash
+                        </button>
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 mr-2"
+                        >
+                          ✗ Bekor qilish
+                        </button>
+                      </>
+                    )}
                     {booking.status === 'confirmed' && (
                       <>
                         <button
