@@ -39,6 +39,9 @@ const Navbar = () => {
             <Link to="/room-types" className="hover:bg-blue-700 px-3 py-2 rounded">
               Xona turlari
             </Link>
+            <Link to="/users" className="hover:bg-blue-700 px-3 py-2 rounded">
+              Foydalanuvchilar
+            </Link>
             
             <div className="flex items-center space-x-2 ml-4">
               <span className="text-sm">{user?.name}</span>

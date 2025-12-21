@@ -8,6 +8,8 @@ use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,4 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Services
     Route::post('/services/add-to-booking', [ServiceController::class, 'addToBooking']);
     Route::apiResource('services', ServiceController::class);
+
+    // Users
+    Route::apiResource('users', UserController::class);
+
+    // Roles
+    Route::apiResource('roles', RoleController::class);
 });
