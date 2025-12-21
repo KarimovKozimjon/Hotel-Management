@@ -11,6 +11,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import ServicesPage from './pages/ServicesPage';
 import RoomTypesPage from './pages/RoomTypesPage';
 import UsersPage from './pages/UsersPage';
+import ReviewsPage from './pages/ReviewsPage';
 import './index.css';
 
 function App() {
@@ -58,6 +59,11 @@ function App() {
           <Route path="/users" element={
             <PrivateRoute>
               <UsersPage />
+            </PrivateRoute>
+          } />
+          <Route path="/reviews" element={
+            <PrivateRoute>
+              <ReviewsPage />
             </PrivateRoute>
           } />
           <Route path="/" element={<Navigate to="/dashboard" />} />

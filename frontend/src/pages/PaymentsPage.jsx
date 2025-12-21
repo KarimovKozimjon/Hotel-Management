@@ -3,10 +3,12 @@ import { paymentService } from '../services/paymentService';
 import { bookingService } from '../services/bookingService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
+import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
 
 const PaymentsPage = () => {
   const [payments, setPayments] = useState([]);
+  const [filteredPayments, setFilteredPayments] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -31,11 +33,21 @@ const PaymentsPage = () => {
     try {
       const data = await paymentService.getAll(filter);
       setPayments(data);
+      setFilteredPayments(data);
       setLoading(false);
     } catch (error) {
       toast.error('To\'lovlarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = payments.filter(payment =>
+      payment.booking?.guest?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payment.payment_method.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payment.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPayments(filtered);
   };
 
   const fetchBookings = async () => {
@@ -136,6 +148,10 @@ const PaymentsPage = () => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder="Mehmon, to'lov turi, transaction ID bo'yicha qidirish..." />
+        </div>
+
         {/* Filters */}
         <div className="bg-white p-4 rounded-lg shadow-md mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -199,7 +215,7 @@ const PaymentsPage = () => {
                   </td>
                 </tr>
               ) : (
-                payments.map((payment) => (
+                filteredPayments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm">#{payment.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap">

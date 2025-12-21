@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { userService, roleService } from '../services/userService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
+import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -26,11 +28,21 @@ const UsersPage = () => {
     try {
       const data = await userService.getAll();
       setUsers(data);
+      setFilteredUsers(data);
       setLoading(false);
     } catch (error) {
       toast.error('Foydalanuvchilarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = users.filter(user =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.role?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
   };
 
   const fetchRoles = async () => {
@@ -131,7 +143,11 @@ const UsersPage = () => {
           </button>
         </div>
 
-        {/* Users Table */}
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder="Ism, email, rol bo'yicha qidirish..." />
+        </div>
+
+        {/* Statistics */}
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -152,7 +168,7 @@ const UsersPage = () => {
                   </td>
                 </tr>
               ) : (
-                users.map((user) => (
+                filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm">#{user.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{user.name}</td>

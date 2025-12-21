@@ -2,14 +2,19 @@ import { useState, useEffect } from 'react';
 import { roomService, roomTypeService } from '../services/roomService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
+import SearchBar from '../components/common/SearchBar';
+import Pagination from '../components/common/Pagination';
 import toast from 'react-hot-toast';
 
 const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
+  const [filteredRooms, setFilteredRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     room_number: '',
     room_type_id: '',
@@ -27,11 +32,23 @@ const RoomsPage = () => {
     try {
       const data = await roomService.getAll();
       setRooms(data);
+      setFilteredRooms(data);
       setLoading(false);
     } catch (error) {
       toast.error('Xonalarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = rooms.filter(room =>
+      room.room_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      room.roomType?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      room.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      room.floor.toString().includes(searchTerm)
+    );
+    setFilteredRooms(filtered);
+    setCurrentPage(1); // Reset to first page on search
   };
 
   const fetchRoomTypes = async () => {
@@ -132,6 +149,10 @@ const RoomsPage = () => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder="Xona raqami, turi, holati bo'yicha qidirish..." />
+        </div>
+
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -145,7 +166,9 @@ const RoomsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {rooms.map((room) => (
+              {filteredRooms
+                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                .map((room) => (
                 <tr key={room.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{room.room_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{room.room_type?.name}</td>
@@ -170,6 +193,12 @@ const RoomsPage = () => {
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredRooms.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
 

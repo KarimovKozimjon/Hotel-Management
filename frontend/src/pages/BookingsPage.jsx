@@ -4,10 +4,12 @@ import { guestService } from '../services/guestService';
 import { roomService } from '../services/roomService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
+import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
 
 const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
   const [guests, setGuests] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,11 +34,21 @@ const BookingsPage = () => {
     try {
       const data = await bookingService.getAll();
       setBookings(data);
+      setFilteredBookings(data);
       setLoading(false);
     } catch (error) {
       toast.error('Bronlarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = bookings.filter(booking =>
+      booking.guest?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.room?.room_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredBookings(filtered);
   };
 
   const fetchGuests = async () => {
@@ -183,6 +195,10 @@ const BookingsPage = () => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder="Mehmon, xona, holat bo'yicha qidirish..." />
+        </div>
+
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -197,7 +213,7 @@ const BookingsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <tr key={booking.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {booking.guest?.first_name} {booking.guest?.last_name}

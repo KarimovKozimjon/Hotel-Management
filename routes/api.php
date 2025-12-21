@@ -10,6 +10,7 @@ use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,36 +24,67 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-    // Dashboard
+    // Dashboard - All authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/dashboard/revenue', [DashboardController::class, 'revenue']);
 
-    // Room Types
-    Route::apiResource('room-types', RoomTypeController::class);
+    // Room Types - Admin and Manager
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::apiResource('room-types', RoomTypeController::class)->except(['index', 'show']);
+    });
+    Route::get('/room-types', [RoomTypeController::class, 'index']);
+    Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
 
-    // Rooms
+    // Rooms - Admin and Manager can modify, all can view
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::post('/rooms', [RoomController::class, 'store']);
+        Route::put('/rooms/{id}', [RoomController::class, 'update']);
+        Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
+    });
+    Route::get('/rooms', [RoomController::class, 'index']);
     Route::get('/rooms/available', [RoomController::class, 'available']);
-    Route::apiResource('rooms', RoomController::class);
+    Route::get('/rooms/{id}', [RoomController::class, 'show']);
 
-    // Guests
-    Route::apiResource('guests', GuestController::class);
+    // Guests - All can view and create, Admin/Manager can modify
+    Route::get('/guests', [GuestController::class, 'index']);
+    Route::get('/guests/{id}', [GuestController::class, 'show']);
+    Route::post('/guests', [GuestController::class, 'store']);
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::put('/guests/{id}', [GuestController::class, 'update']);
+        Route::delete('/guests/{id}', [GuestController::class, 'destroy']);
+    });
 
-    // Bookings
+    // Bookings - All authenticated users
     Route::post('/bookings/{booking}/check-in', [BookingController::class, 'checkIn']);
     Route::post('/bookings/{booking}/check-out', [BookingController::class, 'checkOut']);
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
     Route::apiResource('bookings', BookingController::class);
 
-    // Payments
+    // Payments - All authenticated users
     Route::apiResource('payments', PaymentController::class);
 
-    // Services
+    // Services - Admin and Manager can modify, all can view
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::post('/services', [ServiceController::class, 'store']);
+        Route::put('/services/{id}', [ServiceController::class, 'update']);
+        Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+    });
+    Route::get('/services', [ServiceController::class, 'index']);
+    Route::get('/services/{id}', [ServiceController::class, 'show']);
     Route::post('/services/add-to-booking', [ServiceController::class, 'addToBooking']);
-    Route::apiResource('services', ServiceController::class);
 
-    // Users
-    Route::apiResource('users', UserController::class);
+    // Reviews - All authenticated users
+    Route::get('/reviews/booking/{bookingId}', [ReviewController::class, 'getByBooking']);
+    Route::get('/reviews/guest/{guestId}', [ReviewController::class, 'getByGuest']);
+    Route::apiResource('reviews', ReviewController::class);
 
-    // Roles
-    Route::apiResource('roles', RoleController::class);
+    // Users - Admin only
+    Route::middleware('role:Admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
+
+    // Roles - Admin only
+    Route::middleware('role:Admin')->group(function () {
+        Route::apiResource('roles', RoleController::class);
+    });
 });

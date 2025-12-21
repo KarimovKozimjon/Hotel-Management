@@ -3,10 +3,12 @@ import { serviceService } from '../services/serviceService';
 import { bookingService } from '../services/bookingService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
+import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
+  const [filteredServices, setFilteredServices] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -35,11 +37,21 @@ const ServicesPage = () => {
     try {
       const data = await serviceService.getAll();
       setServices(data);
+      setFilteredServices(data);
       setLoading(false);
     } catch (error) {
       toast.error('Xizmatlarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = services.filter(service =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredServices(filtered);
   };
 
   const fetchBookings = async () => {
@@ -164,9 +176,13 @@ const ServicesPage = () => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder="Xizmat nomi, kategoriya bo'yicha qidirish..." />
+        </div>
+
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
+          {filteredServices.map((service) => (
             <div key={service.id} className="bg-white rounded-lg shadow-md p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
