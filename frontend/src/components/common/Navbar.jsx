@@ -30,6 +30,15 @@ const Navbar = () => {
             <Link to="/guests" className="hover:bg-blue-700 px-3 py-2 rounded">
               Mehmonlar
             </Link>
+            <Link to="/payments" className="hover:bg-blue-700 px-3 py-2 rounded">
+              To'lovlar
+            </Link>
+            <Link to="/services" className="hover:bg-blue-700 px-3 py-2 rounded">
+              Xizmatlar
+            </Link>
+            <Link to="/room-types" className="hover:bg-blue-700 px-3 py-2 rounded">
+              Xona turlari
+            </Link>
             
             <div className="flex items-center space-x-2 ml-4">
               <span className="text-sm">{user?.name}</span>

@@ -7,6 +7,9 @@ import Dashboard from './components/dashboard/Dashboard';
 import RoomsPage from './pages/RoomsPage';
 import BookingsPage from './pages/BookingsPage';
 import GuestsPage from './pages/GuestsPage';
+import PaymentsPage from './pages/PaymentsPage';
+import ServicesPage from './pages/ServicesPage';
+import RoomTypesPage from './pages/RoomTypesPage';
 import './index.css';
 
 function App() {
@@ -34,6 +37,21 @@ function App() {
           <Route path="/guests" element={
             <PrivateRoute>
               <GuestsPage />
+            </PrivateRoute>
+          } />
+          <Route path="/payments" element={
+            <PrivateRoute>
+              <PaymentsPage />
+            </PrivateRoute>
+          } />
+          <Route path="/services" element={
+            <PrivateRoute>
+              <ServicesPage />
+            </PrivateRoute>
+          } />
+          <Route path="/room-types" element={
+            <PrivateRoute>
+              <RoomTypesPage />
             </PrivateRoute>
           } />
           <Route path="/" element={<Navigate to="/dashboard" />} />
