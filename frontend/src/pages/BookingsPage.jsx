@@ -99,24 +99,39 @@ const BookingsPage = () => {
       }
     }
   };
-
   const handleCheckIn = async (id) => {
-    try {
-      await bookingService.checkIn(id);
-      toast.success('Check-in amalga oshirildi');
-      fetchBookings();
-    } catch (error) {
-      toast.error('Check-in xatolik');
+    if (window.confirm('Mehmonni check-in qilmoqchimisiz?')) {
+      try {
+        await bookingService.checkIn(id);
+        toast.success('Check-in muvaffaqiyatli amalga oshirildi');
+        fetchBookings();
+      } catch (error) {
+        toast.error('Check-in da xatolik');
+      }
     }
   };
 
   const handleCheckOut = async (id) => {
-    try {
-      await bookingService.checkOut(id);
-      toast.success('Check-out amalga oshirildi');
-      fetchBookings();
-    } catch (error) {
-      toast.error('Check-out xatolik');
+    if (window.confirm('Mehmonni check-out qilmoqchimisiz?')) {
+      try {
+        await bookingService.checkOut(id);
+        toast.success('Check-out muvaffaqiyatli amalga oshirildi');
+        fetchBookings();
+      } catch (error) {
+        toast.error('Check-out da xatolik');
+      }
+    }
+  };
+
+  const handleCancel = async (id) => {
+    if (window.confirm('Bronni bekor qilmoqchimisiz?')) {
+      try {
+        await bookingService.cancel(id);
+        toast.success('Bron bekor qilindi');
+        fetchBookings();
+      } catch (error) {
+        toast.error('Bronni bekor qilishda xatolik');
+      }
     }
   };
 
@@ -194,17 +209,25 @@ const BookingsPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(booking.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {booking.status === 'confirmed' && (
-                      <button
-                        onClick={() => handleCheckIn(booking.id)}
-                        className="text-green-600 hover:text-green-900 mr-2"
-                      >
-                        Check-in
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleCheckIn(booking.id)}
+                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mr-2"
+                        >
+                          Check-in
+                        </button>
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 mr-2"
+                        >
+                          Bekor qilish
+                        </button>
+                      </>
                     )}
                     {booking.status === 'checked_in' && (
                       <button
                         onClick={() => handleCheckOut(booking.id)}
-                        className="text-blue-600 hover:text-blue-900 mr-2"
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 mr-2"
                       >
                         Check-out
                       </button>

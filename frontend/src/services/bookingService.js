@@ -35,4 +35,9 @@ export const bookingService = {
     const response = await api.post(`/bookings/${id}/check-out`);
     return response.data;
   },
+
+  cancel: async (id) => {
+    const response = await api.post(`/bookings/${id}/cancel`);
+    return response.data;
+  },
 };
