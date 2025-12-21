@@ -20,6 +20,13 @@ import GuestDashboard from './pages/guest/GuestDashboard';
 import MyBookingsPage from './pages/guest/MyBookingsPage';
 import GuestProfile from './pages/guest/GuestProfile';
 import BookRoomPage from './pages/guest/BookRoomPage';
+import ChangePassword from './pages/guest/ChangePassword';
+import PaymentHistory from './pages/guest/PaymentHistory';
+import PublicLayout from './components/public/PublicLayout';
+import HomePage from './pages/public/HomePage';
+import PublicRoomsPage from './pages/public/PublicRoomsPage';
+import AboutPage from './pages/public/AboutPage';
+import ContactPage from './pages/public/ContactPage';
 import './index.css';
 
 function App() {
@@ -29,6 +36,28 @@ function App() {
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Toaster position="top-right" />
           <Routes>
+            {/* Public routes */}
+            <Route path="/" element={
+              <PublicLayout>
+                <HomePage />
+              </PublicLayout>
+            } />
+            <Route path="/public/rooms" element={
+              <PublicLayout>
+                <PublicRoomsPage />
+              </PublicLayout>
+            } />
+            <Route path="/public/about" element={
+              <PublicLayout>
+                <AboutPage />
+              </PublicLayout>
+            } />
+            <Route path="/public/contact" element={
+              <PublicLayout>
+                <ContactPage />
+              </PublicLayout>
+            } />
+
             {/* Staff routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={
@@ -100,8 +129,16 @@ function App() {
                 <GuestProfile />
               </GuestLayout>
             } />
-
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/guest/change-password" element={
+              <GuestLayout>
+                <ChangePassword />
+              </GuestLayout>
+            } />
+            <Route path="/guest/payment-history" element={
+              <GuestLayout>
+                <PaymentHistory />
+              </GuestLayout>
+            } />
           </Routes>
         </Router>
       </GuestAuthProvider>

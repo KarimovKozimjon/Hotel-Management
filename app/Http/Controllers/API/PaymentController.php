@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentReceipt;
 
 class PaymentController extends Controller
 {
@@ -51,6 +53,14 @@ class PaymentController extends Controller
             'status' => 'completed',
             'paid_at' => now(),
         ]);
+
+        // Send payment receipt email
+        $payment->load('booking.guest');
+        try {
+            Mail::to($payment->booking->guest->email)->send(new PaymentReceipt($payment));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send payment receipt email: ' . $e->getMessage());
+        }
 
         return response()->json($payment->load('booking'), 201);
     }

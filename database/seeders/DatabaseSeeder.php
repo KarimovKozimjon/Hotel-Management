@@ -21,40 +21,14 @@ class DatabaseSeeder extends Seeder
         // Rollarni yaratish
         $this->call(RoleSeeder::class);
 
-        // Rollarni olish
-        $adminRole = Role::where('name', 'Admin')->first();
-        $managerRole = Role::where('name', 'Manager')->first();
-        $staffRole = Role::where('name', 'Staff')->first();
+        // Admin rolini olish
+        $adminRole = Role::where('name', 'admin')->first();
 
         // Admin foydalanuvchi yaratish
         User::create([
-            'name' => 'Admin User',
+            'name' => 'Admin',
             'email' => 'admin@hotel.com',
-            'password' => Hash::make('password'),
-            'role_id' => $adminRole?->id,
-        ]);
-
-        // Manager foydalanuvchi yaratish
-        User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@hotel.com',
-            'password' => Hash::make('password'),
-            'role_id' => $managerRole?->id,
-        ]);
-
-        // Staff foydalanuvchi yaratish
-        User::create([
-            'name' => 'Staff User',
-            'email' => 'staff@hotel.com',
-            'password' => Hash::make('password'),
-            'role_id' => $staffRole?->id,
-        ]);
-
-        // Test foydalanuvchi
-        User::create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('admin123'),
             'role_id' => $adminRole?->id,
         ]);
 

@@ -31,6 +31,13 @@ class Booking extends Model
         'checked_out_at' => 'datetime',
     ];
 
+    protected $appends = ['total_price'];
+
+    public function getTotalPriceAttribute()
+    {
+        return $this->total_amount;
+    }
+
     public function guest()
     {
         return $this->belongsTo(Guest::class);

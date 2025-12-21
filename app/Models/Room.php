@@ -31,4 +31,14 @@ class Room extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(RoomImage::class)->orderBy('order');
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(RoomImage::class)->where('is_primary', true);
+    }
 }

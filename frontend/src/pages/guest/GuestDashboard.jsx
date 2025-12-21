@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGuestAuth } from '../../context/GuestAuthContext';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 
 function GuestDashboard() {
@@ -18,13 +19,31 @@ function GuestDashboard() {
 
   const fetchStats = async () => {
     try {
-      // TODO: Backend API dan ma'lumotlarni olish
-      // Hozircha test ma'lumotlar
+      // Fetch real data from backend
+      const [bookingsRes, paymentsRes, reviewsRes] = await Promise.all([
+        api.get('/guest/my-bookings'),
+        api.get('/guest/payments').catch(() => ({ data: { data: [] } })),
+        api.get('/guest/my-reviews').catch(() => ({ data: { data: [] } }))
+      ]);
+
+      const bookings = bookingsRes.data.data || [];
+      const payments = paymentsRes.data.data || [];
+      const reviews = reviewsRes.data.data || [];
+
+      const now = new Date();
+      const upcomingBookings = bookings.filter(b => 
+        new Date(b.check_in_date) > now && 
+        (b.status === 'confirmed' || b.status === 'pending')
+      );
+
+      const paidPayments = payments.filter(p => p.payment_status === 'paid');
+      const totalSpent = paidPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+
       setStats({
-        totalBookings: 0,
-        upcomingBookings: 0,
-        totalSpent: 0,
-        reviewsSubmitted: 0
+        totalBookings: bookings.length,
+        upcomingBookings: upcomingBookings.length,
+        totalSpent: totalSpent.toFixed(2),
+        reviewsSubmitted: reviews.length
       });
     } catch (error) {
       toast.error('Ma\'lumotlarni yuklashda xatolik');

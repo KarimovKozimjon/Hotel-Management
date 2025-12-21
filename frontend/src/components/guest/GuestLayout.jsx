@@ -68,6 +68,17 @@ function GuestLayout({ children }) {
                 </Link>
 
                 <Link
+                  to="/guest/payment-history"
+                  className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                    isActive('/guest/payment-history')
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  💳 To'lovlar
+                </Link>
+
+                <Link
                   to="/guest/profile"
                   className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                     isActive('/guest/profile')
@@ -76,6 +87,17 @@ function GuestLayout({ children }) {
                   }`}
                 >
                   👤 Profilim
+                </Link>
+
+                <Link
+                  to="/guest/change-password"
+                  className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                    isActive('/guest/change-password')
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  🔒 Parolni o'zgartirish
                 </Link>
               </div>
             </div>

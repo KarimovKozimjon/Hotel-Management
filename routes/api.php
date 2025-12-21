@@ -12,6 +12,8 @@ use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\InvoiceController;
+use App\Http\Controllers\RoomImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +51,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/rooms', [RoomController::class, 'index']);
     Route::get('/rooms/available', [RoomController::class, 'available']);
     Route::get('/rooms/{id}', [RoomController::class, 'show']);
+
+    // Room Images - Admin can manage
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::post('/rooms/{roomId}/images', [RoomImageController::class, 'store']);
+        Route::put('/rooms/{roomId}/images/{imageId}', [RoomImageController::class, 'update']);
+        Route::delete('/rooms/{roomId}/images/{imageId}', [RoomImageController::class, 'destroy']);
+        Route::post('/rooms/{roomId}/images/{imageId}/set-primary', [RoomImageController::class, 'setPrimary']);
+        Route::post('/rooms/{roomId}/images/reorder', [RoomImageController::class, 'reorder']);
+    });
+    Route::get('/rooms/{roomId}/images', [RoomImageController::class, 'index']);
 
     // Guests - All can view and create, Admin/Manager can modify
     Route::get('/guests', [GuestController::class, 'index']);
@@ -88,6 +100,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Roles - Temporarily accessible to all for testing (should be Admin only in production)
     Route::apiResource('roles', RoleController::class);
+
+    // Invoices - Generate and download PDFs
+    Route::get('/invoices/booking/{bookingId}', [InvoiceController::class, 'generateBookingInvoice']);
+    Route::get('/invoices/payment/{paymentId}', [InvoiceController::class, 'generatePaymentReceipt']);
+    Route::get('/invoices/preview/booking/{bookingId}', [InvoiceController::class, 'previewBookingInvoice']);
+    Route::get('/invoices/preview/payment/{paymentId}', [InvoiceController::class, 'previewPaymentReceipt']);
 });
 
 // Guest Portal Routes (separate auth guard)

@@ -4,6 +4,7 @@ import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import SearchBar from '../components/common/SearchBar';
 import Pagination from '../components/common/Pagination';
+import RoomImageManager from '../components/admin/RoomImageManager';
 import toast from 'react-hot-toast';
 
 const RoomsPage = () => {
@@ -12,6 +13,8 @@ const RoomsPage = () => {
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [editingRoom, setEditingRoom] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -177,6 +180,15 @@ const RoomsPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(room.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
+                      onClick={() => {
+                        setSelectedRoomId(room.id);
+                        setShowImageModal(true);
+                      }}
+                      className="text-purple-600 hover:text-purple-900 mr-3"
+                    >
+                      Rasmlar
+                    </button>
+                    <button
                       onClick={() => handleEdit(room)}
                       className="text-blue-600 hover:text-blue-900 mr-3"
                     >
@@ -282,6 +294,30 @@ const RoomsPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Image Manager Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Xona Rasmlari</h2>
+              <button
+                onClick={() => {
+                  setShowImageModal(false);
+                  setSelectedRoomId(null);
+                }}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <RoomImageManager
+              roomId={selectedRoomId}
+              onImagesChange={() => {}}
+            />
           </div>
         </div>
       )}

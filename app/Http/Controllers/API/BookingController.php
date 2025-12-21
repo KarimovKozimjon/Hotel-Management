@@ -7,6 +7,10 @@ use App\Models\Booking;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingConfirmation;
+use App\Mail\BookingCancelled;
+use App\Mail\CheckInReminder;
 
 class BookingController extends Controller
 {
@@ -81,7 +85,15 @@ class BookingController extends Controller
             'status' => 'pending',
         ]);
 
-        return response()->json($booking->load(['guest', 'room.roomType']), 201);
+        // Send booking confirmation email
+        $booking->load(['guest', 'room.roomType']);
+        try {
+            Mail::to($booking->guest->email)->send(new BookingConfirmation($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+        }
+
+        return response()->json($booking, 201);
     }
 
     public function show(Booking $booking)
@@ -117,6 +129,14 @@ class BookingController extends Controller
 
         $booking->room->update(['status' => 'occupied']);
 
+        // Send check-in confirmation email
+        $booking->load(['guest', 'room.roomType']);
+        try {
+            Mail::to($booking->guest->email)->send(new CheckInReminder($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send check-in email: ' . $e->getMessage());
+        }
+
         return response()->json($booking->load(['guest', 'room']));
     }
 
@@ -143,6 +163,14 @@ class BookingController extends Controller
         }
 
         $booking->update(['status' => 'cancelled']);
+
+        // Send cancellation email
+        $booking->load(['guest', 'room.roomType']);
+        try {
+            Mail::to($booking->guest->email)->send(new BookingCancelled($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send cancellation email: ' . $e->getMessage());
+        }
 
         return response()->json($booking);
     }
