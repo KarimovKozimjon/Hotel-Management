@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
 import { paymentService } from '../services/paymentService';
+import { bookingService } from '../services/bookingService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 
 const PaymentsPage = () => {
   const [payments, setPayments] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    booking_id: '',
+    amount: '',
+    payment_method: 'cash',
+    transaction_id: '',
+    notes: ''
+  });
   const [filter, setFilter] = useState({
     status: '',
     payment_method: ''
@@ -14,6 +24,7 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     fetchPayments();
+    fetchBookings();
   }, []);
 
   const fetchPayments = async () => {
@@ -25,6 +36,39 @@ const PaymentsPage = () => {
       toast.error('To\'lovlarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const fetchBookings = async () => {
+    try {
+      const data = await bookingService.getAll();
+      // Faqat checked_in statusdagi bronlarni olish
+      setBookings(data.filter(b => b.status === 'checked_in' || b.status === 'confirmed'));
+    } catch (error) {
+      toast.error('Bronlarni yuklashda xatolik');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await paymentService.create(formData);
+      toast.success('To\'lov muvaffaqiyatli yaratildi');
+      setShowModal(false);
+      resetForm();
+      fetchPayments();
+    } catch (error) {
+      toast.error('To\'lov yaratishda xatolik');
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      booking_id: '',
+      amount: '',
+      payment_method: 'cash',
+      transaction_id: '',
+      notes: ''
+    });
   };
 
   const handleFilterChange = (field, value) => {
@@ -84,6 +128,12 @@ const PaymentsPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">To'lovlar</h1>
+          <button
+            onClick={() => { resetForm(); setShowModal(true); }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            + Yangi to'lov
+          </button>
         </div>
 
         {/* Filters */}
@@ -200,6 +250,98 @@ const PaymentsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">Yangi to'lov</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Bron</label>
+                <select
+                  value={formData.booking_id}
+                  onChange={(e) => setFormData({ ...formData, booking_id: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="">Tanlang</option>
+                  {bookings.map((booking) => (
+                    <option key={booking.id} value={booking.id}>
+                      #{booking.id} - {booking.guest?.first_name} {booking.guest?.last_name} - Xona {booking.room?.room_number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Summa ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">To'lov turi</label>
+                <select
+                  value={formData.payment_method}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="cash">Naqd</option>
+                  <option value="card">Karta</option>
+                  <option value="online">Onlayn</option>
+                  <option value="bank_transfer">Bank o'tkazmasi</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Tranzaksiya ID (ixtiyoriy)</label>
+                <input
+                  type="text"
+                  value={formData.transaction_id}
+                  onChange={(e) => setFormData({ ...formData, transaction_id: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="TRX123456"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Izoh (ixtiyoriy)</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows="3"
+                  placeholder="Qo'shimcha ma'lumot..."
+                ></textarea>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                >
+                  To'lovni saqlash
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowModal(false); resetForm(); }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                >
+                  Bekor qilish
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

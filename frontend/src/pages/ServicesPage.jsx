@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/serviceService';
+import { bookingService } from '../services/bookingService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showAddToBookingModal, setShowAddToBookingModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -16,9 +20,15 @@ const ServicesPage = () => {
     category: 'room_service',
     is_active: true
   });
+  const [addToBookingData, setAddToBookingData] = useState({
+    booking_id: '',
+    service_id: '',
+    quantity: 1
+  });
 
   useEffect(() => {
     fetchServices();
+    fetchBookings();
   }, []);
 
   const fetchServices = async () => {
@@ -30,6 +40,47 @@ const ServicesPage = () => {
       toast.error('Xizmatlarni yuklashda xatolik');
       setLoading(false);
     }
+  };
+
+  const fetchBookings = async () => {
+    try {
+      const data = await bookingService.getAll();
+      // Faqat checked_in va confirmed statusdagi bronlar
+      setBookings(data.filter(b => b.status === 'checked_in' || b.status === 'confirmed'));
+    } catch (error) {
+      toast.error('Bronlarni yuklashda xatolik');
+    }
+  };
+
+  const handleAddToBooking = async (e) => {
+    e.preventDefault();
+    try {
+      await serviceService.addToBooking(addToBookingData);
+      toast.success('Xizmat bronlashga qo\'shildi');
+      setShowAddToBookingModal(false);
+      resetAddToBookingForm();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Xizmatni qo\'shishda xatolik');
+    }
+  };
+
+  const openAddToBookingModal = (service) => {
+    setSelectedService(service);
+    setAddToBookingData({
+      booking_id: '',
+      service_id: service.id,
+      quantity: 1
+    });
+    setShowAddToBookingModal(true);
+  };
+
+  const resetAddToBookingForm = () => {
+    setAddToBookingData({
+      booking_id: '',
+      service_id: '',
+      quantity: 1
+    });
+    setSelectedService(null);
   };
 
   const handleSubmit = async (e) => {
@@ -137,6 +188,15 @@ const ServicesPage = () => {
                 <span className="text-2xl font-bold text-blue-600">${service.price}</span>
               </div>
               
+              <div className="flex gap-2 mb-2">
+                <button
+                  onClick={() => openAddToBookingModal(service)}
+                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                >
+                  Bronlashga qo'shish
+                </button>
+              </div>
+              
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEdit(service)}
@@ -242,6 +302,79 @@ const ServicesPage = () => {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                >
+                  Bekor qilish
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add to Booking Modal */}
+      {showAddToBookingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">Xizmatni bronlashga qo'shish</h2>
+            
+            {selectedService && (
+              <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-lg">{selectedService.name}</h3>
+                <p className="text-sm text-gray-600">{selectedService.description}</p>
+                <p className="text-xl font-bold text-blue-600 mt-2">${selectedService.price}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleAddToBooking}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Bron</label>
+                <select
+                  value={addToBookingData.booking_id}
+                  onChange={(e) => setAddToBookingData({ ...addToBookingData, booking_id: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="">Tanlang</option>
+                  {bookings.map((booking) => (
+                    <option key={booking.id} value={booking.id}>
+                      #{booking.id} - {booking.guest?.first_name} {booking.guest?.last_name} - Xona {booking.room?.room_number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Miqdor</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={addToBookingData.quantity}
+                  onChange={(e) => setAddToBookingData({ ...addToBookingData, quantity: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              {selectedService && addToBookingData.quantity && (
+                <div className="mb-4 p-3 bg-gray-50 rounded">
+                  <p className="text-sm text-gray-600">Jami summa:</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    ${(selectedService.price * addToBookingData.quantity).toFixed(2)}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+                >
+                  Qo'shish
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowAddToBookingModal(false); resetAddToBookingForm(); }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
                 >
                   Bekor qilish
