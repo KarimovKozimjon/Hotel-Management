@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import reviewService from '../services/reviewService';
-import bookingService from '../services/bookingService';
-import guestService from '../services/guestService';
+import { bookingService } from '../services/bookingService';
+import { guestService } from '../services/guestService';
 import SearchBar from '../components/common/SearchBar';
 
 function ReviewsPage() {

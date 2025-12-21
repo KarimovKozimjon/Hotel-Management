@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Guest;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -20,9 +21,10 @@ class DatabaseSeeder extends Seeder
         // Rollarni yaratish
         $this->call(RoleSeeder::class);
 
-        // Admin role olish
-        $adminRole = Role::where('name', 'admin')->first();
-        $managerRole = Role::where('name', 'manager')->first();
+        // Rollarni olish
+        $adminRole = Role::where('name', 'Admin')->first();
+        $managerRole = Role::where('name', 'Manager')->first();
+        $staffRole = Role::where('name', 'Staff')->first();
 
         // Admin foydalanuvchi yaratish
         User::create([
@@ -40,12 +42,33 @@ class DatabaseSeeder extends Seeder
             'role_id' => $managerRole?->id,
         ]);
 
+        // Staff foydalanuvchi yaratish
+        User::create([
+            'name' => 'Staff User',
+            'email' => 'staff@hotel.com',
+            'password' => Hash::make('password'),
+            'role_id' => $staffRole?->id,
+        ]);
+
         // Test foydalanuvchi
         User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
             'role_id' => $adminRole?->id,
+        ]);
+
+        // Test mehmon yaratish
+        Guest::create([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'guest@hotel.com',
+            'password' => Hash::make('password'),
+            'phone' => '+998901234567',
+            'passport_number' => 'AB1234567',
+            'date_of_birth' => '1990-01-01',
+            'nationality' => 'Uzbekistan',
+            'address' => 'Tashkent, Uzbekistan',
         ]);
 
         // Xonalar va boshqa ma'lumotlarni yaratish

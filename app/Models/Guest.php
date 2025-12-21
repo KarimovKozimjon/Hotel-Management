@@ -3,16 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Guest extends Model
+class Guest extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $fillable = [
         'first_name',
         'last_name',
         'email',
+        'password',
         'phone',
         'passport_number',
         'date_of_birth',
@@ -20,9 +23,20 @@ class Guest extends Model
         'address',
     ];
 
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     protected $casts = [
         'date_of_birth' => 'date',
+        'password' => 'hashed',
     ];
+
+    public function getName()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
     public function bookings()
     {

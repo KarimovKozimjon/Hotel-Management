@@ -16,11 +16,13 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
+            $table->string('password')->nullable(); // For guest portal login
             $table->string('phone');
             $table->string('passport_number')->unique();
             $table->date('date_of_birth');
             $table->string('nationality');
             $table->text('address')->nullable();
+            $table->rememberToken(); // For "remember me" functionality
             $table->timestamps();
         });
     }

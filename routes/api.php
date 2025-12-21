@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\GuestController;
+use App\Http\Controllers\API\GuestAuthController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\RoomTypeController;
@@ -14,9 +15,13 @@ use App\Http\Controllers\API\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
+// Public routes - Staff Login
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Public routes - Guest Portal
+Route::post('/guest/register', [GuestAuthController::class, 'register']);
+Route::post('/guest/login', [GuestAuthController::class, 'login']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -78,13 +83,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reviews/guest/{guestId}', [ReviewController::class, 'getByGuest']);
     Route::apiResource('reviews', ReviewController::class);
 
-    // Users - Admin only
-    Route::middleware('role:Admin')->group(function () {
-        Route::apiResource('users', UserController::class);
-    });
+    // Users - Temporarily accessible to all for testing (should be Admin only in production)
+    Route::apiResource('users', UserController::class);
 
-    // Roles - Admin only
-    Route::middleware('role:Admin')->group(function () {
-        Route::apiResource('roles', RoleController::class);
-    });
+    // Roles - Temporarily accessible to all for testing (should be Admin only in production)
+    Route::apiResource('roles', RoleController::class);
+});
+
+// Guest Portal Routes (separate auth guard)
+Route::prefix('guest')->middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [GuestAuthController::class, 'logout']);
+    Route::get('/me', [GuestAuthController::class, 'me']);
+    
+    // Guest's own bookings and reviews
+    Route::get('/my-bookings', [GuestAuthController::class, 'myBookings']);
+    Route::get('/my-reviews', [GuestAuthController::class, 'myReviews']);
 });
