@@ -69,13 +69,13 @@ function BookRoomPage() {
 
     try {
       setLoading(true);
+      const totalGuests = bookingData.number_of_adults + bookingData.number_of_children;
       const response = await api.post('/bookings', {
         guest_id: guest.id,
         room_id: selectedRoom.id,
         check_in_date: filters.check_in_date,
         check_out_date: filters.check_out_date,
-        number_of_adults: bookingData.number_of_adults,
-        number_of_children: bookingData.number_of_children,
+        number_of_guests: totalGuests,
         special_requests: bookingData.special_requests,
       });
 
@@ -262,7 +262,7 @@ function BookRoomPage() {
                     </p>
                   )}
 
-                  {room.room_type?.amenities && (
+                  {room.room_type?.amenities && typeof room.room_type.amenities === 'string' && (
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2">Qulayliklar:</p>
                       <div className="flex flex-wrap gap-2">

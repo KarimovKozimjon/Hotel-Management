@@ -17,7 +17,8 @@ function MyBookingsPage() {
       const response = await api.get('/guest/my-bookings');
       setBookings(response.data.data);
     } catch (error) {
-      toast.error('Bronlarni yuklashda xatolik');
+      console.error('Booking fetch error:', error.response || error);
+      toast.error(error.response?.data?.message || 'Bronlarni yuklashda xatolik');
     } finally {
       setLoading(false);
     }
