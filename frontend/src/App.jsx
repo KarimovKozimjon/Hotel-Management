@@ -19,6 +19,7 @@ import GuestLayout from './components/guest/GuestLayout';
 import GuestDashboard from './pages/guest/GuestDashboard';
 import MyBookingsPage from './pages/guest/MyBookingsPage';
 import GuestProfile from './pages/guest/GuestProfile';
+import BookRoomPage from './pages/guest/BookRoomPage';
 import './index.css';
 
 function App() {
@@ -87,6 +88,11 @@ function App() {
             <Route path="/guest/my-bookings" element={
               <GuestLayout>
                 <MyBookingsPage />
+              </GuestLayout>
+            } />
+            <Route path="/guest/book-room" element={
+              <GuestLayout>
+                <BookRoomPage />
               </GuestLayout>
             } />
             <Route path="/guest/profile" element={
