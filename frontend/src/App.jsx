@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { GuestAuthProvider } from './context/GuestAuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import GuestPrivateRoute from './components/GuestPrivateRoute';
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import DashboardLayout from './components/dashboard/DashboardLayout';
@@ -27,7 +28,6 @@ import MyBookingsPage from './pages/guest/MyBookingsPage';
 import GuestProfile from './pages/guest/GuestProfile';
 import BookRoomPage from './pages/guest/BookRoomPage';
 import ChangePassword from './pages/guest/ChangePassword';
-import PaymentHistory from './pages/guest/PaymentHistory';
 import PublicLayout from './components/public/PublicLayout';
 import HomePage from './pages/public/HomePage';
 import PublicRoomsPage from './pages/public/PublicRoomsPage';
@@ -153,34 +153,39 @@ function App() {
             <Route path="/guest/login" element={<GuestLogin />} />
             <Route path="/guest/register" element={<GuestRegister />} />
             <Route path="/guest/dashboard" element={
-              <GuestLayout>
-                <GuestDashboard />
-              </GuestLayout>
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <GuestDashboard />
+                </GuestLayout>
+              </GuestPrivateRoute>
             } />
             <Route path="/guest/my-bookings" element={
-              <GuestLayout>
-                <MyBookingsPage />
-              </GuestLayout>
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <MyBookingsPage />
+                </GuestLayout>
+              </GuestPrivateRoute>
             } />
             <Route path="/guest/book-room" element={
-              <GuestLayout>
-                <BookRoomPage />
-              </GuestLayout>
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <BookRoomPage />
+                </GuestLayout>
+              </GuestPrivateRoute>
             } />
             <Route path="/guest/profile" element={
-              <GuestLayout>
-                <GuestProfile />
-              </GuestLayout>
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <GuestProfile />
+                </GuestLayout>
+              </GuestPrivateRoute>
             } />
             <Route path="/guest/change-password" element={
-              <GuestLayout>
-                <ChangePassword />
-              </GuestLayout>
-            } />
-            <Route path="/guest/payment-history" element={
-              <GuestLayout>
-                <PaymentHistory />
-              </GuestLayout>
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <ChangePassword />
+                </GuestLayout>
+              </GuestPrivateRoute>
             } />
           </Routes>
         </Router>

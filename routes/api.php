@@ -151,4 +151,13 @@ Route::prefix('guest')->middleware('auth:sanctum')->group(function () {
     // Guest's own bookings and reviews
     Route::get('/my-bookings', [GuestAuthController::class, 'myBookings']);
     Route::get('/my-reviews', [GuestAuthController::class, 'myReviews']);
+    
+    // Guest can create bookings
+    Route::post('/bookings', [BookingController::class, 'store']);
+    
+    // Guest can view available rooms
+    Route::get('/rooms/available', [RoomController::class, 'available']);
+    
+    // Guest can view their payments
+    Route::get('/payments', [PaymentController::class, 'guestPayments']);
 });

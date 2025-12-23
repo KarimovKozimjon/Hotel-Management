@@ -29,7 +29,7 @@ function BookRoomPage() {
 
   const fetchRoomTypes = async () => {
     try {
-      const response = await api.get('/room-types');
+      const response = await api.get('/public/room-types');
       setRoomTypes(response.data);
     } catch (error) {
       toast.error('Xona turlarini yuklashda xatolik');
@@ -49,7 +49,7 @@ function BookRoomPage() {
         ...advancedFilters,
       };
       
-      const response = await api.get('/rooms/available', { params });
+      const response = await api.get('/guest/rooms/available', { params });
       
       if (response.data.data) {
         setRooms(response.data.data);
@@ -84,7 +84,7 @@ function BookRoomPage() {
   };
 
   const handleBookRoom = (room) => {
-    if (!filters.check_in_date || !filters.check_out_date) {
+    if (!searchFilters.check_in_date || !searchFilters.check_out_date) {
       toast.error('Iltimos, kirish va chiqish sanalarini tanlang');
       return;
     }
@@ -98,7 +98,7 @@ function BookRoomPage() {
     try {
       setLoading(true);
       const totalGuests = bookingData.number_of_adults + bookingData.number_of_children;
-      const response = await api.post('/bookings', {
+      const response = await api.post('/guest/bookings', {
         guest_id: guest.id,
         room_id: selectedRoom.id,
         check_in_date: searchFilters.check_in_date,
@@ -142,11 +142,11 @@ function BookRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
+    <div className="min-h-screen bg-blue-50">
+      <div className="bg-blue-600 shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Xona bron qilish 🏨</h1>
-          <p className="mt-1 text-xs sm:text-sm text-gray-500">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow">Xona bron qilish 🏨</h1>
+          <p className="mt-1 text-xs sm:text-sm text-blue-100">
             Mavjud xonalardan birini tanlang va bron qiling
           </p>
         </div>
@@ -155,10 +155,10 @@ function BookRoomPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Date Search */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-4">📅 Sana tanlang</h2>
+          <h2 className="text-base sm:text-lg font-semibold mb-4 text-blue-700">📅 Sana tanlang</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-blue-700 mb-2">
                 Kirish sanasi *
               </label>
               <input
@@ -172,7 +172,7 @@ function BookRoomPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-blue-700 mb-2">
                 Chiqish sanasi *
               </label>
               <input
@@ -189,7 +189,7 @@ function BookRoomPage() {
               <button
                 onClick={handleSearch}
                 disabled={!searchFilters.check_in_date || !searchFilters.check_out_date}
-                className="w-full bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold text-sm sm:text-base"
+                className="w-full bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold text-sm sm:text-base transition-all"
               >
                 🔍 Qidirish
               </button>
@@ -228,13 +228,13 @@ function BookRoomPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Yuklanmoqda...</p>
+            <p className="mt-4 text-blue-700">Yuklanmoqda...</p>
           </div>
         ) : rooms.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 sm:p-12 text-center">
+          <div className="bg-white/90 rounded-lg shadow p-8 sm:p-12 text-center backdrop-blur">
             <span className="text-5xl sm:text-6xl mb-4 block">🚫</span>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Xonalar topilmadi</h3>
-            <p className="text-sm sm:text-base text-gray-600">
+            <h3 className="text-lg sm:text-xl font-semibold text-blue-700 mb-2">Xonalar topilmadi</h3>
+            <p className="text-sm sm:text-base text-blue-500">
               {searchFilters.check_in_date && searchFilters.check_out_date 
                 ? 'Boshqa filtrlar bilan qidiring' 
                 : 'Qidiruv uchun sanalarni tanlang'}
@@ -243,7 +243,32 @@ function BookRoomPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {rooms.map((room) => (
-              <div key={room.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+              <div key={room.id} className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow overflow-hidden">
+                {/* Room Image */}
+                <div className="relative h-48 sm:h-56 overflow-hidden bg-gray-200">
+                  {room.images && room.images.length > 0 ? (
+                    <img
+                      src={room.images.find(img => img.is_primary)?.image_url || room.images[0]?.image_url}
+                      alt={room.room_type?.name}
+                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = room.room_type?.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800';
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={room.room_type?.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800'}
+                      alt={room.room_type?.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-lg">
+                      Mavjud
+                    </span>
+                  </div>
+                </div>
+
                 <div className="p-4 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
@@ -252,9 +277,6 @@ function BookRoomPage() {
                       </h3>
                       <p className="text-xs sm:text-sm text-gray-500">Xona #{room.room_number}</p>
                     </div>
-                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                      Mavjud
-                    </span>
                   </div>
 
                   <div className="space-y-2 mb-4">
@@ -298,7 +320,7 @@ function BookRoomPage() {
 
                   <button
                     onClick={() => handleBookRoom(room)}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base"
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base transition-all"
                   >
                     Bron qilish
                   </button>
@@ -314,26 +336,26 @@ function BookRoomPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 sm:p-6">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4">Bronni tasdiqlang</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700">Bronni tasdiqlang</h2>
 
-              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
-                <h3 className="font-semibold mb-2 text-sm sm:text-base">{selectedRoom.room_type?.name}</h3>
-                <p className="text-xs sm:text-sm text-gray-600">Xona #{selectedRoom.room_number}</p>
+              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base text-blue-700">{selectedRoom.room_type?.name}</h3>
+                <p className="text-xs sm:text-sm text-blue-500">Xona #{selectedRoom.room_number}</p>
                 
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600">Kirish</p>
+                    <p className="text-xs sm:text-sm text-blue-500">Kirish</p>
                     <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_in_date).toLocaleDateString('uz-UZ')}</p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600">Chiqish</p>
+                    <p className="text-xs sm:text-sm text-blue-500">Chiqish</p>
                     <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_out_date).toLocaleDateString('uz-UZ')}</p>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-xs sm:text-sm text-gray-600">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
-                  <p className="text-base sm:text-lg font-bold text-green-600 mt-2">
+                <div className="mt-4 pt-4 border-t border-blue-100">
+                  <p className="text-xs sm:text-sm text-blue-500">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
+                  <p className="text-base sm:text-lg font-bold text-blue-700 mt-2">
                     Jami: ${calculateTotal()}
                   </p>
                 </div>
@@ -388,14 +410,14 @@ function BookRoomPage() {
                     setShowModal(false);
                     setSelectedRoom(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
+                  className="flex-1 px-4 py-2 border border-blue-200 rounded-lg hover:bg-blue-50 text-sm sm:text-base transition-all"
                   disabled={loading}
                 >
                   Bekor qilish
                 </button>
                 <button
                   onClick={handleConfirmBooking}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base transition-all"
                   disabled={loading}
                 >
                   {loading ? 'Saqlanmoqda...' : 'Tasdiqlash'}

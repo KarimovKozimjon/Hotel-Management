@@ -144,7 +144,7 @@ class RoomController extends Controller
         }
 
         // Load room type for price and capacity filtering
-        $query->with('roomType');
+        $query->with(['roomType', 'images']);
 
         $rooms = $query->get();
 

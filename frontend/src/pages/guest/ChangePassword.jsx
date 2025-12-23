@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGuestAuth } from '../../context/GuestAuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 function ChangePassword() {
   const { guest } = useGuestAuth();
@@ -11,6 +12,9 @@ function ChangePassword() {
     new_password_confirmation: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,84 +52,124 @@ function ChangePassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Parolni o'zgartirish 🔒</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Xavfsizlik uchun parolingizni muntazam o'zgartiring
-          </p>
+    <div className="min-h-screen bg-blue-50">
+      {/* Hero Header */}
+      <div className="bg-white border-b border-blue-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-3xl md:text-4xl font-bold text-blue-700 flex items-center gap-3 mb-1">
+              <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+                {/* Ikon */}
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" /></svg>
+              </span>
+              Parolni o'zgartirish
+            </h1>
+            <p className="text-base md:text-lg text-blue-400">
+              Yangi xavfsiz parol o'rnating
+            </p>
+          </motion.div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-8">
+      <div className="max-w-xl mx-auto mt-10 bg-white rounded-2xl shadow-md p-8 border border-gray-100">
           <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Joriy parol *
-              </label>
-              <input
-                type="password"
-                value={formData.current_password}
-                onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Joriy parolingizni kiriting"
-              />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-6"
+            >
+              <label className="block text-sm font-medium text-blue-700 mb-1">Joriy parol</label>
+              <div className="relative">
+                <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={formData.current_password}
+                    onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+                    placeholder="Joriy parolingizni kiriting"
+                  />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showCurrentPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+            </motion.div>
 
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Yangi parol *
-              </label>
-              <input
-                type="password"
-                value={formData.new_password}
-                onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
-                required
-                minLength="6"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Yangi parolni kiriting (kamida 6 ta belgi)"
-              />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-6"
+            >
+              <label className="block text-sm font-medium text-blue-700 mb-1">Yangi parol</label>
+              <div className="relative">
+                <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={formData.new_password}
+                    onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
+                    required
+                    minLength="6"
+                    className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+                    placeholder="Yangi parolni kiriting (kamida 6 ta belgi)"
+                  />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showNewPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+            </motion.div>
 
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Yangi parolni tasdiqlash *
-              </label>
-              <input
-                type="password"
-                value={formData.new_password_confirmation}
-                onChange={(e) => setFormData({ ...formData, new_password_confirmation: e.target.value })}
-                required
-                minLength="6"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Yangi parolni qayta kiriting"
-              />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mb-6"
+            >
+              <label className="block text-sm font-medium text-blue-700 mb-1">Yangi parolni tasdiqlash</label>
+              <div className="relative">
+                <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.new_password_confirmation}
+                    onChange={(e) => setFormData({ ...formData, new_password_confirmation: e.target.value })}
+                    required
+                    minLength="6"
+                    className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+                    placeholder="Yangi parolni qayta kiriting"
+                  />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+            </motion.div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-blue-900 mb-2">💡 Parol uchun tavsiyalar:</h3>
-              <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-                <li>Kamida 6 ta belgidan iborat bo'lsin</li>
-                <li>Katta va kichik harflardan foydalaning</li>
-                <li>Raqam va maxsus belgilar qo'shing</li>
-                <li>Oddiy so'zlardan foydalanmang</li>
-              </ul>
-            </div>
+            {/* Parol uchun tavsiyalar blokini olib tashlash yoki soddalashtirish mumkin */}
 
-            <div className="flex space-x-4">
+            <div className="mt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? 'Saqlanmoqda...' : 'Parolni o\'zgartirish'}
+                {loading ? 'Yuklanmoqda...' : 'Saqlash'}
               </button>
             </div>
           </form>
-        </div>
+        {/* ...existing code... */}
       </div>
     </div>
   );

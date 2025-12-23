@@ -370,7 +370,7 @@ function HomePage() {
                         {t('home.viewRooms')}
                       </a>
                       <Link
-                        to="/guest/register"
+                        to="/guest/login"
                         className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-white text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl"
                       >
                         {t('home.bookNow')}
@@ -640,7 +640,7 @@ function HomePage() {
                       ))}
                     </div>
                     <Link
-                      to="/guest/register"
+                      to="/guest/login"
                       className="block w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 shadow-lg mt-auto"
                     >
                       {t('home.bookNow')}
@@ -992,7 +992,7 @@ function HomePage() {
               {t('home.cta.questions')}
             </a>
             <Link
-              to="/guest/register"
+              to="/guest/login"
               className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-indigo-600 hover:scale-105 transform transition-all duration-300"
             >
               {t('home.cta.bookNow')}

@@ -180,21 +180,21 @@ function MyBookingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Yuklanmoqda...</p>
+          <p className="mt-4 text-blue-500">Yuklanmoqda...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
+    <div className="min-h-screen bg-blue-50">
+      <div className="bg-white border-b border-blue-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Mening bronlarim 📋</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-blue-700">Mening bronlarim 📋</h1>
+          <p className="mt-1 text-sm text-blue-400">
             Barcha bronlaringizni bu yerda ko'ring
           </p>
         </div>
@@ -202,10 +202,10 @@ function MyBookingsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {bookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
+          <div className="bg-white border border-blue-100 rounded-lg shadow-sm p-12 text-center">
             <span className="text-6xl mb-4 block">📭</span>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Bronlar topilmadi</h3>
-            <p className="text-gray-600 mb-6">Siz hali hech qanday xona bronlamagansiz</p>
+            <h3 className="text-xl font-semibold text-blue-700 mb-2">Bronlar topilmadi</h3>
+            <p className="text-blue-400 mb-6">Siz hali hech qanday xona bronlamagansiz</p>
             <a
               href="/guest/book-room"
               className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
@@ -216,14 +216,14 @@ function MyBookingsPage() {
         ) : (
           <div className="space-y-6">
             {bookings.map((booking) => (
-              <div key={booking.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+              <div key={booking.id} className="bg-white border border-blue-100 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className="text-lg font-semibold text-blue-700">
                         Bron #{booking.id}
                       </h3>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-blue-400 mt-1">
                         Yaratilgan: {formatDate(booking.created_at)}
                       </p>
                     </div>
@@ -232,22 +232,22 @@ function MyBookingsPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Xona</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-sm text-blue-400 mb-1">Xona</p>
+                      <p className="font-semibold text-blue-900">
                         {booking.room?.room_type?.name} - Xona #{booking.room?.room_number}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Kirish sanasi</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-sm text-blue-400 mb-1">Kirish sanasi</p>
+                      <p className="font-semibold text-blue-900">
                         {formatDate(booking.check_in_date)}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Chiqish sanasi</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-sm text-blue-400 mb-1">Chiqish sanasi</p>
+                      <p className="font-semibold text-blue-900">
                         {formatDate(booking.check_out_date)}
                       </p>
                     </div>
@@ -255,17 +255,17 @@ function MyBookingsPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Kattalar soni</p>
-                      <p className="font-semibold text-gray-900">{booking.number_of_adults}</p>
+                      <p className="text-sm text-blue-400 mb-1">Kattalar soni</p>
+                      <p className="font-semibold text-blue-900">{booking.number_of_adults}</p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Bolalar soni</p>
-                      <p className="font-semibold text-gray-900">{booking.number_of_children || 0}</p>
+                      <p className="text-sm text-blue-400 mb-1">Bolalar soni</p>
+                      <p className="font-semibold text-blue-900">{booking.number_of_children || 0}</p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Jami summa</p>
+                      <p className="text-sm text-blue-400 mb-1">Jami summa</p>
                       <p className="text-xl font-bold text-green-600">${booking.total_price}</p>
                       {getPaymentStatus(booking) === 'paid' ? (
                         <div className="mt-1">
@@ -275,7 +275,7 @@ function MyBookingsPage() {
                               ? booking.payments.find(p => p.status === 'completed')
                               : booking.payment;
                             return payment && (
-                              <div className="text-xs text-gray-500 mt-1">
+                              <div className="text-xs text-blue-400 mt-1">
                                 {payment.payment_method === 'card' && '💳 Karta'}
                                 {payment.payment_method === 'online' && '🌐 Online'}
                                 {payment.payment_method === 'cash' && '💵 Naqd'}
@@ -292,8 +292,8 @@ function MyBookingsPage() {
 
                   {booking.special_requests && (
                     <div className="mt-4 pt-4 border-t">
-                      <p className="text-sm text-gray-600 mb-1">Maxsus so'rovlar</p>
-                      <p className="text-gray-900">{booking.special_requests}</p>
+                      <p className="text-sm text-blue-400 mb-1">Maxsus so'rovlar</p>
+                      <p className="text-blue-900">{booking.special_requests}</p>
                     </div>
                   )}
 
@@ -302,7 +302,7 @@ function MyBookingsPage() {
                     {/* Download Invoice Button */}
                     <button
                       onClick={() => handleDownloadInvoice(booking.id)}
-                      className="bg-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-purple-700 font-semibold inline-flex items-center justify-center text-sm sm:text-base"
+                      className="bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-indigo-700 font-semibold inline-flex items-center justify-center text-sm sm:text-base"
                     >
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

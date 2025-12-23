@@ -91,4 +91,28 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Payment deleted successfully']);
     }
+
+    /**
+     * Get payments for authenticated guest
+     */
+    public function guestPayments(Request $request)
+    {
+        $guest = $request->user();
+        
+        if (!$guest) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $payments = Payment::whereHas('booking', function ($query) use ($guest) {
+            $query->where('guest_id', $guest->id);
+        })
+        ->with(['booking.room.roomType'])
+        ->latest()
+        ->get();
+
+        return response()->json([
+            'data' => $payments,
+            'total' => $payments->count()
+        ]);
+    }
 }

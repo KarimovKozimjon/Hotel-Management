@@ -37,9 +37,17 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Check if it's a guest route
+      if (error.config?.url?.startsWith('/guest/')) {
+        localStorage.removeItem('guestToken');
+        localStorage.removeItem('guest');
+        window.location.href = '/guest/login';
+      } else {
+        // Staff route
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
