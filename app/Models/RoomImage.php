@@ -30,6 +30,12 @@ class RoomImage extends Model
 
     public function getImageUrlAttribute()
     {
+        // If image_path is already a full URL, return it as is
+        if (filter_var($this->image_path, FILTER_VALIDATE_URL)) {
+            return $this->image_path;
+        }
+        
+        // Otherwise, treat it as a local storage path
         return url('storage/' . $this->image_path);
     }
 }

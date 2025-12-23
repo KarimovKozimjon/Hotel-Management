@@ -46,12 +46,21 @@ export const roomTypeService = {
   },
 
   create: async (data) => {
-    const response = await api.post('/room-types', data);
+    const response = await api.post('/room-types', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
   update: async (id, data) => {
-    const response = await api.put(`/room-types/${id}`, data);
+    // If data is FormData, use POST with _method=PUT (Laravel convention)
+    const response = await api.post(`/room-types/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 

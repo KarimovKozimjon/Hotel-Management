@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGuestAuth } from '../../context/GuestAuthContext';
+import AdvancedSearchFilters from '../../components/common/AdvancedSearchFilters';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -10,22 +11,20 @@ function BookRoomPage() {
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [filters, setFilters] = useState({
+  const [searchFilters, setSearchFilters] = useState({
     check_in_date: '',
     check_out_date: '',
-    room_type_id: '',
-    min_price: '',
-    max_price: ''
   });
+  const [advancedFilters, setAdvancedFilters] = useState({});
   const [bookingData, setBookingData] = useState({
     number_of_adults: 1,
     number_of_children: 0,
     special_requests: ''
   });
+  const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
     fetchRoomTypes();
-    fetchRooms();
   }, []);
 
   const fetchRoomTypes = async () => {
@@ -37,22 +36,51 @@ function BookRoomPage() {
     }
   };
 
-  const fetchRooms = async () => {
+  const handleSearch = async () => {
+    if (!searchFilters.check_in_date || !searchFilters.check_out_date) {
+      toast.error('Iltimos, kirish va chiqish sanalarini tanlang');
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await api.get('/rooms', { params: filters });
-      // Filter only available rooms
-      const availableRooms = response.data.filter(room => room.status === 'available');
-      setRooms(availableRooms);
+      const params = {
+        ...searchFilters,
+        ...advancedFilters,
+      };
+      
+      const response = await api.get('/rooms/available', { params });
+      
+      if (response.data.data) {
+        setRooms(response.data.data);
+        setSearchResults({
+          total: response.data.total_results,
+          filters: response.data.filters_applied
+        });
+        toast.success(`${response.data.total_results} ta xona topildi`);
+      } else {
+        setRooms([]);
+        setSearchResults({ total: 0, filters: {} });
+        toast.info('Xonalar topilmadi');
+      }
     } catch (error) {
       toast.error('Xonalarni yuklashda xatolik');
+      setRooms([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = () => {
-    fetchRooms();
+  const handleFilterChange = (filters) => {
+    setAdvancedFilters(filters);
+    // Auto-search if dates are already selected
+    if (searchFilters.check_in_date && searchFilters.check_out_date) {
+      // Debounce the search
+      const timer = setTimeout(() => {
+        handleSearch();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
   };
 
   const handleBookRoom = (room) => {
@@ -73,8 +101,8 @@ function BookRoomPage() {
       const response = await api.post('/bookings', {
         guest_id: guest.id,
         room_id: selectedRoom.id,
-        check_in_date: filters.check_in_date,
-        check_out_date: filters.check_out_date,
+        check_in_date: searchFilters.check_in_date,
+        check_out_date: searchFilters.check_out_date,
         number_of_guests: totalGuests,
         special_requests: bookingData.special_requests,
       });
@@ -101,44 +129,44 @@ function BookRoomPage() {
   };
 
   const calculateDays = () => {
-    if (!filters.check_in_date || !filters.check_out_date) return 0;
-    const checkIn = new Date(filters.check_in_date);
-    const checkOut = new Date(filters.check_out_date);
+    if (!searchFilters.check_in_date || !searchFilters.check_out_date) return 0;
+    const checkIn = new Date(searchFilters.check_in_date);
+    const checkOut = new Date(searchFilters.check_out_date);
     const days = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
     return days > 0 ? days : 0;
   };
 
   const calculateTotal = () => {
-    if (!selectedRoom) return 0;
-    return selectedRoom.room_type.price_per_night * calculateDays();
+    if (!selectedRoom?.room_type) return 0;
+    return selectedRoom.room_type.base_price * calculateDays();
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Xona bron qilish 🏨</h1>
-          <p className="mt-1 text-sm text-gray-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Xona bron qilish 🏨</h1>
+          <p className="mt-1 text-xs sm:text-sm text-gray-500">
             Mavjud xonalardan birini tanlang va bron qiling
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Qidiruv filterlari</h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Date Search */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-4">📅 Sana tanlang</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kirish sanasi *
               </label>
               <input
                 type="date"
-                value={filters.check_in_date}
-                onChange={(e) => setFilters({ ...filters, check_in_date: e.target.value })}
+                value={searchFilters.check_in_date}
+                onChange={(e) => setSearchFilters({ ...searchFilters, check_in_date: e.target.value })}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -149,66 +177,52 @@ function BookRoomPage() {
               </label>
               <input
                 type="date"
-                value={filters.check_out_date}
-                onChange={(e) => setFilters({ ...filters, check_out_date: e.target.value })}
-                min={filters.check_in_date || new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                value={searchFilters.check_out_date}
+                onChange={(e) => setSearchFilters({ ...searchFilters, check_out_date: e.target.value })}
+                min={searchFilters.check_in_date || new Date().toISOString().split('T')[0]}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Xona turi
-              </label>
-              <select
-                value={filters.room_type_id}
-                onChange={(e) => setFilters({ ...filters, room_type_id: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            <div className="flex items-end">
+              <button
+                onClick={handleSearch}
+                disabled={!searchFilters.check_in_date || !searchFilters.check_out_date}
+                className="w-full bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold text-sm sm:text-base"
               >
-                <option value="">Barchasi</option>
-                {roomTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Min narx ($)
-              </label>
-              <input
-                type="number"
-                value={filters.min_price}
-                onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Max narx ($)
-              </label>
-              <input
-                type="number"
-                value={filters.max_price}
-                onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+                🔍 Qidirish
+              </button>
             </div>
           </div>
-
-          <div className="mt-4">
-            <button
-              onClick={handleSearch}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
-              🔍 Qidirish
-            </button>
-          </div>
+          
+          {calculateDays() > 0 && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-900">
+                📊 Qolish muddati: <span className="font-bold">{calculateDays()} kun</span>
+              </p>
+            </div>
+          )}
         </div>
+
+        {/* Advanced Filters */}
+        {searchFilters.check_in_date && searchFilters.check_out_date && (
+          <AdvancedSearchFilters 
+            onFilterChange={handleFilterChange} 
+            roomTypes={roomTypes}
+          />
+        )}
+
+        {/* Search Results Info */}
+        {searchResults && (
+          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-100 p-4 rounded-lg">
+            <div>
+              <p className="text-sm sm:text-base font-semibold text-gray-900">
+                {searchResults.total} ta xona topildi
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Rooms Grid */}
         {loading ? (
@@ -217,47 +231,51 @@ function BookRoomPage() {
             <p className="mt-4 text-gray-600">Yuklanmoqda...</p>
           </div>
         ) : rooms.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <span className="text-6xl mb-4 block">🚫</span>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Xonalar topilmadi</h3>
-            <p className="text-gray-600">Boshqa filtrlar bilan qidiring</p>
+          <div className="bg-white rounded-lg shadow p-8 sm:p-12 text-center">
+            <span className="text-5xl sm:text-6xl mb-4 block">🚫</span>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Xonalar topilmadi</h3>
+            <p className="text-sm sm:text-base text-gray-600">
+              {searchFilters.check_in_date && searchFilters.check_out_date 
+                ? 'Boshqa filtrlar bilan qidiring' 
+                : 'Qidiruv uchun sanalarni tanlang'}
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {rooms.map((room) => (
               <div key={room.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">
                         {room.room_type?.name}
                       </h3>
-                      <p className="text-sm text-gray-500">Xona #{room.room_number}</p>
+                      <p className="text-xs sm:text-sm text-gray-500">Xona #{room.room_number}</p>
                     </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                       Mavjud
                     </span>
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Sig'imi:</span>
                       <span className="font-semibold">{room.room_type?.capacity} kishi</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Qavat:</span>
                       <span className="font-semibold">{room.floor}-qavat</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Narx (kunlik):</span>
                       <span className="font-semibold text-green-600">
-                        ${room.room_type?.price_per_night}
+                        ${room.room_type?.base_price}
                       </span>
                     </div>
                   </div>
 
                   {room.room_type?.description && (
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-2">
                       {room.room_type.description}
                     </p>
                   )}
@@ -265,8 +283,8 @@ function BookRoomPage() {
                   {room.room_type?.amenities && typeof room.room_type.amenities === 'string' && (
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2">Qulayliklar:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {room.room_type.amenities.split(',').map((amenity, index) => (
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
+                        {room.room_type.amenities.split(',').slice(0, 3).map((amenity, index) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
@@ -280,7 +298,7 @@ function BookRoomPage() {
 
                   <button
                     onClick={() => handleBookRoom(room)}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base"
                   >
                     Bron qilish
                   </button>
@@ -294,36 +312,36 @@ function BookRoomPage() {
       {/* Booking Modal */}
       {showModal && selectedRoom && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Bronni tasdiqlang</h2>
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4">Bronni tasdiqlang</h2>
 
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 className="font-semibold mb-2">{selectedRoom.room_type?.name}</h3>
-                <p className="text-sm text-gray-600">Xona #{selectedRoom.room_number}</p>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">{selectedRoom.room_type?.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-600">Xona #{selectedRoom.room_number}</p>
                 
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
-                    <p className="text-sm text-gray-600">Kirish</p>
-                    <p className="font-semibold">{new Date(filters.check_in_date).toLocaleDateString('uz-UZ')}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Kirish</p>
+                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_in_date).toLocaleDateString('uz-UZ')}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Chiqish</p>
-                    <p className="font-semibold">{new Date(filters.check_out_date).toLocaleDateString('uz-UZ')}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Chiqish</p>
+                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_out_date).toLocaleDateString('uz-UZ')}</p>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
-                  <p className="text-lg font-bold text-green-600 mt-2">
+                  <p className="text-xs sm:text-sm text-gray-600">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
+                  <p className="text-base sm:text-lg font-bold text-green-600 mt-2">
                     Jami: ${calculateTotal()}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-6">
+              <div className="space-y-4 mb-4 sm:mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     Kattalar soni *
                   </label>
                   <input
@@ -332,13 +350,13 @@ function BookRoomPage() {
                     max={selectedRoom.room_type?.capacity}
                     value={bookingData.number_of_adults}
                     onChange={(e) => setBookingData({ ...bookingData, number_of_adults: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     Bolalar soni
                   </label>
                   <input
@@ -346,38 +364,38 @@ function BookRoomPage() {
                     min="0"
                     value={bookingData.number_of_children}
                     onChange={(e) => setBookingData({ ...bookingData, number_of_children: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     Maxsus so'rovlar
                   </label>
                   <textarea
                     value={bookingData.special_requests}
                     onChange={(e) => setBookingData({ ...bookingData, special_requests: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     rows="3"
                     placeholder="Masalan: Yuqori qavatdagi xona, oyna ko'rinishi, va h.k."
                   />
                 </div>
               </div>
 
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <button
                   onClick={() => {
                     setShowModal(false);
                     setSelectedRoom(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
                   disabled={loading}
                 >
                   Bekor qilish
                 </button>
                 <button
                   onClick={handleConfirmBooking}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
                   disabled={loading}
                 >
                   {loading ? 'Saqlanmoqda...' : 'Tasdiqlash'}

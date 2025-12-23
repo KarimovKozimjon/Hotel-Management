@@ -14,9 +14,12 @@ const RoomTypesPage = () => {
     description: '',
     capacity: '',
     base_price: '',
-    amenities: []
+    amenities: [],
+    image_url: ''
   });
   const [amenityInput, setAmenityInput] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     fetchRoomTypes();
@@ -36,18 +39,40 @@ const RoomTypesPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('Submitting formData:', formData);
+      
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('capacity', formData.capacity);
+      submitData.append('base_price', formData.base_price);
+      submitData.append('amenities', JSON.stringify(formData.amenities));
+      
+      console.log('Amenities being sent:', formData.amenities);
+      
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      } else if (formData.image_url) {
+        submitData.append('image_url', formData.image_url);
+      }
+
       if (editingRoomType) {
-        await roomTypeService.update(editingRoomType.id, formData);
+        // For PUT requests with FormData, we need to use POST with _method
+        submitData.append('_method', 'PUT');
+        const result = await roomTypeService.update(editingRoomType.id, submitData);
+        console.log('Update result:', result);
         toast.success('Xona turi yangilandi');
       } else {
-        await roomTypeService.create(formData);
+        const result = await roomTypeService.create(submitData);
+        console.log('Create result:', result);
         toast.success('Xona turi qo\'shildi');
       }
       setShowModal(false);
       resetForm();
       fetchRoomTypes();
     } catch (error) {
-      toast.error('Xatolik yuz berdi');
+      console.error('Submit error:', error);
+      toast.error(error.response?.data?.message || 'Xatolik yuz berdi');
     }
   };
 
@@ -58,8 +83,10 @@ const RoomTypesPage = () => {
       description: roomType.description || '',
       capacity: roomType.capacity,
       base_price: roomType.base_price,
-      amenities: roomType.amenities || []
+      amenities: roomType.amenities || [],
+      image_url: roomType.image_url || ''
     });
+    setImagePreview(roomType.image_url || null);
     setShowModal(true);
   };
 
@@ -92,16 +119,31 @@ const RoomTypesPage = () => {
     });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
       description: '',
       capacity: '',
       base_price: '',
-      amenities: []
+      amenities: [],
+      image_url: ''
     });
     setAmenityInput('');
     setEditingRoomType(null);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   if (loading) return <Loader />;
@@ -124,6 +166,15 @@ const RoomTypesPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roomTypes.map((roomType) => (
             <div key={roomType.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              {roomType.image_url && (
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={roomType.image_url} 
+                    alt={roomType.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div className="p-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{roomType.name}</h3>
                 <p className="text-gray-600 mb-4">{roomType.description}</p>
@@ -233,6 +284,36 @@ const RoomTypesPage = () => {
                     onChange={(e) => setFormData({ ...formData, base_price: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg"
                     required
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Rasm</label>
+                <div className="mb-2">
+                  {imagePreview && (
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-full h-48 object-cover rounded-lg mb-2"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">yoki URL kiriting:</p>
+                  <input
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => {
+                      setFormData({ ...formData, image_url: e.target.value });
+                      setImagePreview(e.target.value);
+                    }}
+                    className="w-full px-3 py-2 border rounded-lg mt-1"
+                    placeholder="https://example.com/image.jpg"
                   />
                 </div>
               </div>

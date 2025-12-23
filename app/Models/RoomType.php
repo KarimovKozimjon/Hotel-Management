@@ -15,6 +15,7 @@ class RoomType extends Model
         'capacity',
         'base_price',
         'amenities',
+        'image_url',
     ];
 
     protected $casts = [

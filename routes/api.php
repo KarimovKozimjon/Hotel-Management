@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\GuestController;
 use App\Http\Controllers\API\GuestAuthController;
@@ -13,6 +14,8 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\InvoiceController;
+use App\Http\Controllers\API\PaymentGatewayController;
+use App\Http\Controllers\API\DiscountController;
 use App\Http\Controllers\RoomImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +27,18 @@ Route::post('/login', [AuthController::class, 'login']);
 // Public routes - Guest Portal
 Route::post('/guest/register', [GuestAuthController::class, 'register']);
 Route::post('/guest/login', [GuestAuthController::class, 'login']);
+
+// Public routes - Room information for homepage
+Route::get('/public/rooms', [RoomController::class, 'publicIndex']);
+Route::get('/public/room-types', [RoomTypeController::class, 'publicIndex']);
+
+// Public route - Contact form
+Route::post('/contact', [ContactController::class, 'store']);
+
+// Payment Gateway Webhooks (public - called by payment providers)
+Route::post('/payment/click/prepare', [PaymentGatewayController::class, 'clickPrepare']);
+Route::post('/payment/click/complete', [PaymentGatewayController::class, 'clickComplete']);
+Route::post('/payment/payme/webhook', [PaymentGatewayController::class, 'paymeWebhook']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -41,6 +56,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/room-types', [RoomTypeController::class, 'index']);
     Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
+
+    // Contact Messages - Admin and Manager
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::get('/contact-messages', [ContactController::class, 'index']);
+        Route::get('/contact-messages/unread-count', [ContactController::class, 'getUnreadCount']);
+        Route::get('/contact-messages/{id}', [ContactController::class, 'show']);
+        Route::delete('/contact-messages/{id}', [ContactController::class, 'destroy']);
+        Route::post('/contact-messages/{id}/mark-as-read', [ContactController::class, 'markAsRead']);
+    });
 
     // Rooms - Admin and Manager can modify, all can view
     Route::middleware('role:Admin,Manager')->group(function () {
@@ -80,6 +104,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Payments - All authenticated users
     Route::apiResource('payments', PaymentController::class);
 
+    // Payment Gateway - Initiate payments
+    Route::post('/payment/initiate', [PaymentGatewayController::class, 'initiate']);
+    Route::get('/payment/status', [PaymentGatewayController::class, 'checkStatus']);
+
     // Services - Admin and Manager can modify, all can view
     Route::middleware('role:Admin,Manager')->group(function () {
         Route::post('/services', [ServiceController::class, 'store']);
@@ -94,6 +122,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reviews/booking/{bookingId}', [ReviewController::class, 'getByBooking']);
     Route::get('/reviews/guest/{guestId}', [ReviewController::class, 'getByGuest']);
     Route::apiResource('reviews', ReviewController::class);
+
+    // Discounts/Promo Codes - Admin and Manager
+    Route::middleware('role:Admin,Manager')->group(function () {
+        Route::apiResource('discounts', DiscountController::class);
+    });
+    Route::post('/discounts/validate', [DiscountController::class, 'validate_code']);
+    Route::get('/discounts', [DiscountController::class, 'index']);
 
     // Users - Temporarily accessible to all for testing (should be Admin only in production)
     Route::apiResource('users', UserController::class);

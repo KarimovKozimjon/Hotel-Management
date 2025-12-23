@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { guestService } from '../services/guestService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 
 const GuestsPage = () => {
+  const navigate = useNavigate();
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -161,6 +163,12 @@ const GuestsPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{guest.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{guest.phone}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                      onClick={() => navigate(`/guests/${guest.id}`)}
+                      className="text-green-600 hover:text-green-900 mr-3"
+                    >
+                      Ko'rish
+                    </button>
                     <button
                       onClick={() => handleEdit(guest)}
                       className="text-blue-600 hover:text-blue-900 mr-3"

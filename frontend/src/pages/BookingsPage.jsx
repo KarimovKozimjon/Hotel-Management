@@ -6,8 +6,10 @@ import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
+import { useNotifications } from '../context/NotificationContext';
 
 const BookingsPage = () => {
+  const { addNotification } = useNotifications();
   const [bookings, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [guests, setGuests] = useState([]);
@@ -114,8 +116,17 @@ const BookingsPage = () => {
   const handleCheckIn = async (id) => {
     if (window.confirm('Mehmonni check-in qilmoqchimisiz?')) {
       try {
-        await bookingService.checkIn(id);
+        const result = await bookingService.checkIn(id);
         toast.success('Check-in muvaffaqiyatli amalga oshirildi');
+        
+        // Real-time notification
+        addNotification({
+          type: 'checkin',
+          message: 'Mehmon check-in qilindi',
+          description: `Bron #${result.booking_number || id}`,
+          sound: true
+        });
+        
         fetchBookings();
       } catch (error) {
         toast.error('Check-in da xatolik');
@@ -126,8 +137,17 @@ const BookingsPage = () => {
   const handleCheckOut = async (id) => {
     if (window.confirm('Mehmonni check-out qilmoqchimisiz?')) {
       try {
-        await bookingService.checkOut(id);
+        const result = await bookingService.checkOut(id);
         toast.success('Check-out muvaffaqiyatli amalga oshirildi');
+        
+        // Real-time notification
+        addNotification({
+          type: 'checkout',
+          message: 'Mehmon check-out qilindi',
+          description: `Bron #${result.booking_number || id}`,
+          sound: true
+        });
+        
         fetchBookings();
       } catch (error) {
         toast.error('Check-out da xatolik');
@@ -138,8 +158,17 @@ const BookingsPage = () => {
   const handleCancel = async (id) => {
     if (window.confirm('Bronni bekor qilmoqchimisiz?')) {
       try {
-        await bookingService.cancel(id);
+        const result = await bookingService.cancel(id);
         toast.success('Bron bekor qilindi');
+        
+        // Real-time notification
+        addNotification({
+          type: 'error',
+          message: 'Bron bekor qilindi',
+          description: `Bron #${result.booking_number || id}`,
+          sound: false
+        });
+        
         fetchBookings();
       } catch (error) {
         toast.error('Bronni bekor qilishda xatolik');
@@ -150,8 +179,17 @@ const BookingsPage = () => {
   const handleConfirm = async (id) => {
     if (window.confirm('Bronni tasdiqlashni xohlaysizmi?')) {
       try {
-        await bookingService.update(id, { status: 'confirmed' });
+        const result = await bookingService.update(id, { status: 'confirmed' });
         toast.success('Bron tasdiqlandi');
+        
+        // Real-time notification
+        addNotification({
+          type: 'success',
+          message: 'Bron tasdiqlandi',
+          description: `Bron #${result.booking_number || id}`,
+          sound: false
+        });
+        
         fetchBookings();
       } catch (error) {
         toast.error('Bronni tasdiqlashda xatolik');

@@ -37,12 +37,27 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        \Log::info('Login attempt', [
+            'email' => $request->email, 
+            'has_password' => !empty($request->password),
+            'password_length' => strlen($request->password ?? ''),
+            'all_data' => $request->all()
+        ]);
+        
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $credentials = $request->only('email', 'password');
+        \Log::info('Attempting authentication', ['credentials' => ['email' => $credentials['email'], 'password_length' => strlen($credentials['password'])]]);
+
+        if (!Auth::attempt($credentials)) {
+            \Log::warning('Login failed - invalid credentials', [
+                'email' => $request->email,
+                'user_exists' => \App\Models\User::where('email', $request->email)->exists(),
+                'password_provided' => !empty($request->password)
+            ]);
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -50,6 +65,8 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
+        
+        \Log::info('Login successful', ['user_id' => $user->id]);
 
         return response()->json([
             'user' => $user->load('role'),

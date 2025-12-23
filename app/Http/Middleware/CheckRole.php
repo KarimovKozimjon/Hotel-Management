@@ -26,10 +26,19 @@ class CheckRole
             return response()->json(['error' => 'User has no role assigned'], 403);
         }
 
-        // Check if user's role is in the allowed roles
+        // Check if user's role is in the allowed roles (case-insensitive)
         $allowedRoles = is_array($roles) ? $roles : [$roles];
+        $userRole = strtolower($user->role->name);
+        $allowedRolesLower = array_map('strtolower', $allowedRoles);
         
-        if (!in_array($user->role->name, $allowedRoles)) {
+        if (!in_array($userRole, $allowedRolesLower)) {
+            \Log::warning('Access denied', [
+                'user_id' => $user->id,
+                'user_role' => $user->role->name,
+                'required_roles' => $allowedRoles,
+                'url' => $request->url(),
+                'method' => $request->method()
+            ]);
             return response()->json(['error' => 'Forbidden - Insufficient permissions'], 403);
         }
 

@@ -5,9 +5,28 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
+    public function publicIndex()
+    {
+        // Public endpoint for homepage
+        $roomTypes = RoomType::all()->map(function ($type) {
+            return [
+                'id' => $type->id,
+                'name' => $type->name,
+                'description' => $type->description,
+                'capacity' => $type->capacity,
+                'price' => $type->base_price,
+                'image' => $type->image_url ?? 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
+                'amenities' => $type->amenities ?? [],
+            ];
+        });
+        
+        return response()->json($roomTypes);
+    }
+
     public function index()
     {
         $roomTypes = RoomType::withCount('rooms')->get();
@@ -21,9 +40,25 @@ class RoomTypeController extends Controller
             'description' => 'nullable|string',
             'capacity' => 'required|integer|min:1',
             'base_price' => 'required|numeric|min:0',
-            'amenities' => 'nullable|array',
+            'amenities' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|url',
         ]);
 
+        // Parse amenities if it's a JSON string
+        if (isset($validated['amenities']) && is_string($validated['amenities'])) {
+            $validated['amenities'] = json_decode($validated['amenities'], true);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('room-types', 'public');
+            $validated['image_url'] = Storage::url($path);
+        } elseif ($request->has('image_url')) {
+            $validated['image_url'] = $request->image_url;
+        }
+
+        unset($validated['image']);
         $roomType = RoomType::create($validated);
 
         return response()->json($roomType, 201);
@@ -34,17 +69,53 @@ class RoomTypeController extends Controller
         return response()->json($roomType->load('rooms'));
     }
 
-    public function update(Request $request, RoomType $roomType)
+    public function update(Request $request, $id)
     {
+        $roomType = RoomType::findOrFail($id);
+        
+        \Log::info('Updating room type', [
+            'id' => $id,
+            'request_data' => $request->all(),
+            'amenities_raw' => $request->input('amenities')
+        ]);
+        
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'capacity' => 'sometimes|integer|min:1',
             'base_price' => 'sometimes|numeric|min:0',
-            'amenities' => 'nullable|array',
+            'amenities' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|url',
         ]);
 
+        // Parse amenities if it's a JSON string
+        if (isset($validated['amenities']) && is_string($validated['amenities'])) {
+            $validated['amenities'] = json_decode($validated['amenities'], true);
+        }
+        
+        \Log::info('Parsed amenities', ['amenities' => $validated['amenities'] ?? null]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($roomType->image_url && !filter_var($roomType->image_url, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $roomType->image_url));
+            }
+            
+            $path = $request->file('image')->store('room-types', 'public');
+            $validated['image_url'] = Storage::url($path);
+        } elseif ($request->has('image_url')) {
+            $validated['image_url'] = $request->image_url;
+        }
+
+        unset($validated['image']);
         $roomType->update($validated);
+
+        // Refresh the model to get updated data
+        $roomType->refresh();
+        
+        \Log::info('Room type updated', ['result' => $roomType->toArray()]);
 
         return response()->json($roomType);
     }

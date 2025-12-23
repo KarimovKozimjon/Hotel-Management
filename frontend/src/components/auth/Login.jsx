@@ -14,12 +14,16 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
+    console.log('Login attempt:', { email, password: password ? '***' : 'empty' });
+
     try {
       await login(email, password);
       toast.success('Muvaffaqiyatli kirildi!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login xato!');
+      console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
+      toast.error(error.response?.data?.message || error.message || 'Login xato!');
     } finally {
       setLoading(false);
     }
