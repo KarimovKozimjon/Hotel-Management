@@ -70,176 +70,154 @@ function GuestDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-purple-100 font-sans">
       {/* Hero Header */}
-      <div className="bg-white border-b border-blue-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white/80 border-b border-blue-100 shadow-md backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center gap-4">
+          <div className="flex-shrink-0">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl border-4 border-white flex items-center justify-center overflow-hidden">
+              <FiUser className="w-14 h-14 text-white drop-shadow-lg" />
+            </div>
+          </div>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="flex-1"
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-700 flex items-center gap-3 mb-1">
-              <FiUser className="w-8 h-8 text-blue-600" />
+            <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-700 via-indigo-500 to-purple-600 bg-clip-text text-transparent flex items-center gap-3 mb-1 drop-shadow-lg">
               Xush kelibsiz, {guest?.first_name} {guest?.last_name}!
             </h1>
-            <p className="text-base md:text-lg text-blue-400">
-              Mehmonlar kabineti — Sizning shaxsiy panelingiz
-            </p>
+            <p className="text-base text-blue-500 font-medium">Mehmonlar kabineti — Sizning shaxsiy panelingiz</p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Statistika kartalari */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-md p-7 flex items-center gap-5 hover:shadow-lg transition-all border border-gray-100"
-          >
-            <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
-              <FiCalendar className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900 mb-1">Jami bronlar</div>
-              <div className="text-gray-500 text-sm">{stats.totalBookings}</div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-md p-7 flex items-center gap-5 hover:shadow-lg transition-all border border-gray-100"
-          >
-            <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
-              <FiBell className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900 mb-1">Kelgusi bronlar</div>
-              <div className="text-gray-500 text-sm">{stats.upcomingBookings}</div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-md p-7 flex items-center gap-5 hover:shadow-lg transition-all border border-gray-100"
-          >
-            <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
-              <FiDollarSign className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900 mb-1">Jami to'langan</div>
-              <div className="text-gray-500 text-sm">${stats.totalSpent.toLocaleString()}</div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-md p-7 flex items-center gap-5 hover:shadow-lg transition-all border border-gray-100"
-          >
-            <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
-              <FiStar className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900 mb-1">Sharhlar</div>
-              <div className="text-gray-500 text-sm">{stats.reviewsSubmitted}</div>
-            </div>
-          </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          {/* Stat Card */}
+          {[
+            {
+              icon: <FiCalendar className="w-7 h-7 text-white" />, label: "Jami bronlar", value: stats.totalBookings, delay: 0.1
+            },
+            {
+              icon: <FiBell className="w-7 h-7 text-white" />, label: "Kelgusi bronlar", value: stats.upcomingBookings, delay: 0.2
+            },
+            {
+              icon: <FiDollarSign className="w-7 h-7 text-white" />, label: "Jami to'langan", value: `$${stats.totalSpent.toLocaleString()}`, delay: 0.3
+            },
+            {
+              icon: <FiStar className="w-7 h-7 text-white" />, label: "Sharhlar", value: stats.reviewsSubmitted, delay: 0.4
+            }
+          ].map((card, idx) => (
+            <motion.div
+              key={card.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: card.delay }}
+                className="relative bg-white/90 rounded-2xl shadow-xl p-8 flex items-center gap-6 border-2 border-transparent hover:scale-[1.03] hover:shadow-2xl transition-all duration-300 group overflow-hidden"
+              style={{
+                borderImage: 'linear-gradient(135deg, #6366f1, #8b5cf6) 1',
+                borderWidth: '2px',
+                borderStyle: 'solid',
+                borderImageSlice: 1,
+              }}
+            >
+              <div className="w-16 h-16 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg group-hover:scale-110 transition-transform">
+                {card.icon}
+              </div>
+              <div>
+                  <div className="text-lg font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">{card.label}</div>
+                  <div className="text-2xl font-extrabold text-blue-700 group-hover:text-purple-600 transition-colors">{card.value}</div>
+              </div>
+              <div className="absolute right-0 top-0 w-20 h-20 bg-gradient-to-br from-yellow-200/30 to-yellow-400/10 rounded-bl-full blur-2xl opacity-60 pointer-events-none" />
+                <div className="absolute right-0 top-0 w-20 h-20 bg-gradient-to-br from-indigo-200/30 to-purple-200/10 rounded-bl-full blur-2xl opacity-60 pointer-events-none" />
+            </motion.div>
+          ))}
         </div>
 
         {/* Tezkor havolalar */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <motion.a
-            href="/guest/my-bookings"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="group bg-white border border-blue-100 rounded-xl p-5 hover:shadow-md transition-all duration-200"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-blue-100 group-hover:scale-110 transition-transform">
-                <FiClipboard className="w-7 h-7 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+          {/* Quick Links */}
+          {[
+            {
+              href: "/guest/my-bookings",
+              title: "Mening bronlarim", desc: "Barcha bronlaringizni ko'ring", delay: 0.5
+            },
+            {
+              href: "/guest/book-room",
+              title: "Xona bron qilish", desc: "Yangi xona band qiling", delay: 0.6
+            },
+            {
+              href: "/guest/profile",
+              title: "Profilim", desc: "Shaxsiy ma'lumotlarni tahrirlash", delay: 0.7
+            }
+          ].map(link => (
+            <motion.a
+              key={link.href}
+              href={link.href}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: link.delay }}
+              className="group bg-white/90 border-2 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 flex items-center gap-5 relative overflow-hidden"
+              style={{
+                borderImage: 'linear-gradient(135deg, #6366f1, #8b5cf6) 1',
+                borderWidth: '2px',
+                borderStyle: 'solid',
+                borderImageSlice: 1,
+              }}
+            >
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-blue-700 group-hover:text-indigo-600 transition-colors">{link.title}</h3>
+                <p className="text-sm text-blue-400 mt-1 group-hover:text-purple-600 transition-colors">{link.desc}</p>
               </div>
-              <div>
-                <h3 className="text-base font-bold text-blue-700">Mening bronlarim</h3>
-                <p className="text-sm text-blue-400 mt-1">Barcha bronlaringizni ko'ring</p>
-              </div>
-            </div>
-          </motion.a>
-
-          <motion.a
-            href="/guest/book-room"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="group bg-white border border-blue-100 rounded-xl p-5 hover:shadow-md transition-all duration-200"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-blue-100 group-hover:scale-110 transition-transform">
-                <FiHome className="w-7 h-7 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-blue-700">Xona bron qilish</h3>
-                <p className="text-sm text-blue-400 mt-1">Yangi xona band qiling</p>
-              </div>
-            </div>
-          </motion.a>
-
-          <motion.a
-            href="/guest/profile"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 }}
-            className="group bg-white border border-blue-100 rounded-xl p-5 hover:shadow-md transition-all duration-200"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-blue-100 group-hover:scale-110 transition-transform">
-                <FiUser className="w-7 h-7 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-blue-700">Profilim</h3>
-                <p className="text-sm text-blue-400 mt-1">Shaxsiy ma'lumotlarni tahrirlash</p>
-              </div>
-            </div>
-          </motion.a>
+              <div className="absolute right-0 top-0 w-16 h-16 bg-gradient-to-br from-indigo-200/30 to-purple-200/10 rounded-bl-full blur-2xl opacity-60 pointer-events-none" />
+            </motion.a>
+          ))}
         </div>
 
         {/* Shaxsiy ma'lumotlar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="bg-white border border-blue-100 rounded-xl p-8 shadow-sm"
+          className="bg-white/90 border-2 rounded-2xl p-4 shadow-xl relative overflow-hidden"
+          style={{
+            borderImage: 'linear-gradient(135deg, #6366f1, #8b5cf6) 1',
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            borderImageSlice: 1,
+          }}
         >
-          <h2 className="text-xl font-bold text-blue-700 mb-6 flex items-center gap-2">
-            <FiUser className="w-6 h-6 text-blue-600" />
+          <h2 className="text-lg font-extrabold bg-gradient-to-r from-blue-700 via-indigo-500 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2 drop-shadow-lg">
+            <FiUser className="w-5 h-5 text-blue-600" />
             Shaxsiy ma'lumotlar
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-blue-400 font-medium mb-1">Email</p>
-              <p className="font-semibold text-blue-900">{guest?.email}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 shadow-sm">
+              <p className="text-xs text-blue-400 font-medium mb-1">Email</p>
+              <p className="font-semibold text-blue-900 text-sm">{guest?.email}</p>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-blue-400 font-medium mb-1">Telefon</p>
-              <p className="font-semibold text-blue-900">{guest?.phone}</p>
+            <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 shadow-sm">
+              <p className="text-xs text-blue-400 font-medium mb-1">Telefon</p>
+              <p className="font-semibold text-blue-900 text-sm">{guest?.phone}</p>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-blue-400 font-medium mb-1">Pasport raqami</p>
-              <p className="font-semibold text-blue-900">{guest?.passport_number}</p>
+            <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 shadow-sm">
+              <p className="text-xs text-blue-400 font-medium mb-1">Pasport raqami</p>
+              <p className="font-semibold text-blue-900 text-sm">{guest?.passport_number}</p>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-blue-400 font-medium mb-1">Millati</p>
-              <p className="font-semibold text-blue-900">{guest?.nationality}</p>
+            <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 shadow-sm">
+              <p className="text-xs text-blue-400 font-medium mb-1">Millati</p>
+              <p className="font-semibold text-blue-900 text-sm">{guest?.nationality}</p>
             </div>
           </div>
+          <div className="flex justify-end mt-4">
+            <a href="/guest/profile" className="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold px-5 py-2 rounded-xl shadow hover:from-purple-600 hover:to-indigo-500 hover:scale-105 transition-all border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 text-sm">
+              Profilni tahrirlash
+            </a>
+          </div>
+          <div className="absolute right-0 bottom-0 w-28 h-28 bg-gradient-to-br from-yellow-200/30 to-yellow-400/10 rounded-tl-full blur-2xl opacity-60 pointer-events-none" />
         </motion.div>
       </div>
     </div>

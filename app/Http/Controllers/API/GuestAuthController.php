@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
@@ -85,6 +84,22 @@ class GuestAuthController extends Controller
     public function me(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $guest = $request->user();
+        $validated = $request->validate([
+            'first_name' => 'sometimes|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string',
+            'passport_number' => 'sometimes|string|unique:guests,passport_number,' . $guest->id,
+            'date_of_birth' => 'sometimes|date',
+            'nationality' => 'sometimes|string',
+            'address' => 'nullable|string',
+        ]);
+        $guest->update($validated);
+        return response()->json($guest);
     }
 
     public function myBookings(Request $request)

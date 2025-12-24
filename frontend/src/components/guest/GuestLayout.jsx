@@ -39,10 +39,10 @@ function GuestLayout({ children }) {
   };
 
   const navItems = [
-    { path: '/guest/dashboard', label: t('nav.home'), icon: '🏠' },
-    { path: '/guest/my-bookings', label: t('guest.myBookings'), icon: '📋' },
-    { path: '/guest/book-room', label: t('guest.bookRoom'), icon: '🏨' },
-    { path: '/guest/payment-history', label: t('guest.paymentHistory'), icon: '💳' },
+    { path: '/guest/dashboard', label: t('nav.home') },
+    { path: '/guest/my-bookings', label: t('guest.myBookings') },
+    { path: '/guest/book-room', label: t('guest.bookRoom') },
+    { path: '/guest/payment-history', label: t('guest.paymentHistory') },
   ];
 
   return (
@@ -97,7 +97,7 @@ function GuestLayout({ children }) {
                         : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
                     }`}
                   >
-                    <span>{item.icon}</span>
+                    {/* icon removed */}
                     <span>{item.label}</span>
                   </motion.div>
                   {isActive(item.path) && (
