@@ -1,24 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-function AdvancedSearchFilters({ onFilterChange, roomTypes = [] }) {
-  const [filters, setFilters] = useState({
-    room_type_id: '',
-    min_price: '',
-    max_price: '',
-    min_capacity: '',
-    floor: '',
-    sort_by: '',
-  });
-
+function AdvancedSearchFilters({ filters, setFilters, onFilterChange, roomTypes = [], handleSearch }) {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    onFilterChange(filters);
-  }, [filters]);
-
   const handleChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleApply = () => {
+    onFilterChange(filters);
+    setShowFilters(false);
+    if (typeof handleSearch === 'function') {
+      handleSearch();
+    }
   };
 
   const handleReset = () => {
@@ -56,111 +51,96 @@ function AdvancedSearchFilters({ onFilterChange, roomTypes = [] }) {
         </button>
       </div>
 
-      {/* Filters */}
-      <div className={`${showFilters ? 'block' : 'hidden'} lg:block space-y-4`}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Room Type Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Xona turi
-            </label>
-            <select
-              value={filters.room_type_id}
-              onChange={(e) => handleChange('room_type_id', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Barchasi</option>
-              {roomTypes.map(type => (
-                <option key={type.id} value={type.id}>
-                  {type.name} (${type.base_price})
-                </option>
-              ))}
-            </select>
-          </div>
 
-          {/* Capacity Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Minimal sig'im
-            </label>
-            <select
-              value={filters.min_capacity}
-              onChange={(e) => handleChange('min_capacity', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Har qanday</option>
-              <option value="1">1+ kishi</option>
-              <option value="2">2+ kishi</option>
-              <option value="3">3+ kishi</option>
-              <option value="4">4+ kishi</option>
-              <option value="5">5+ kishi</option>
-            </select>
-          </div>
-
-          {/* Floor Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Qavat
-            </label>
-            <select
-              value={filters.floor}
-              onChange={(e) => handleChange('floor', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Barcha qavatlar</option>
-              <option value="1">1-qavat</option>
-              <option value="2">2-qavat</option>
-              <option value="3">3-qavat</option>
-              <option value="4">4-qavat</option>
-              <option value="5">5-qavat</option>
-            </select>
-          </div>
+      {/* Zamonaviy gorizontal filterlar */}
+      <div className={`w-full flex flex-wrap gap-4 items-end justify-start mb-4`}>
+        {/* Room Type Filter */}
+        <div className="flex flex-col min-w-[180px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Xona turi</label>
+          <select
+            value={filters.room_type_id}
+            onChange={(e) => {
+              const val = e.target.value;
+              handleChange('room_type_id', val === '' ? '' : parseInt(val, 10));
+            }}
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
+          >
+            <option value="">Barchasi</option>
+            {roomTypes.map(type => (
+              <option key={type.id} value={type.id}>
+                {type.name} (${type.base_price})
+              </option>
+            ))}
+          </select>
         </div>
-
+        {/* Capacity Filter */}
+        <div className="flex flex-col min-w-[140px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Minimal sig'im</label>
+          <select
+            value={filters.min_capacity}
+            onChange={(e) => handleChange('min_capacity', e.target.value)}
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
+          >
+            <option value="">Har qanday</option>
+            <option value="1">1+ kishi</option>
+            <option value="2">2+ kishi</option>
+            <option value="3">3+ kishi</option>
+            <option value="4">4+ kishi</option>
+            <option value="5">5+ kishi</option>
+          </select>
+        </div>
+        {/* Floor Filter */}
+        <div className="flex flex-col min-w-[120px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Qavat</label>
+          <select
+            value={filters.floor}
+            onChange={(e) => handleChange('floor', e.target.value)}
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
+          >
+            <option value="">Barcha qavatlar</option>
+            <option value="1">1-qavat</option>
+            <option value="2">2-qavat</option>
+            <option value="3">3-qavat</option>
+            <option value="4">4-qavat</option>
+            <option value="5">5-qavat</option>
+          </select>
+        </div>
         {/* Price Range */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Narx oralig'i: ${priceRange.min} - ${priceRange.max}
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <input
-                type="number"
-                placeholder="Min narx"
-                value={filters.min_price}
-                onChange={(e) => {
-                  handleChange('min_price', e.target.value);
-                  setPriceRange(prev => ({ ...prev, min: Number(e.target.value) || 0 }));
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
-            <div>
-              <input
-                type="number"
-                placeholder="Max narx"
-                value={filters.max_price}
-                onChange={(e) => {
-                  handleChange('max_price', e.target.value);
-                  setPriceRange(prev => ({ ...prev, max: Number(e.target.value) || 1000 }));
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
-          </div>
+        <div className="flex flex-col min-w-[120px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Min narx</label>
+          <input
+            type="number"
+            placeholder="Min narx"
+            value={filters.min_price}
+            onChange={(e) => {
+              handleChange('min_price', e.target.value);
+              setPriceRange(prev => ({ ...prev, min: Number(e.target.value) || 0 }));
+            }}
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
+            min="0"
+          />
         </div>
-
+        <div className="flex flex-col min-w-[120px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Max narx</label>
+          <input
+            type="number"
+            placeholder="Max narx"
+            value={filters.max_price}
+            onChange={(e) => {
+              handleChange('max_price', e.target.value);
+              setPriceRange(prev => ({ ...prev, max: Number(e.target.value) || 1000 }));
+            }}
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
+            min="0"
+          />
+        </div>
         {/* Sort By */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Saralash
-          </label>
+        <div className="flex flex-col min-w-[140px]">
+          <label className="text-xs font-semibold text-gray-600 mb-1">Saralash</label>
           <select
             value={filters.sort_by}
             onChange={(e) => handleChange('sort_by', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-sm bg-white"
           >
             <option value="">Standart</option>
             <option value="price_asc">💰 Narx: Arzondan qimmmatga</option>
@@ -170,18 +150,17 @@ function AdvancedSearchFilters({ onFilterChange, roomTypes = [] }) {
             <option value="floor">🏢 Qavat bo'yicha</option>
           </select>
         </div>
-
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
+        <div className="flex flex-col min-w-[120px] gap-2">
           <button
             onClick={handleReset}
-            className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold text-sm sm:text-base"
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold text-sm mb-1"
           >
             🔄 Tozalash
           </button>
           <button
-            onClick={() => setShowFilters(false)}
-            className="flex-1 lg:hidden bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base"
+            onClick={handleApply}
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-semibold text-sm"
           >
             ✓ Qo'llash
           </button>

@@ -8,14 +8,21 @@ function BookRoomPage() {
   const { guest } = useGuestAuth();
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [searchFilters, setSearchFilters] = useState({
     check_in_date: '',
     check_out_date: '',
   });
-  const [advancedFilters, setAdvancedFilters] = useState({});
+  const [advancedFilters, setAdvancedFilters] = useState({
+    room_type_id: '',
+    min_price: '',
+    max_price: '',
+    min_capacity: '',
+    floor: '',
+    sort_by: '',
+  });
   const [bookingData, setBookingData] = useState({
     number_of_adults: 1,
     number_of_children: 0,
@@ -33,6 +40,8 @@ function BookRoomPage() {
       setRoomTypes(response.data);
     } catch (error) {
       toast.error('Xona turlarini yuklashda xatolik');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,16 +57,17 @@ function BookRoomPage() {
         ...searchFilters,
         ...advancedFilters,
       };
-      
       const response = await api.get('/guest/rooms/available', { params });
-      
-      if (response.data.data) {
-        setRooms(response.data.data);
+      console.log('API javobi:', response.data);
+      // Flexible data extraction for different API response shapes
+      let roomsArr = response.data.data || response.data.rooms || response.data;
+      if (Array.isArray(roomsArr) && roomsArr.length > 0) {
+        setRooms(roomsArr);
         setSearchResults({
-          total: response.data.total_results,
-          filters: response.data.filters_applied
+          total: roomsArr.length,
+          filters: response.data.filters_applied || {}
         });
-        toast.success(`${response.data.total_results} ta xona topildi`);
+        toast.success(`${roomsArr.length} ta xona topildi`);
       } else {
         setRooms([]);
         setSearchResults({ total: 0, filters: {} });
@@ -73,14 +83,7 @@ function BookRoomPage() {
 
   const handleFilterChange = (filters) => {
     setAdvancedFilters(filters);
-    // Auto-search if dates are already selected
-    if (searchFilters.check_in_date && searchFilters.check_out_date) {
-      // Debounce the search
-      const timer = setTimeout(() => {
-        handleSearch();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
+    // Qidirish faqat button bosilganda ishlaydi
   };
 
   const handleBookRoom = (room) => {
@@ -142,21 +145,24 @@ function BookRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-purple-50">
       <div className="bg-blue-600 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow">Xona bron qilish 🏨</h1>
-          <p className="mt-1 text-xs sm:text-sm text-blue-100">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold text-white drop-shadow mb-2">Xona bron qilish 🏨</h1>
+          <p className="text-sm text-blue-100">
             Mavjud xonalardan birini tanlang va bron qiling
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Date Search */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-4 text-blue-700">📅 Sana tanlang</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white border-2 border-purple-300 rounded-xl p-8 mb-10 shadow-sm">
+          <div className="flex items-center mb-4">
+            <span className="text-2xl mr-2 text-purple-500">📅</span>
+            <h2 className="text-2xl font-bold text-purple-700">Sana tanlang</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
               <label className="block text-sm font-medium text-blue-700 mb-2">
                 Kirish sanasi *
@@ -166,7 +172,7 @@ function BookRoomPage() {
                 value={searchFilters.check_in_date}
                 onChange={(e) => setSearchFilters({ ...searchFilters, check_in_date: e.target.value })}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                className="w-full px-4 py-2 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all"
                 required
               />
             </div>
@@ -179,8 +185,12 @@ function BookRoomPage() {
                 type="date"
                 value={searchFilters.check_out_date}
                 onChange={(e) => setSearchFilters({ ...searchFilters, check_out_date: e.target.value })}
-                min={searchFilters.check_in_date || new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                min={
+                  searchFilters.check_in_date
+                    ? new Date(new Date(searchFilters.check_in_date).getTime() + 86400000).toISOString().split('T')[0]
+                    : new Date().toISOString().split('T')[0]
+                }
+                className="w-full px-4 py-2 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all"
                 required
               />
             </div>
@@ -189,9 +199,9 @@ function BookRoomPage() {
               <button
                 onClick={handleSearch}
                 disabled={!searchFilters.check_in_date || !searchFilters.check_out_date}
-                className="w-full bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold text-sm sm:text-base transition-all"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-lg shadow font-semibold text-base hover:scale-105 hover:shadow-lg transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                🔍 Qidirish
+                <span className="mr-2">🔍</span> Qidirish
               </button>
             </div>
           </div>
@@ -207,17 +217,28 @@ function BookRoomPage() {
 
         {/* Advanced Filters */}
         {searchFilters.check_in_date && searchFilters.check_out_date && (
-          <AdvancedSearchFilters 
-            onFilterChange={handleFilterChange} 
-            roomTypes={roomTypes}
-          />
+          <div className="mb-10">
+            <div className="bg-white border-2 border-purple-300 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center mb-4">
+                <span className="text-xl mr-2 text-purple-400">🔍</span>
+                <h3 className="text-xl font-bold text-purple-700">Qidiruv filtrlari</h3>
+              </div>
+              <AdvancedSearchFilters
+                filters={advancedFilters}
+                onFilterChange={handleFilterChange}
+                roomTypes={roomTypes}
+                setFilters={setAdvancedFilters}
+                handleSearch={handleSearch}
+              />
+            </div>
+          </div>
         )}
 
         {/* Search Results Info */}
         {searchResults && (
-          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-100 p-4 rounded-lg">
-            <div>
-              <p className="text-sm sm:text-base font-semibold text-gray-900">
+          <div className="mb-8">
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <p className="text-base font-semibold text-gray-900">
                 {searchResults.total} ta xona topildi
               </p>
             </div>
@@ -231,17 +252,17 @@ function BookRoomPage() {
             <p className="mt-4 text-blue-700">Yuklanmoqda...</p>
           </div>
         ) : rooms.length === 0 ? (
-          <div className="bg-white/90 rounded-lg shadow p-8 sm:p-12 text-center backdrop-blur">
-            <span className="text-5xl sm:text-6xl mb-4 block">🚫</span>
-            <h3 className="text-lg sm:text-xl font-semibold text-blue-700 mb-2">Xonalar topilmadi</h3>
-            <p className="text-sm sm:text-base text-blue-500">
+          <div className="bg-white rounded-lg shadow p-12 text-center">
+            <span className="text-6xl mb-4 block">🚫</span>
+            <h3 className="text-xl font-semibold text-blue-700 mb-2">Xonalar topilmadi</h3>
+            <p className="text-base text-blue-500">
               {searchFilters.check_in_date && searchFilters.check_out_date 
                 ? 'Boshqa filtrlar bilan qidiring' 
                 : 'Qidiruv uchun sanalarni tanlang'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((room) => (
               <div key={room.id} className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow overflow-hidden">
                 {/* Room Image */}

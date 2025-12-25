@@ -330,9 +330,17 @@ function GuestProfile() {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
+                    onClick={async () => {
                       if (confirm('Haqiqatan ham hisobingizni o\'chirmoqchimisiz?')) {
-                        toast.error('Hisobni o\'chirish funksiyasi qo\'shilmoqda');
+                        try {
+                          await api.delete('/guest/delete-account');
+                          toast.success('Hisob muvaffaqiyatli o\'chirildi');
+                          localStorage.removeItem('guestToken');
+                          localStorage.removeItem('guest');
+                          window.location.href = '/guest/login';
+                        } catch (error) {
+                          toast.error(error.response?.data?.message || 'Hisobni o\'chirishda xatolik');
+                        }
                       }
                     }}
                     className="text-red-400 hover:text-purple-600 font-semibold border-b-2 border-red-300 hover:border-purple-400 transition-all"
