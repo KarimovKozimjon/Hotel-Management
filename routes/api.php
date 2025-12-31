@@ -133,15 +133,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Users - Temporarily accessible to all for testing (should be Admin only in production)
     Route::apiResource('users', UserController::class);
 
+
     // Roles - Temporarily accessible to all for testing (should be Admin only in production)
     Route::apiResource('roles', RoleController::class);
-
-    // Invoices - Generate and download PDFs
-    Route::get('/invoices/booking/{bookingId}', [InvoiceController::class, 'generateBookingInvoice']);
-    Route::get('/invoices/payment/{paymentId}', [InvoiceController::class, 'generatePaymentReceipt']);
-    Route::get('/invoices/preview/booking/{bookingId}', [InvoiceController::class, 'previewBookingInvoice']);
-    Route::get('/invoices/preview/payment/{paymentId}', [InvoiceController::class, 'previewPaymentReceipt']);
 });
+
+// Invoices - Generate and download PDFs (public, middleware yo'q!)
+Route::get('/invoices/booking/{bookingId}', [InvoiceController::class, 'generateBookingInvoice']);
+Route::get('/invoices/payment/{paymentId}', [InvoiceController::class, 'generatePaymentReceipt']);
+Route::get('/invoices/preview/booking/{bookingId}', [InvoiceController::class, 'previewBookingInvoice']);
+Route::get('/invoices/preview/payment/{paymentId}', [InvoiceController::class, 'previewPaymentReceipt']);
 
 // Guest Portal Routes (separate auth guard)
 Route::prefix('guest')->middleware('auth:sanctum')->group(function () {

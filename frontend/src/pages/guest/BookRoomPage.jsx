@@ -53,11 +53,11 @@ function BookRoomPage() {
 
     try {
       setLoading(true);
-      const params = {
-        ...searchFilters,
-        ...advancedFilters,
-      };
-      const response = await api.get('/guest/rooms/available', { params });
+      // Bo'sh stringlarni null qilib yuborish
+      const cleanFilters = Object.fromEntries(
+        Object.entries({ ...searchFilters, ...advancedFilters }).map(([k, v]) => [k, v === '' ? null : v])
+      );
+      const response = await api.get('/guest/rooms/available', { params: cleanFilters });
       console.log('API javobi:', response.data);
       // Flexible data extraction for different API response shapes
       let roomsArr = response.data.data || response.data.rooms || response.data;
@@ -145,10 +145,13 @@ function BookRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-purple-50">
-      <div className="bg-blue-600 shadow">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-white drop-shadow mb-2">Xona bron qilish 🏨</h1>
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-purple-50 font-sans">
+      <div className="bg-blue-600 shadow-lg">
+        <div className="container mx-auto px-4 py-8 flex flex-col gap-2">
+          <h1 className="text-3xl font-bold text-white drop-shadow mb-2 flex items-center gap-2">
+            <span className="inline-block bg-white/20 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-yellow-300"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v1.5M3 7.5h18M3 7.5v9A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5v-9M7.5 12h.008v.008H7.5V12zm4.5 0h.008v.008H12V12zm4.5 0h.008v.008H16.5V12z" /></svg></span>
+            Xona bron qilish
+          </h1>
           <p className="text-sm text-blue-100">
             Mavjud xonalardan birini tanlang va bron qiling
           </p>
@@ -157,14 +160,15 @@ function BookRoomPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Date Search */}
-        <div className="bg-white border-2 border-purple-300 rounded-xl p-8 mb-10 shadow-sm">
-          <div className="flex items-center mb-4">
-            <span className="text-2xl mr-2 text-purple-500">📅</span>
+        <div className="bg-white border-2 border-purple-300 rounded-xl p-8 mb-10 shadow-lg animate-fade-in">
+          <div className="flex items-center mb-4 gap-2">
+            <span className="inline-block bg-purple-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-purple-500"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 7.5h18M4.5 7.5v9A2.25 2.25 0 006.75 18.75h10.5A2.25 2.25 0 0019.5 16.5v-9" /></svg></span>
             <h2 className="text-2xl font-bold text-purple-700">Sana tanlang</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
-              <label className="block text-sm font-medium text-blue-700 mb-2">
+              <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
+                <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
                 Kirish sanasi *
               </label>
               <input
@@ -172,13 +176,14 @@ function BookRoomPage() {
                 value={searchFilters.check_in_date}
                 onChange={(e) => setSearchFilters({ ...searchFilters, check_in_date: e.target.value })}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all"
+                className="w-full px-3 py-1.5 border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all focus:border-blue-400 focus:shadow-lg h-9"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-blue-700 mb-2">
+              <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
+                <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-6l-4-2" /></svg></span>
                 Chiqish sanasi *
               </label>
               <input
@@ -190,7 +195,7 @@ function BookRoomPage() {
                     ? new Date(new Date(searchFilters.check_in_date).getTime() + 86400000).toISOString().split('T')[0]
                     : new Date().toISOString().split('T')[0]
                 }
-                className="w-full px-4 py-2 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all"
+                className="w-full px-3 py-1.5 border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 text-base bg-white transition-all focus:border-blue-400 focus:shadow-lg h-9"
                 required
               />
             </div>
@@ -199,9 +204,10 @@ function BookRoomPage() {
               <button
                 onClick={handleSearch}
                 disabled={!searchFilters.check_in_date || !searchFilters.check_out_date}
-                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-lg shadow font-semibold text-base hover:scale-105 hover:shadow-lg transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-xl shadow-lg font-semibold text-base hover:scale-105 hover:shadow-xl transition-all disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                <span className="mr-2">🔍</span> Qidirish
+                <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg></span>
+                Qidirish
               </button>
             </div>
           </div>
@@ -218,19 +224,13 @@ function BookRoomPage() {
         {/* Advanced Filters */}
         {searchFilters.check_in_date && searchFilters.check_out_date && (
           <div className="mb-10">
-            <div className="bg-white border-2 border-purple-300 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <span className="text-xl mr-2 text-purple-400">🔍</span>
-                <h3 className="text-xl font-bold text-purple-700">Qidiruv filtrlari</h3>
-              </div>
-              <AdvancedSearchFilters
-                filters={advancedFilters}
-                onFilterChange={handleFilterChange}
-                roomTypes={roomTypes}
-                setFilters={setAdvancedFilters}
-                handleSearch={handleSearch}
-              />
-            </div>
+            <AdvancedSearchFilters
+              filters={advancedFilters}
+              onFilterChange={handleFilterChange}
+              roomTypes={roomTypes}
+              setFilters={setAdvancedFilters}
+              handleSearch={handleSearch}
+            />
           </div>
         )}
 
@@ -354,15 +354,20 @@ function BookRoomPage() {
 
       {/* Booking Modal */}
       {showModal && selectedRoom && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-blue-100">
             <div className="p-4 sm:p-6">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700">Bronni tasdiqlang</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
+                <span className="inline-block bg-blue-100 rounded-full p-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-blue-600"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
+                Bronni tasdiqlang
+              </h2>
 
-              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
-                <h3 className="font-semibold mb-2 text-sm sm:text-base text-blue-700">{selectedRoom.room_type?.name}</h3>
+              <div className="bg-blue-50 p-3 sm:p-4 rounded-xl mb-4 sm:mb-6 shadow">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base text-blue-700 flex items-center gap-1">
+                  <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12h.008v.008H16.5V12z" /></svg></span>
+                  {selectedRoom.room_type?.name}
+                </h3>
                 <p className="text-xs sm:text-sm text-blue-500">Xona #{selectedRoom.room_number}</p>
-                
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
                     <p className="text-xs sm:text-sm text-blue-500">Kirish</p>
@@ -373,7 +378,6 @@ function BookRoomPage() {
                     <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_out_date).toLocaleDateString('uz-UZ')}</p>
                   </div>
                 </div>
-
                 <div className="mt-4 pt-4 border-t border-blue-100">
                   <p className="text-xs sm:text-sm text-blue-500">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
                   <p className="text-base sm:text-lg font-bold text-blue-700 mt-2">
@@ -384,7 +388,8 @@ function BookRoomPage() {
 
               <div className="space-y-4 mb-4 sm:mb-6">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                    <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
                     Kattalar soni *
                   </label>
                   <input
@@ -393,13 +398,14 @@ function BookRoomPage() {
                     max={selectedRoom.room_type?.capacity}
                     value={bookingData.number_of_adults}
                     onChange={(e) => setBookingData({ ...bookingData, number_of_adults: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                    className="w-full px-2 py-1.5 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base focus:border-blue-400 focus:shadow-lg transition-all h-8"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                    <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-6l-4-2" /></svg></span>
                     Bolalar soni
                   </label>
                   <input
@@ -407,18 +413,19 @@ function BookRoomPage() {
                     min="0"
                     value={bookingData.number_of_children}
                     onChange={(e) => setBookingData({ ...bookingData, number_of_children: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                    className="w-full px-2 py-1.5 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base focus:border-blue-400 focus:shadow-lg transition-all h-8"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                    <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
                     Maxsus so'rovlar
                   </label>
                   <textarea
                     value={bookingData.special_requests}
                     onChange={(e) => setBookingData({ ...bookingData, special_requests: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                    className="w-full px-2 py-1.5 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base focus:border-blue-400 focus:shadow-lg transition-all min-h-[32px]"
                     rows="3"
                     placeholder="Masalan: Yuqori qavatdagi xona, oyna ko'rinishi, va h.k."
                   />
@@ -431,14 +438,14 @@ function BookRoomPage() {
                     setShowModal(false);
                     setSelectedRoom(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-blue-200 rounded-lg hover:bg-blue-50 text-sm sm:text-base transition-all"
+                  className="flex-1 px-4 py-2 border-2 border-blue-200 rounded-xl hover:bg-blue-50 text-sm sm:text-base transition-all shadow"
                   disabled={loading}
                 >
                   Bekor qilish
                 </button>
                 <button
                   onClick={handleConfirmBooking}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base transition-all"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-2 rounded-xl hover:scale-105 hover:shadow-xl disabled:bg-gray-400 text-sm sm:text-base transition-all shadow-lg font-semibold"
                   disabled={loading}
                 >
                   {loading ? 'Saqlanmoqda...' : 'Tasdiqlash'}

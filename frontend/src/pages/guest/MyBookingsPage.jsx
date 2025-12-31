@@ -71,7 +71,7 @@ function MyBookingsPage() {
       // If using real payment gateway (Click/Payme)
       if (useGateway) {
         const returnUrl = window.location.origin + '/guest/my-bookings';
-        
+
         const response = await paymentGatewayService.initiatePayment(
           paymentModal.id,
           parseFloat(paymentModal.total_price),
@@ -81,7 +81,7 @@ function MyBookingsPage() {
 
         if (response.success && response.payment_url) {
           toast.success(`${selectedGateway === 'click' ? 'Click.uz' : 'Payme'}ga yo'naltirilmoqda...`);
-          
+
           // Redirect to payment gateway
           window.location.href = response.payment_url;
           return;
@@ -104,7 +104,7 @@ function MyBookingsPage() {
       const response = await api.post('/payments', paymentData);
 
       toast.success('To\'lov muvaffaqiyatli amalga oshirildi!');
-      
+
       // Immediately update the booking in state to show payment status
       const updatedBookings = bookings.map(booking => {
         if (booking.id === paymentModal.id) {
@@ -116,10 +116,10 @@ function MyBookingsPage() {
         return booking;
       });
       setBookings(updatedBookings);
-      
+
       setPaymentModal(null);
       setPaymentMethod('card');
-      
+
       // Fetch fresh data from server
       setTimeout(() => {
         fetchBookings();
@@ -134,10 +134,10 @@ function MyBookingsPage() {
   const getPaymentStatus = (booking) => {
     // Check if payment exists for this booking
     // payments can be an array or single object
-    const payment = Array.isArray(booking.payments) 
+    const payment = Array.isArray(booking.payments)
       ? booking.payments.find(p => p.status === 'completed')
       : booking.payment;
-      
+
     if (payment && payment.status === 'completed') {
       return 'paid';
     }
@@ -172,10 +172,11 @@ function MyBookingsPage() {
     }
   };
 
+  // Invoice yuklab olish: faqat yangi tabda ochish va xabar chiqarish
   const handleDownloadInvoice = (bookingId) => {
-    const url = `http://localhost:8000/api/invoices/booking/${bookingId}`;
-    window.open(url, '_blank');
-    toast.success('Invoice yuklanmoqda...');
+    const url = `${window.location.origin.replace(':3000', ':8000')}/api/invoices/booking/${bookingId}`;
+    window.open(url, '_blank', 'noopener');
+    toast.success('Faktura (invoice) yuklanmoqda...');
   };
 
   if (loading) {
@@ -271,7 +272,7 @@ function MyBookingsPage() {
                         <div className="mt-1">
                           <span className="text-xs text-green-600 font-semibold">✓ To'langan</span>
                           {(() => {
-                            const payment = Array.isArray(booking.payments) 
+                            const payment = Array.isArray(booking.payments)
                               ? booking.payments.find(p => p.status === 'completed')
                               : booking.payment;
                             return payment && (
@@ -352,7 +353,7 @@ function MyBookingsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl sm:text-2xl font-bold mb-4">To'lov qilish 💳</h2>
-            
+
             <div className="mb-4 sm:mb-6">
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4">
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
@@ -382,124 +383,93 @@ function MyBookingsPage() {
                 <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
                   To'lov usuli
                 </label>
-                
-                {/* Online Payment Gateways */}
-                <div className="mb-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <label className="flex items-center mb-3">
-                    <input
-                      type="checkbox"
-                      checked={useGateway}
-                      onChange={(e) => setUseGateway(e.target.checked)}
-                      className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5"
-                    />
-                    <span className="font-semibold text-blue-900 text-sm sm:text-base">
-                      🇺🇿 O'zbekiston to'lov tizimlari orqali
-                    </span>
-                  </label>
-                  
-                  {useGateway && (
-                    <div className="space-y-2 ml-6 sm:ml-8">
-                      <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
-                        <input
-                          type="radio"
-                          name="gateway"
-                          value="click"
-                          checked={selectedGateway === 'click'}
-                          onChange={(e) => setSelectedGateway(e.target.value)}
-                          className="mr-2 sm:mr-3"
-                        />
-                        <div>
-                          <div className="font-semibold text-blue-900 text-sm sm:text-base">Click.uz</div>
-                          <div className="text-xs sm:text-sm text-blue-700">Tezkor va xavfsiz to'lov</div>
-                        </div>
-                      </label>
 
-                      <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
-                        <input
-                          type="radio"
-                          name="gateway"
-                          value="payme"
-                          checked={selectedGateway === 'payme'}
-                          onChange={(e) => setSelectedGateway(e.target.value)}
-                          className="mr-2 sm:mr-3"
-                        />
-                        <div>
-                          <div className="font-semibold text-blue-900 text-sm sm:text-base">Payme</div>
-                          <div className="text-xs sm:text-sm text-blue-700">Barcha kartalar qo'llab-quvvatlanadi</div>
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                </div>
+                {/* Online Payment Gateways olib tashlandi */}
 
-                {/* Manual Payment Methods */}
-                {!useGateway && (
-                  <div className="space-y-2">
-                    <label className="flex items-center p-2 sm:p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                {useGateway && (
+                  <div className="space-y-2 ml-6 sm:ml-8">
+                    <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
                       <input
                         type="radio"
-                        name="payment_method"
-                        value="card"
-                        checked={paymentMethod === 'card'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        name="gateway"
+                        value="click"
+                        checked={selectedGateway === 'click'}
+                        onChange={(e) => setSelectedGateway(e.target.value)}
                         className="mr-2 sm:mr-3"
                       />
                       <div>
-                        <div className="font-semibold text-sm sm:text-base">💳 Bank kartasi</div>
-                        <div className="text-xs sm:text-sm text-gray-500">Visa, Mastercard, Humo, UzCard</div>
+                        <div className="font-semibold text-blue-900 text-sm sm:text-base">Click.uz</div>
+                        <div className="text-xs sm:text-sm text-blue-700">Tezkor va xavfsiz to'lov</div>
                       </div>
                     </label>
 
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
                       <input
                         type="radio"
-                        name="payment_method"
-                        value="online"
-                        checked={paymentMethod === 'online'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="mr-3"
-                      />
-                      <div>
-                        <div className="font-semibold">🌐 Online to'lov</div>
-                        <div className="text-sm text-gray-500">Boshqa onlayn usullar</div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="cash"
-                        checked={paymentMethod === 'cash'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        name="gateway"
+                        value="payme"
+                        checked={selectedGateway === 'payme'}
+                        onChange={(e) => setSelectedGateway(e.target.value)}
                         className="mr-2 sm:mr-3"
                       />
                       <div>
-                        <div className="font-semibold text-sm sm:text-base">💵 Naqd pul</div>
-                        <div className="text-xs sm:text-sm text-gray-500">Resepshonda to'lash</div>
+                        <div className="font-semibold text-blue-900 text-sm sm:text-base">Payme</div>
+                        <div className="text-xs sm:text-sm text-blue-700">Barcha kartalar qo'llab-quvvatlanadi</div>
                       </div>
                     </label>
                   </div>
                 )}
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <button
-                onClick={() => setPaymentModal(null)}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 font-semibold text-sm sm:text-base"
-              >
-                Bekor qilish
-              </button>
-              <button
-                onClick={handlePayment}
-                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-semibold text-sm sm:text-base"
-              >
-                {useGateway 
-                  ? `${selectedGateway === 'click' ? 'Click.uz' : 'Payme'}ga o'tish →` 
-                  : 'To\'lash'}
-              </button>
+              {/* Manual Payment Methods */}
+              {!useGateway && (
+                <div className="space-y-2">
+                  <label className="flex items-center p-2 sm:p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="card"
+                      checked={paymentMethod === 'card'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-2 sm:mr-3"
+                    />
+                    <div>
+                      <div className="font-semibold text-sm sm:text-base">💳 Bank kartasi</div>
+                      <div className="text-xs sm:text-sm text-gray-500">Visa, Mastercard, Humo, UzCard</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="cash"
+                      checked={paymentMethod === 'cash'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-2 sm:mr-3"
+                    />
+                    <div>
+                      <div className="font-semibold text-sm sm:text-base">💵 Naqd pul</div>
+                      <div className="text-xs sm:text-sm text-gray-500">Resepshonda to'lash</div>
+                    </div>
+                  </label>
+                </div>
+              )}
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <button
+              onClick={() => setPaymentModal(null)}
+              className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 font-semibold text-sm sm:text-base"
+            >
+              Bekor qilish
+            </button>
+            <button
+              onClick={handlePayment}
+              className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-semibold text-sm sm:text-base"
+            >
+              To'lash
+            </button>
           </div>
         </div>
       )}
@@ -509,7 +479,7 @@ function MyBookingsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl sm:text-2xl font-bold mb-4">Sharh qoldirish ⭐</h2>
-            
+
             <div className="mb-4 sm:mb-6">
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4">
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
@@ -530,9 +500,8 @@ function MyBookingsPage() {
                       key={star}
                       type="button"
                       onClick={() => setReviewData({ ...reviewData, rating: star })}
-                      className={`text-2xl sm:text-3xl ${
-                        star <= reviewData.rating ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
+                      className={`text-2xl sm:text-3xl ${star <= reviewData.rating ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
                     >
                       ⭐
                     </button>
@@ -582,7 +551,7 @@ function MyBookingsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6">
             <h2 className="text-xl sm:text-2xl font-bold mb-4 text-red-600">Bronni bekor qilish ⚠️</h2>
-            
+
             <div className="mb-4 sm:mb-6">
               <div className="bg-red-50 border border-red-200 p-3 sm:p-4 rounded-lg mb-4">
                 <p className="text-sm sm:text-base text-gray-700 mb-2">
