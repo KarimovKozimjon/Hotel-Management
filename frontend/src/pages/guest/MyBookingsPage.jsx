@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGuestAuth } from '../../context/GuestAuthContext';
 import api from '../../services/api';
-import paymentGatewayService from '../../services/paymentGatewayService';
 import toast from 'react-hot-toast';
 
 function MyBookingsPage() {
@@ -10,8 +9,6 @@ function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [paymentModal, setPaymentModal] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('card');
-  const [useGateway, setUseGateway] = useState(false);
-  const [selectedGateway, setSelectedGateway] = useState('click');
   const [reviewModal, setReviewModal] = useState(null);
   const [reviewData, setReviewData] = useState({
     rating: 5,
@@ -68,29 +65,7 @@ function MyBookingsPage() {
     }
 
     try {
-      // If using real payment gateway (Click/Payme)
-      if (useGateway) {
-        const returnUrl = window.location.origin + '/guest/my-bookings';
-        
-        const response = await paymentGatewayService.initiatePayment(
-          paymentModal.id,
-          parseFloat(paymentModal.total_price),
-          selectedGateway,
-          returnUrl
-        );
-
-        if (response.success && response.payment_url) {
-          toast.success(`${selectedGateway === 'click' ? 'Click.uz' : 'Payme'}ga yo'naltirilmoqda...`);
-          
-          // Redirect to payment gateway
-          window.location.href = response.payment_url;
-          return;
-        } else {
-          throw new Error('Failed to get payment URL');
-        }
-      }
-
-      // Manual payment (cash/card/bank_transfer)
+      // Manual payment (cash/card)
       const paymentData = {
         booking_id: paymentModal.id,
         amount: parseFloat(paymentModal.total_price),
@@ -277,9 +252,8 @@ function MyBookingsPage() {
                             return payment && (
                               <div className="text-xs text-blue-400 mt-1">
                                 {payment.payment_method === 'card' && '💳 Karta'}
-                                {payment.payment_method === 'online' && '🌐 Online'}
                                 {payment.payment_method === 'cash' && '💵 Naqd'}
-                                {payment.payment_method === 'bank_transfer' && '🏦 Bank'}
+                                {!['card', 'cash'].includes(payment.payment_method) && payment.payment_method}
                               </div>
                             );
                           })()}
@@ -382,105 +356,38 @@ function MyBookingsPage() {
                 <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
                   To'lov usuli
                 </label>
-                
-                {/* Online Payment Gateways */}
-                <div className="mb-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <label className="flex items-center mb-3">
+
+                <div className="space-y-2">
+                  <label className="flex items-center p-2 sm:p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                     <input
-                      type="checkbox"
-                      checked={useGateway}
-                      onChange={(e) => setUseGateway(e.target.checked)}
-                      className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5"
+                      type="radio"
+                      name="payment_method"
+                      value="card"
+                      checked={paymentMethod === 'card'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-2 sm:mr-3"
                     />
-                    <span className="font-semibold text-blue-900 text-sm sm:text-base">
-                      🇺🇿 O'zbekiston to'lov tizimlari orqali
-                    </span>
-                  </label>
-                  
-                  {useGateway && (
-                    <div className="space-y-2 ml-6 sm:ml-8">
-                      <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
-                        <input
-                          type="radio"
-                          name="gateway"
-                          value="click"
-                          checked={selectedGateway === 'click'}
-                          onChange={(e) => setSelectedGateway(e.target.value)}
-                          className="mr-2 sm:mr-3"
-                        />
-                        <div>
-                          <div className="font-semibold text-blue-900 text-sm sm:text-base">Click.uz</div>
-                          <div className="text-xs sm:text-sm text-blue-700">Tezkor va xavfsiz to'lov</div>
-                        </div>
-                      </label>
-
-                      <label className="flex items-center p-2 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
-                        <input
-                          type="radio"
-                          name="gateway"
-                          value="payme"
-                          checked={selectedGateway === 'payme'}
-                          onChange={(e) => setSelectedGateway(e.target.value)}
-                          className="mr-2 sm:mr-3"
-                        />
-                        <div>
-                          <div className="font-semibold text-blue-900 text-sm sm:text-base">Payme</div>
-                          <div className="text-xs sm:text-sm text-blue-700">Barcha kartalar qo'llab-quvvatlanadi</div>
-                        </div>
-                      </label>
+                    <div>
+                      <div className="font-semibold text-sm sm:text-base">💳 Bank kartasi</div>
+                      <div className="text-xs sm:text-sm text-gray-500">Visa, Mastercard, Humo, UzCard</div>
                     </div>
-                  )}
+                  </label>
+
+                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="cash"
+                      checked={paymentMethod === 'cash'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-2 sm:mr-3"
+                    />
+                    <div>
+                      <div className="font-semibold text-sm sm:text-base">💵 Naqd pul</div>
+                      <div className="text-xs sm:text-sm text-gray-500">Resepshonda to'lash</div>
+                    </div>
+                  </label>
                 </div>
-
-                {/* Manual Payment Methods */}
-                {!useGateway && (
-                  <div className="space-y-2">
-                    <label className="flex items-center p-2 sm:p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="card"
-                        checked={paymentMethod === 'card'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="mr-2 sm:mr-3"
-                      />
-                      <div>
-                        <div className="font-semibold text-sm sm:text-base">💳 Bank kartasi</div>
-                        <div className="text-xs sm:text-sm text-gray-500">Visa, Mastercard, Humo, UzCard</div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="online"
-                        checked={paymentMethod === 'online'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="mr-3"
-                      />
-                      <div>
-                        <div className="font-semibold">🌐 Online to'lov</div>
-                        <div className="text-sm text-gray-500">Boshqa onlayn usullar</div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="cash"
-                        checked={paymentMethod === 'cash'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="mr-2 sm:mr-3"
-                      />
-                      <div>
-                        <div className="font-semibold text-sm sm:text-base">💵 Naqd pul</div>
-                        <div className="text-xs sm:text-sm text-gray-500">Resepshonda to'lash</div>
-                      </div>
-                    </label>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -495,9 +402,7 @@ function MyBookingsPage() {
                 onClick={handlePayment}
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-semibold text-sm sm:text-base"
               >
-                {useGateway 
-                  ? `${selectedGateway === 'click' ? 'Click.uz' : 'Payme'}ga o'tish →` 
-                  : 'To\'lash'}
+                To'lash
               </button>
             </div>
           </div>

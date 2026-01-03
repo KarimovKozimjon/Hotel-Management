@@ -115,9 +115,7 @@ const PaymentsPage = () => {
   const getPaymentMethodLabel = (method) => {
     const labels = {
       cash: 'Naqd',
-      card: 'Karta',
-      online: 'Onlayn',
-      bank_transfer: 'Bank o\'tkazmasi'
+      card: 'Karta'
     };
     return labels[method] || method;
   };
@@ -179,8 +177,6 @@ const PaymentsPage = () => {
                 <option value="">Barchasi</option>
                 <option value="cash">Naqd</option>
                 <option value="card">Karta</option>
-                <option value="online">Onlayn</option>
-                <option value="bank_transfer">Bank o'tkazmasi</option>
               </select>
             </div>
             <div className="flex items-end">
@@ -312,8 +308,6 @@ const PaymentsPage = () => {
                 >
                   <option value="cash">Naqd</option>
                   <option value="card">Karta</option>
-                  <option value="online">Onlayn</option>
-                  <option value="bank_transfer">Bank o'tkazmasi</option>
                 </select>
               </div>
 

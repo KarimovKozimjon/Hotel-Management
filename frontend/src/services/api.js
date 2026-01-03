@@ -2,6 +2,32 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
+export const getBackendOrigin = () => {
+  try {
+    return new URL(API_URL).origin;
+  } catch {
+    return 'http://localhost:8000';
+  }
+};
+
+export const resolveAssetUrl = (value) => {
+  if (!value || typeof value !== 'string') return value;
+
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+
+  // Already absolute or a data URL
+  if (/^(https?:)?\/\//i.test(trimmed) || /^data:/i.test(trimmed)) return trimmed;
+
+  const origin = getBackendOrigin();
+
+  // Laravel Storage::url() usually returns /storage/...
+  if (trimmed.startsWith('/')) return `${origin}${trimmed}`;
+  if (trimmed.startsWith('storage/')) return `${origin}/${trimmed}`;
+
+  return trimmed;
+};
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {

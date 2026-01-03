@@ -44,7 +44,7 @@ fontSize: {
 - ✅ Semi-transparent overlay
 - ✅ Icon bilan menu itemlar
 - ✅ Smooth transitions
-- ✅ Click handler qo'llab-quvvatlash
+- ✅ Button handler qo'llab-quvvatlash
 - ✅ `lg:hidden` - Faqat mobilda ko'rinadi
 
 **Foydalanish:**

@@ -72,7 +72,6 @@ class RoomController extends Controller
             'floor' => 'required|integer',
             'status' => 'required|in:available,occupied,maintenance,cleaning',
             'description' => 'nullable|string',
-            'images' => 'nullable|array',
         ]);
 
         $room = Room::create($validated);
@@ -93,7 +92,6 @@ class RoomController extends Controller
             'floor' => 'sometimes|integer',
             'status' => 'sometimes|in:available,occupied,maintenance,cleaning',
             'description' => 'nullable|string',
-            'images' => 'nullable|array',
         ]);
 
         $room->update($validated);
@@ -123,23 +121,21 @@ class RoomController extends Controller
 
         $query = Room::where('status', 'available')
             ->whereDoesntHave('bookings', function ($query) use ($request) {
-                $query->where(function ($q) use ($request) {
-                    $q->whereBetween('check_in_date', [$request->check_in_date, $request->check_out_date])
-                      ->orWhereBetween('check_out_date', [$request->check_in_date, $request->check_out_date])
-                      ->orWhere(function ($q) use ($request) {
-                          $q->where('check_in_date', '<=', $request->check_in_date)
-                            ->where('check_out_date', '>=', $request->check_out_date);
-                      });
-                })->whereIn('status', ['confirmed', 'checked_in']);
+                // Overlap check using a half-open interval: [check_in, check_out)
+                // Existing booking overlaps requested range if:
+                // existing.check_in < requested.check_out AND existing.check_out > requested.check_in
+                $query->whereIn('status', ['confirmed', 'checked_in'])
+                    ->where('check_in_date', '<', $request->check_out_date)
+                    ->where('check_out_date', '>', $request->check_in_date);
             });
 
         // Filter by room type
-        if ($request->has('room_type_id')) {
+        if ($request->filled('room_type_id')) {
             $query->where('room_type_id', $request->room_type_id);
         }
 
         // Filter by floor
-        if ($request->has('floor')) {
+        if ($request->filled('floor')) {
             $query->where('floor', $request->floor);
         }
 
@@ -149,27 +145,27 @@ class RoomController extends Controller
         $rooms = $query->get();
 
         // Filter by price range (from room_type)
-        if ($request->has('min_price')) {
+        if ($request->filled('min_price')) {
             $rooms = $rooms->filter(function ($room) use ($request) {
                 return $room->roomType && $room->roomType->base_price >= $request->min_price;
             });
         }
 
-        if ($request->has('max_price')) {
+        if ($request->filled('max_price')) {
             $rooms = $rooms->filter(function ($room) use ($request) {
                 return $room->roomType && $room->roomType->base_price <= $request->max_price;
             });
         }
 
         // Filter by capacity
-        if ($request->has('min_capacity')) {
+        if ($request->filled('min_capacity')) {
             $rooms = $rooms->filter(function ($room) use ($request) {
                 return $room->roomType && $room->roomType->capacity >= $request->min_capacity;
             });
         }
 
         // Sorting
-        if ($request->has('sort_by')) {
+        if ($request->filled('sort_by')) {
             switch ($request->sort_by) {
                 case 'price_asc':
                     $rooms = $rooms->sortBy(function ($room) {

@@ -141,7 +141,9 @@
 - [ ] Sharh yuboriladi
 - [ ] Toast notification ko'rinadi
 
-#### To'lovlar Tarixi (/guest/payment-history)
+#### To'lovlar Tarixi
+
+Eslatma: Guest uchun alohida "payment history" sahifa olib tashlangan (faqat "My Bookings" yetarli).
 - [ ] Statistika kartlari ko'rinadi:
   - [ ] Jami to'lovlar
   - [ ] To'langan to'lovlar
@@ -448,7 +450,7 @@
    - [ ] Xona rasmlari yuklash
    - [ ] Email bildirishnomalar
    - [ ] PDF invoice
-   - [ ] Online to'lov integratsiyasi (Click/Payme)
+  - [ ] Online to'lov integratsiyasi (o'chirilgan; faqat naqd/karta)
 
 2. **Yaxshilashlar:**
    - [ ] Mobile responsive design

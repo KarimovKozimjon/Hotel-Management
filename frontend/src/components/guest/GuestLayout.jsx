@@ -42,7 +42,6 @@ function GuestLayout({ children }) {
     { path: '/guest/dashboard', label: t('nav.home') },
     { path: '/guest/my-bookings', label: t('guest.myBookings') },
     { path: '/guest/book-room', label: t('guest.bookRoom') },
-    { path: '/guest/payment-history', label: t('guest.paymentHistory') },
   ];
 
   return (

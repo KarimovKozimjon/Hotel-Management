@@ -15,8 +15,25 @@ function GuestDashboard() {
   });
   const [loading, setLoading] = useState(true);
 
+  const formatUsd = (value) => {
+    const numberValue = Number(value);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(numberValue) ? numberValue : 0);
+  };
+
   useEffect(() => {
     fetchStats();
+    const onFocus = () => {
+      fetchStats();
+    };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+    };
   }, []);
 
   const fetchStats = async () => {
@@ -38,13 +55,20 @@ function GuestDashboard() {
         (b.status === 'confirmed' || b.status === 'pending')
       );
 
-      const paidPayments = payments.filter(p => p.payment_status === 'paid');
-      const totalSpent = paidPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      const paidPayments = payments.filter((p) => {
+        const status = String(p.status || p.payment_status || '').toLowerCase();
+        return status === 'completed' || status === 'paid';
+      });
+
+      const totalSpent = paidPayments.reduce((sum, p) => {
+        const amount = Number(p.amount);
+        return sum + (Number.isFinite(amount) ? amount : 0);
+      }, 0);
 
       setStats({
         totalBookings: bookings.length,
         upcomingBookings: upcomingBookings.length,
-        totalSpent: totalSpent.toFixed(2),
+        totalSpent,
         reviewsSubmitted: reviews.length
       });
     } catch (error) {
@@ -105,7 +129,7 @@ function GuestDashboard() {
               icon: <FiBell className="w-7 h-7 text-white" />, label: "Kelgusi bronlar", value: stats.upcomingBookings, delay: 0.2
             },
             {
-              icon: <FiDollarSign className="w-7 h-7 text-white" />, label: "Jami to'langan", value: `$${stats.totalSpent.toLocaleString()}`, delay: 0.3
+              icon: <FiDollarSign className="w-7 h-7 text-white" />, label: "Jami to'langan", value: formatUsd(stats.totalSpent), delay: 0.3
             },
             {
               icon: <FiStar className="w-7 h-7 text-white" />, label: "Sharhlar", value: stats.reviewsSubmitted, delay: 0.4

@@ -3,6 +3,9 @@ import { roomTypeService } from '../services/roomService';
 import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl } from '../services/api';
+
+const DEFAULT_ROOM_TYPE_IMAGE = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800';
 
 const RoomTypesPage = () => {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -86,7 +89,7 @@ const RoomTypesPage = () => {
       amenities: roomType.amenities || [],
       image_url: roomType.image_url || ''
     });
-    setImagePreview(roomType.image_url || null);
+    setImagePreview(resolveAssetUrl(roomType.image_url) || DEFAULT_ROOM_TYPE_IMAGE);
     setShowModal(true);
   };
 
@@ -166,15 +169,13 @@ const RoomTypesPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roomTypes.map((roomType) => (
             <div key={roomType.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {roomType.image_url && (
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={roomType.image_url} 
-                    alt={roomType.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={resolveAssetUrl(roomType.image_url) || DEFAULT_ROOM_TYPE_IMAGE} 
+                  alt={roomType.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="p-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{roomType.name}</h3>
                 <p className="text-gray-600 mb-4">{roomType.description}</p>
@@ -309,8 +310,9 @@ const RoomTypesPage = () => {
                     type="url"
                     value={formData.image_url}
                     onChange={(e) => {
-                      setFormData({ ...formData, image_url: e.target.value });
-                      setImagePreview(e.target.value);
+                      const nextValue = e.target.value;
+                      setFormData({ ...formData, image_url: nextValue });
+                      setImagePreview(resolveAssetUrl(nextValue) || DEFAULT_ROOM_TYPE_IMAGE);
                     }}
                     className="w-full px-3 py-2 border rounded-lg mt-1"
                     placeholder="https://example.com/image.jpg"

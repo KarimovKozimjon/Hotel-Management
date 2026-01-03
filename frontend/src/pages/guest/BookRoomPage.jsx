@@ -74,7 +74,12 @@ function BookRoomPage() {
         toast.info('Xonalar topilmadi');
       }
     } catch (error) {
-      toast.error('Xonalarni yuklashda xatolik');
+      const errors = error.response?.data?.errors;
+      if (errors) {
+        Object.values(errors).forEach((err) => toast.error(err[0]));
+      } else {
+        toast.error(error.response?.data?.message || 'Xonalarni yuklashda xatolik');
+      }
       setRooms([]);
     } finally {
       setLoading(false);
@@ -124,7 +129,7 @@ function BookRoomPage() {
       if (errors) {
         Object.values(errors).forEach(err => toast.error(err[0]));
       } else {
-        toast.error(error.response?.data?.error || 'Bronlashda xatolik');
+        toast.error(error.response?.data?.message || error.response?.data?.error || 'Bronlashda xatolik');
       }
     } finally {
       setLoading(false);

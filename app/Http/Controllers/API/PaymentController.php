@@ -15,17 +15,17 @@ class PaymentController extends Controller
         $query = Payment::with('booking.guest');
 
         // Filter by status
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         // Filter by payment method
-        if ($request->has('payment_method')) {
+        if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->payment_method);
         }
 
         // Filter by booking
-        if ($request->has('booking_id')) {
+        if ($request->filled('booking_id')) {
             $query->where('booking_id', $request->booking_id);
         }
 
@@ -39,7 +39,7 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'booking_id' => 'required|exists:bookings,id',
             'amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|in:cash,card,online,bank_transfer',
+            'payment_method' => 'required|in:cash,card',
             'transaction_id' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
@@ -74,7 +74,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'sometimes|numeric|min:0',
-            'payment_method' => 'sometimes|in:cash,card,online,bank_transfer',
+            'payment_method' => 'sometimes|in:cash,card',
             'status' => 'sometimes|in:pending,completed,failed,refunded',
             'transaction_id' => 'nullable|string',
             'notes' => 'nullable|string',

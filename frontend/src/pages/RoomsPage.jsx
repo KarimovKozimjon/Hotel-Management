@@ -77,7 +77,13 @@ const RoomsPage = () => {
       resetForm();
       fetchRooms();
     } catch (error) {
-      toast.error('Xatolik yuz berdi');
+      const message =
+        error?.response?.data?.message ||
+        (error?.response?.data?.errors
+          ? Object.values(error.response.data.errors).flat().join(' ')
+          : null) ||
+        'Xatolik yuz berdi';
+      toast.error(message);
     }
   };
 
@@ -121,13 +127,13 @@ const RoomsPage = () => {
       available: 'bg-green-100 text-green-800',
       occupied: 'bg-red-100 text-red-800',
       maintenance: 'bg-yellow-100 text-yellow-800',
-      reserved: 'bg-blue-100 text-blue-800'
+      cleaning: 'bg-blue-100 text-blue-800'
     };
     const labels = {
       available: 'Bo\'sh',
       occupied: 'Band',
       maintenance: 'Ta\'mirlash',
-      reserved: 'Bron qilingan'
+      cleaning: 'Tozalash'
     };
     return (
       <span className={`px-2 py-1 rounded-full text-xs ${badges[status]}`}>
@@ -266,7 +272,7 @@ const RoomsPage = () => {
                   <option value="available">Bo'sh</option>
                   <option value="occupied">Band</option>
                   <option value="maintenance">Ta'mirlash</option>
-                  <option value="reserved">Bron qilingan</option>
+                  <option value="cleaning">Tozalash</option>
                 </select>
               </div>
               <div className="mb-4">
