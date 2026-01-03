@@ -97,7 +97,7 @@ function GuestLayout({ children }) {
                     }`}
                   >
                     {/* icon removed */}
-                    <span>{item.label}</span>
+                    <span className="block max-w-40 truncate whitespace-nowrap">{item.label}</span>
                   </motion.div>
                   {isActive(item.path) && (
                     <motion.div 
@@ -127,11 +127,11 @@ function GuestLayout({ children }) {
                   <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
                     {guest?.first_name?.charAt(0)}{guest?.last_name?.charAt(0)}
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div className="text-left min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
                       {guest?.first_name} {guest?.last_name}
                     </p>
-                    <p className="text-xs text-gray-500">{guest?.email}</p>
+                    <p className="text-xs text-gray-500 truncate">{guest?.email}</p>
                   </div>
                   <svg className={`w-4 h-4 text-gray-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

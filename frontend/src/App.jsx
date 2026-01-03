@@ -5,7 +5,6 @@ import { GuestAuthProvider } from './context/GuestAuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import GuestPrivateRoute from './components/GuestPrivateRoute';
 import Login from './components/auth/Login';
-import Dashboard from './components/dashboard/Dashboard';
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import DashboardPage from './pages/DashboardPage';
 import RoomsPage from './pages/RoomsPage';
@@ -17,7 +16,6 @@ import RoomTypesPage from './pages/RoomTypesPage';
 import UsersPage from './pages/UsersPage';
 import ReviewsPage from './pages/ReviewsPage';
 import ReportsPage from './pages/ReportsPage';
-import DiscountsPage from './pages/DiscountsPage';
 import ContactMessagesPage from './pages/ContactMessagesPage';
 import GuestDetailsPage from './pages/GuestDetailsPage';
 import GuestLogin from './components/guest/GuestLogin';
@@ -73,17 +71,23 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={
               <PrivateRoute>
-                <Dashboard />
+                <DashboardLayout>
+                  <DashboardPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/admin/rooms" element={
               <PrivateRoute>
-                <RoomsPage />
+                <DashboardLayout>
+                  <RoomsPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/bookings" element={
               <PrivateRoute>
-                <BookingsPage />
+                <DashboardLayout>
+                  <BookingsPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/guests" element={
@@ -102,22 +106,30 @@ function App() {
             } />
             <Route path="/payments" element={
               <PrivateRoute>
-                <PaymentsPage />
+                <DashboardLayout>
+                  <PaymentsPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/services" element={
               <PrivateRoute>
-                <ServicesPage />
+                <DashboardLayout>
+                  <ServicesPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/room-types" element={
               <PrivateRoute>
-                <RoomTypesPage />
+                <DashboardLayout>
+                  <RoomTypesPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/users" element={
               <PrivateRoute>
-                <UsersPage />
+                <DashboardLayout>
+                  <UsersPage />
+                </DashboardLayout>
               </PrivateRoute>
             } />
             <Route path="/reviews" element={
@@ -131,13 +143,6 @@ function App() {
               <PrivateRoute>
                 <DashboardLayout>
                   <ReportsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/discounts" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <DiscountsPage />
                 </DashboardLayout>
               </PrivateRoute>
             } />

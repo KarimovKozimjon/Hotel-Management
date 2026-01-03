@@ -14,6 +14,11 @@
     "roomTypes": "Xona turlari",
     "users": "Foydalanuvchilar",
     "reviews": "Sharhlar",
+    "management": "Mehmonxona",
+    "operations": "Operatsiyalar",
+    "admin": "Sozlamalar",
+    "reports": "Hisobotlar",
+    "messages": "Xabarlar",
     "logout": "Chiqish",
     "gallery": "Galereya",
     "backToHome": "Bosh sahifaga qaytish"
@@ -136,6 +141,10 @@
       }
     },
     "cta": {
+      "paymentMethod": {
+        "cash": "Naqd",
+        "card": "Karta"
+      },
       "title": "Unutilmas tajriba uchun tayyor misiz?",
       "subtitle": "Bugun xonangizni band qiling va Comfort Hub da eng yaxshi dam olishni his eting!",
       "questions": "Savollaringiz bormi?",
@@ -163,7 +172,503 @@
     "quickLinks": "Tezkor havolalar",
     "viewAllBookings": "Barcha bronlarni ko'rish",
     "makeNewBooking": "Yangi bron qilish",
-    "manageProfile": "Profilni boshqarish"
+    "manageProfile": "Profilni boshqarish",
+    "dashboardSubtitle": "Mehmonlar kabineti — Sizning shaxsiy panelingiz",
+    "upcomingBookings": "Kelgusi bronlar",
+    "dataLoadError": "Ma'lumotlarni yuklashda xatolik",
+    "personalInfo": "Shaxsiy ma'lumotlar",
+    "editProfile": "Profilni tahrirlash",
+    "sessionExpired": "Sessiya tugagan. Qayta login qiling.",
+    "fields": {
+      "firstName": "Ism",
+      "lastName": "Familiya",
+      "email": "Email",
+      "phone": "Telefon",
+      "passportNumber": "Pasport raqami",
+      "dateOfBirth": "Tug'ilgan sana",
+      "nationality": "Millati",
+      "address": "Manzil"
+    },
+    "profilePage": {
+      "title": "Profilim",
+      "subtitle": "Shaxsiy ma'lumotlarni ko'ring va tahrirlang",
+      "emailReadOnly": "Email o'zgartirib bo'lmaydi",
+      "updateSuccess": "Profil muvaffaqiyatli yangilandi",
+      "updateError": "Profilni yangilashda xatolik"
+    },
+    "account": {
+      "title": "Hisob ma'lumotlari",
+      "statusLabel": "Hisob holati",
+      "activeHint": "Akkauntingiz faol",
+      "activeBadge": "Faol",
+      "changePasswordHint": "Parolingizni yangilang",
+      "change": "O'zgartirish",
+      "deleteTitle": "Hisobni o'chirish",
+      "deleteHint": "Akkauntingizni butunlay o'chirish",
+      "deleteConfirm": "Haqiqatan ham hisobingizni o'chirmoqchimisiz?",
+      "deleteSuccess": "Hisob muvaffaqiyatli o'chirildi",
+      "deleteError": "Hisobni o'chirishda xatolik"
+    },
+    "bookings": {
+      "subtitle": "Barcha bronlaringizni bu yerda ko'ring",
+      "fetchError": "Bronlarni yuklashda xatolik",
+      "emptyTitle": "Bronlar topilmadi",
+      "emptyDescription": "Siz hali hech qanday xona bronlamagansiz",
+      "bookingNumber": "Bron",
+      "bookingNumberLabel": "Bron raqami",
+      "createdAt": "Yaratilgan",
+      "room": "Xona",
+      "invoice": "Hisob-faktura",
+      "invoiceDownloading": "Hisob-faktura yuklanmoqda...",
+      "cancelTitle": "Bronni bekor qilish",
+      "cancelConfirm": "Siz ushbu bronni bekor qilmoqchimisiz?",
+      "cancelPolicy": "Bekor qilish shartlari: Kelishdan 24 soat oldin bekor qilsangiz, pul to'liq qaytariladi.",
+      "cancelNo": "Yo'q, saqlash",
+      "cancelYes": "Ha, bekor qilish",
+      "cancelSuccess": "Bron bekor qilindi",
+      "cancelError": "Bronni bekor qilishda xatolik"
+    },
+    "payments": {
+      "amountMissing": "To'lov summasi topilmadi",
+      "success": "To'lov muvaffaqiyatli amalga oshirildi!",
+      "error": "To'lovda xatolik yuz berdi",
+      "pay": "To'lov qilish",
+      "payNow": "To'lash",
+      "paid": "To'langan",
+      "unpaid": "To'lanmagan",
+      "warningAmountMissing": "Ogohlantirish: Summa topilmadi",
+      "cashHint": "Resepshonda to'lash",
+      "method": {
+        "cardShort": "💳 Karta",
+        "cashShort": "💵 Naqd"
+      }
+    },
+    "reviews": {
+      "leaveReview": "Sharh qoldirish",
+      "addSuccess": "Sharh muvaffaqiyatli qo'shildi!",
+      "addError": "Sharh qo'shishda xatolik yuz berdi",
+      "ratingLabel": "Baho (1-5 yulduz)",
+      "commentLabel": "Izoh",
+      "commentPlaceholder": "Tajribangiz haqida yozing..."
+    },
+    "bookRoomPage": {
+      "roomTypesLoadError": "Xona turlarini yuklashda xatolik",
+      "selectDatesError": "Iltimos, kirish va chiqish sanalarini tanlang",
+      "roomsFound": "{{count}} ta xona topildi",
+      "roomsFoundInline": "{{count}} ta xona topildi",
+      "noRoomsToast": "Xonalar topilmadi",
+      "roomsLoadError": "Xonalarni yuklashda xatolik",
+      "subtitle": "Mavjud xonalardan birini tanlang va bron qiling",
+      "selectDatesTitle": "Sana tanlang",
+      "search": "Qidirish",
+      "stayDuration": "Qolish muddati",
+      "days": "kun",
+      "noRoomsTitle": "Xonalar topilmadi",
+      "tryOtherFilters": "Boshqa filtrlar bilan qidiring",
+      "selectDatesHint": "Qidiruv uchun sanalarni tanlang",
+      "roomNumber": "Xona",
+      "people": "kishi",
+      "floorSuffix": "qavat",
+      "bookAction": "Bron qilish",
+      "daysCount": "Kunlar soni",
+      "total": "Jami",
+      "specialRequestsPlaceholder": "Masalan: Yuqori qavatdagi xona, oyna ko'rinishi, va h.k."
+    },
+    "changePasswordPage": {
+      "subtitle": "Yangi xavfsiz parol o'rnating",
+      "current": "Joriy parol",
+      "currentPlaceholder": "Joriy parolingizni kiriting",
+      "new": "Yangi parol",
+      "newPlaceholder": "Yangi parolni kiriting (kamida 6 ta belgi)",
+      "confirm": "Yangi parolni tasdiqlash",
+      "confirmPlaceholder": "Yangi parolni qayta kiriting",
+      "mismatch": "Yangi parollar mos kelmaydi",
+      "minLength": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+      "success": "Parol muvaffaqiyatli o'zgartirildi",
+      "error": "Parolni o'zgartirishda xatolik"
+    }
+  },
+  "staff": {
+    "notifications": {
+      "bellTitle": "Bildirishnomalar",
+      "none": "Bildirishnomalar yo'q",
+      "markAllRead": "Hammasini o'qilgan",
+      "newCount": "({{count}} yangi)",
+      "fallbacks": {
+        "newGuest": "Yangi mehmon",
+        "guestCheckedIn": "Mehmon kirdi",
+        "guestCheckedOut": "Mehmon chiqdi"
+      },
+      "messages": {
+        "newBooking": "Yangi bron: {{ref}}",
+        "paymentReceived": "To'lov qabul qilindi: ${{amount}}",
+        "checkIn": "Mehmon check-in qilindi",
+        "checkOut": "Mehmon check-out qilindi",
+        "checkInRef": "Check-in: {{ref}}",
+        "checkOutRef": "Check-out: {{ref}}",
+        "bookingConfirmed": "Bron tasdiqlandi",
+        "bookingCancelled": "Bron bekor qilindi",
+        "bookingCancelledRef": "Bron bekor qilindi: {{ref}}"
+      },
+      "descriptions": {
+        "guestRoom": "{{guest}} - {{room}}",
+        "guestRoomNumber": "{{guest}} - Xona {{roomNumber}}",
+        "paymentMethod": "To'lov usuli: {{method}}",
+        "bookingMethod": "Bron {{ref}} - {{method}}",
+        "bookingRef": "Bron: {{ref}}",
+        "bookingConfirmed": "Bron {{ref}} muvaffaqiyatli tasdiqlandi",
+        "bookingCancelled": "Bron {{ref}} bekor qilindi",
+        "guestCheckedIn": "{{guest}} xonaga kirdi",
+        "guestCheckedOut": "{{guest}} xonadan chiqdi",
+        "guestName": "{{guest}}"
+      },
+      "demo": {
+        "title": "📢 Real-time Bildirishnomalar Demo",
+        "subtitle": "Turli xil bildirishnomalarni sinab ko'ring (qo'ng'iroq belgisiga bosing):",
+        "howItWorksTitle": "💡 Ishlash Tartibi:",
+        "buttons": {
+          "newBooking": "Yangi Bron",
+          "paymentReceived": "To'lov Qabul Qilindi",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "bookingConfirmed": "Bron Tasdiqlandi",
+          "bookingCancelled": "Bron Bekor Qilindi"
+        },
+        "steps": {
+          "clickButton": "Yuqoridagi tugmalardan birini bosing",
+          "bellShows": "Navbar dagi qo'ng'iroq belgisida bildirishnoma paydo bo'ladi",
+          "badgeCount": "Qizil badge yangi bildirishnomalar sonini ko'rsatadi",
+          "openBell": "Qo'ng'iroq belgisiga bosib barcha bildirishnomalarni ko'ring",
+          "productionNote": "Real production da WebSocket/Pusher orqali avtomatik keladi"
+        }
+      }
+    },
+    "dashboard": {
+      "title": "Boshqaruv paneli",
+      "viewCalendar": "Kalendar ko'rish",
+      "viewStats": "Statistikani ko'rish",
+      "totalRooms": "Jami xonalar",
+      "totalBookings": "Jami bronlar",
+      "totalGuests": "Jami mehmonlar",
+      "totalRevenue": "Jami daromad",
+      "availableRooms": "Bo'sh: {{count}} xona",
+      "occupancy": "Band: {{rate}}%",
+      "registered": "Ro'yxatdan o'tgan",
+      "paidPayments": "To'langan to'lovlar",
+      "todayCheckInsTitle": "Bugungi kirishlar",
+      "todayCheckInsText": "Bugun {{count}} ta mehmon kiradi",
+      "todayCheckOutsTitle": "Bugungi chiqishlar",
+      "todayCheckOutsText": "Bugun {{count}} ta mehmon chiqadi",
+      "viewAllBookings": "Barcha bronlarni ko'rish",
+      "quickActions": "Tezkor harakatlar",
+      "actions": {
+        "newBooking": "Yangi bron",
+        "addGuest": "Mehmon qo'shish"
+      }
+    },
+    "status": {
+      "pending": "Kutilmoqda",
+      "confirmed": "Tasdiqlangan",
+      "checked_in": "Keldi",
+      "checked_out": "Ketdi",
+      "cancelled": "Bekor qilindi",
+      "completed": "To'langan",
+      "failed": "Xatolik",
+      "refunded": "Qaytarilgan"
+    },
+    "bookings": {
+      "title": "Bronlar",
+      "subtitle": "Bronlarni boshqarish va nazorat qilish",
+      "new": "Yangi bron",
+      "searchPlaceholder": "Mehmon, xona, holat bo'yicha qidirish...",
+      "headers": {
+        "guest": "Mehmon",
+        "room": "Xona",
+        "checkIn": "Kirish",
+        "checkOut": "Chiqish",
+        "amount": "Summa",
+        "status": "Holati",
+        "actions": "Amallar"
+      },
+      "actions": {
+        "confirm": "Tasdiqlash",
+        "cancel": "Bekor qilish",
+        "checkIn": "Check-in",
+        "checkOut": "Check-out",
+        "edit": "Tahrirlash",
+        "delete": "O'chirish"
+      },
+      "modal": {
+        "editTitle": "Bronni tahrirlash",
+        "newTitle": "Yangi bron",
+        "guest": "Mehmon",
+        "room": "Xona",
+        "checkInDate": "Kirish sanasi",
+        "checkOutDate": "Chiqish sanasi",
+        "totalAmount": "Umumiy summa ($)",
+        "status": "Holati",
+        "select": "Tanlang"
+      },
+      "confirmations": {
+        "delete": "Bronni o'chirmoqchimisiz?",
+        "checkIn": "Mehmonni check-in qilmoqchimisiz?",
+        "checkOut": "Mehmonni check-out qilmoqchimisiz?",
+        "cancel": "Bronni bekor qilmoqchimisiz?",
+        "confirm": "Bronni tasdiqlashni xohlaysizmi?"
+      },
+      "toasts": {
+        "fetchError": "Bronlarni yuklashda xatolik",
+        "guestsFetchError": "Mehmonlarni yuklashda xatolik",
+        "roomsFetchError": "Xonalarni yuklashda xatolik",
+        "updated": "Bron yangilandi",
+        "created": "Bron yaratildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Bron o'chirildi",
+        "deleteError": "Bronni o'chirishda xatolik",
+        "checkInSuccess": "Check-in muvaffaqiyatli amalga oshirildi",
+        "checkInError": "Check-in da xatolik",
+        "checkOutSuccess": "Check-out muvaffaqiyatli amalga oshirildi",
+        "checkOutError": "Check-out da xatolik",
+        "cancelSuccess": "Bron bekor qilindi",
+        "cancelError": "Bronni bekor qilishda xatolik",
+        "confirmSuccess": "Bron tasdiqlandi",
+        "confirmError": "Bronni tasdiqlashda xatolik"
+      },
+      "notifications": {
+        "checkIn": "Mehmon check-in qilindi",
+        "checkOut": "Mehmon check-out qilindi",
+        "cancelled": "Bron bekor qilindi",
+        "confirmed": "Bron tasdiqlandi",
+        "bookingRef": "Bron #{{ref}}"
+      }
+    },
+    "rooms": {
+      "new": "Yangi xona",
+      "searchPlaceholder": "Xona raqami, turi, holati bo'yicha qidirish...",
+      "headers": {
+        "roomNumber": "Xona №",
+        "type": "Turi",
+        "price": "Narxi",
+        "status": "Holati",
+        "actions": "Amallar"
+      },
+      "actions": {
+        "images": "Rasmlar"
+      },
+      "modal": {
+        "editTitle": "Xonani tahrirlash",
+        "newTitle": "Yangi xona"
+      },
+      "fields": {
+        "roomType": "Xona turi",
+        "select": "Tanlang"
+      },
+      "confirmations": {
+        "delete": "Xonani o'chirmoqchimisiz?"
+      },
+      "toasts": {
+        "fetchError": "Xonalarni yuklashda xatolik",
+        "roomTypesFetchError": "Xona turlarini yuklashda xatolik",
+        "updated": "Xona yangilandi",
+        "created": "Xona qo'shildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Xona o'chirildi",
+        "deleteError": "Xonani o'chirishda xatolik"
+      },
+      "imagesTitle": "Xona Rasmlari"
+    }
+    ,
+    "payments": {
+      "new": "Yangi to'lov",
+      "searchPlaceholder": "Mehmon, to'lov turi, transaction ID bo'yicha qidirish...",
+      "filters": {
+        "status": "Holat",
+        "method": "To'lov turi",
+        "all": "Barchasi",
+        "apply": "Filtr qo'llash"
+      },
+      "headers": {
+        "id": "ID",
+        "guest": "Mehmon",
+        "amount": "Summa",
+        "method": "To'lov turi",
+        "status": "Holat",
+        "date": "Sana"
+      },
+      "empty": "To'lovlar topilmadi",
+      "summary": {
+        "total": "Jami to'lovlar"
+      },
+      "modal": {
+        "title": "Yangi to'lov",
+        "booking": "Bron",
+        "select": "Tanlang",
+        "roomLabel": "Xona",
+        "amount": "Summa ($)",
+        "method": "To'lov turi",
+        "transactionId": "Tranzaksiya ID (ixtiyoriy)",
+        "transactionIdPlaceholder": "TRX123456",
+        "notes": "Izoh (ixtiyoriy)",
+        "notesPlaceholder": "Qo'shimcha ma'lumot...",
+        "save": "To'lovni saqlash"
+      },
+      "toasts": {
+        "fetchError": "To'lovlarni yuklashda xatolik",
+        "bookingsFetchError": "Bronlarni yuklashda xatolik",
+        "created": "To'lov muvaffaqiyatli yaratildi",
+        "createError": "To'lov yaratishda xatolik"
+      }
+    },
+    "users": {
+      "new": "Yangi foydalanuvchi",
+      "searchPlaceholder": "Ism, email, rol bo'yicha qidirish...",
+      "empty": "Foydalanuvchilar topilmadi",
+      "selectRole": "Tanlang",
+      "fields": {
+        "name": "Ism",
+        "email": "Email",
+        "password": "Parol",
+        "passwordHint": "bo'sh qoldirish - o'zgarmaydi",
+        "role": "Rol"
+      },
+      "placeholders": {
+        "password": "Parol",
+        "newPassword": "Yangi parol"
+      },
+      "modal": {
+        "newTitle": "Yangi foydalanuvchi",
+        "editTitle": "Foydalanuvchini tahrirlash"
+      },
+      "confirmations": {
+        "delete": "Foydalanuvchini o'chirmoqchimisiz?"
+      },
+      "toasts": {
+        "fetchError": "Foydalanuvchilarni yuklashda xatolik",
+        "rolesFetchError": "Rollarni yuklashda xatolik",
+        "updated": "Foydalanuvchi yangilandi",
+        "created": "Foydalanuvchi qo'shildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Foydalanuvchi o'chirildi",
+        "deleteError": "Foydalanuvchini o'chirishda xatolik"
+      }
+    },
+    "guests": {
+      "new": "Yangi mehmon",
+      "searchPlaceholder": "Ism, email yoki telefon bo'yicha qidirish...",
+      "fields": {
+        "firstName": "Ism",
+        "lastName": "Familiya",
+        "email": "Email",
+        "phone": "Telefon",
+        "address": "Manzil",
+        "idNumber": "ID/Passport raqami"
+      },
+      "modal": {
+        "newTitle": "Yangi mehmon",
+        "editTitle": "Mehmonni tahrirlash"
+      },
+      "confirmations": {
+        "delete": "Mehmonni o'chirmoqchimisiz?"
+      },
+      "toasts": {
+        "fetchError": "Mehmonlarni yuklashda xatolik",
+        "searchError": "Qidiruvda xatolik",
+        "updated": "Mehmon yangilandi",
+        "created": "Mehmon qo'shildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Mehmon o'chirildi",
+        "deleteError": "Mehmonni o'chirishda xatolik"
+      }
+    },
+    "services": {
+      "new": "Yangi xizmat",
+      "searchPlaceholder": "Xizmat nomi, kategoriya bo'yicha qidirish...",
+      "empty": "Xizmatlar topilmadi",
+      "status": {
+        "active": "Faol",
+        "inactive": "Nofaol"
+      },
+      "categories": {
+        "room_service": "Xona xizmati",
+        "laundry": "Kir yuvish",
+        "restaurant": "Restoran",
+        "spa": "Spa",
+        "transport": "Transport",
+        "other": "Boshqa"
+      },
+      "actions": {
+        "addToBooking": "Bronlashga qo'shish"
+      },
+      "fields": {
+        "name": "Nomi",
+        "description": "Tavsif",
+        "price": "Narxi ($)",
+        "category": "Kategoriya",
+        "active": "Faol"
+      },
+      "modal": {
+        "newTitle": "Yangi xizmat",
+        "editTitle": "Xizmatni tahrirlash"
+      },
+      "addToBookingModal": {
+        "title": "Xizmatni bronlashga qo'shish",
+        "booking": "Bron",
+        "select": "Tanlang",
+        "roomLabel": "Xona",
+        "quantity": "Miqdor",
+        "total": "Jami summa",
+        "add": "Qo'shish"
+      },
+      "confirmations": {
+        "delete": "Xizmatni o'chirmoqchimisiz?"
+      },
+      "toasts": {
+        "fetchError": "Xizmatlarni yuklashda xatolik",
+        "bookingsFetchError": "Bronlarni yuklashda xatolik",
+        "addedToBooking": "Xizmat bronlashga qo'shildi",
+        "addToBookingError": "Xizmatni qo'shishda xatolik",
+        "updated": "Xizmat yangilandi",
+        "created": "Xizmat qo'shildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Xizmat o'chirildi",
+        "deleteError": "Xizmatni o'chirishda xatolik"
+      }
+    },
+    "roomTypes": {
+      "new": "Yangi tur",
+      "empty": "Xona turlari topilmadi",
+      "price": "Narxi",
+      "amenities": "Qulayliklar",
+      "capacityPeople": "{{count}} kishi",
+      "roomsCount": "Xonalar: {{count}} ta",
+      "fields": {
+        "name": "Nomi",
+        "description": "Tavsif",
+        "capacity": "Sig'imi",
+        "basePrice": "Narxi ($)",
+        "image": "Rasm",
+        "orUrl": "yoki URL kiriting",
+        "amenities": "Qulayliklar"
+      },
+      "placeholders": {
+        "addAmenity": "Qulaylik qo'shish"
+      },
+      "modal": {
+        "newTitle": "Yangi xona turi",
+        "editTitle": "Xona turini tahrirlash"
+      },
+      "confirmations": {
+        "delete": "Xona turini o'chirmoqchimisiz?"
+      },
+      "toasts": {
+        "fetchError": "Xona turlarini yuklashda xatolik",
+        "updated": "Xona turi yangilandi",
+        "created": "Xona turi qo'shildi",
+        "genericError": "Xatolik yuz berdi",
+        "deleted": "Xona turi o'chirildi",
+        "deleteError": "Xona turini o'chirishda xatolik"
+      }
+    }
   },
   "common": {
     "search": "Qidirish",
@@ -181,6 +686,7 @@
     "loading": "Yuklanmoqda...",
     "noResults": "Natija topilmadi",
     "confirm": "Tasdiqlash",
+    "confirmDelete": "O'chirishni tasdiqlaysizmi?",
     "back": "Orqaga",
     "next": "Keyingi",
     "submit": "Yuborish",
@@ -221,6 +727,10 @@
   },
   "filter": {
     "title": "Qidiruv filterlari",
+    "all": "Barchasi",
+    "any": "Har qanday",
+    "allFloors": "Barcha qavatlar",
+    "defaultSort": "Standart",
     "roomType": "Xona turi",
     "minPrice": "Minimal narx",
     "maxPrice": "Maksimal narx",

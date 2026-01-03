@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNotifications } from '../../context/NotificationContext';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
-function NotificationBell() {
+function NotificationBell({ scrolled = true }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [showPanel, setShowPanel] = useState(false);
+  const { t } = useTranslation();
 
   const getIcon = (type) => {
     switch (type) {
@@ -64,7 +66,11 @@ function NotificationBell() {
       {/* Bell Button */}
       <button
         onClick={() => setShowPanel(!showPanel)}
-        className="relative p-2 text-white hover:bg-blue-700 rounded-full transition"
+        className={`relative p-2.5 rounded-lg transition-all duration-300 ${
+          scrolled
+            ? 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+            : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+        }`}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -93,9 +99,9 @@ function NotificationBell() {
             <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Bildirishnomalar
+                  {t('staff.notifications.bellTitle')}
                   {unreadCount > 0 && (
-                    <span className="ml-2 text-sm text-blue-600">({unreadCount} yangi)</span>
+                    <span className="ml-2 text-sm text-blue-600">{t('staff.notifications.newCount', { count: unreadCount })}</span>
                   )}
                 </h3>
                 {notifications.length > 0 && (
@@ -103,7 +109,7 @@ function NotificationBell() {
                     onClick={markAllAsRead}
                     className="text-sm text-blue-600 hover:text-blue-700"
                   >
-                    Hammasini o'qilgan
+                    {t('staff.notifications.markAllRead')}
                   </button>
                 )}
               </div>
@@ -116,59 +122,68 @@ function NotificationBell() {
                   <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <p className="text-gray-500">Bildirishnomalar yo'q</p>
+                  <p className="text-gray-500">{t('staff.notifications.none')}</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      onClick={() => handleNotificationClick(notification)}
-                      className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition ${
-                        !notification.read ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Icon */}
-                        <div className="flex-shrink-0 mt-1">
-                          {getIcon(notification.type)}
-                        </div>
+                  {notifications.map((notification) => {
+                    const messageText = notification.messageKey
+                      ? t(notification.messageKey, notification.messageVars)
+                      : notification.message;
+                    const descriptionText = notification.descriptionKey
+                      ? t(notification.descriptionKey, notification.descriptionVars)
+                      : notification.description;
 
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                            {notification.message}
-                          </p>
-                          {notification.description && (
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notification.description}
+                    return (
+                      <div
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification)}
+                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition ${
+                          !notification.read ? 'bg-blue-50' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Icon */}
+                          <div className="flex-shrink-0 mt-1">
+                            {getIcon(notification.type)}
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                              {messageText}
                             </p>
+                            {descriptionText && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                {descriptionText}
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-400 mt-1">
+                              {format(new Date(notification.timestamp), 'dd.MM.yyyy, HH:mm')}
+                            </p>
+                          </div>
+
+                          {/* Delete Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification.id);
+                            }}
+                            className="flex-shrink-0 text-gray-400 hover:text-red-600"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+
+                          {/* Unread Indicator */}
+                          {!notification.read && (
+                            <div className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                           )}
-                          <p className="text-xs text-gray-400 mt-1">
-                            {format(new Date(notification.timestamp), 'dd MMM yyyy, HH:mm')}
-                          </p>
                         </div>
-
-                        {/* Delete Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteNotification(notification.id);
-                          }}
-                          className="flex-shrink-0 text-gray-400 hover:text-red-600"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-
-                        {/* Unread Indicator */}
-                        {!notification.read && (
-                          <div className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

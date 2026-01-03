@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { userService, roleService } from '../services/userService';
-import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import SearchBar from '../components/common/SearchBar';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const UsersPage = () => {
+  const { t, i18n } = useTranslation();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -31,7 +32,7 @@ const UsersPage = () => {
       setFilteredUsers(data);
       setLoading(false);
     } catch (error) {
-      toast.error('Foydalanuvchilarni yuklashda xatolik');
+      toast.error(t('staff.users.toasts.fetchError'));
       setLoading(false);
     }
   };
@@ -50,7 +51,7 @@ const UsersPage = () => {
       const data = await roleService.getAll();
       setRoles(data);
     } catch (error) {
-      toast.error('Rollarni yuklashda xatolik');
+      toast.error(t('staff.users.toasts.rolesFetchError'));
     }
   };
 
@@ -66,16 +67,16 @@ const UsersPage = () => {
 
       if (editingUser) {
         await userService.update(editingUser.id, submitData);
-        toast.success('Foydalanuvchi yangilandi');
+        toast.success(t('staff.users.toasts.updated'));
       } else {
         await userService.create(submitData);
-        toast.success('Foydalanuvchi qo\'shildi');
+        toast.success(t('staff.users.toasts.created'));
       }
       setShowModal(false);
       resetForm();
       fetchUsers();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Xatolik yuz berdi');
+      toast.error(error.response?.data?.message || t('staff.users.toasts.genericError'));
     }
   };
 
@@ -91,15 +92,22 @@ const UsersPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Foydalanuvchini o\'chirmoqchimisiz?')) {
+    if (window.confirm(t('staff.users.confirmations.delete'))) {
       try {
         await userService.delete(id);
-        toast.success('Foydalanuvchi o\'chirildi');
+        toast.success(t('staff.users.toasts.deleted'));
         fetchUsers();
       } catch (error) {
-        toast.error(error.response?.data?.message || 'Foydalanuvchini o\'chirishda xatolik');
+        toast.error(error.response?.data?.message || t('staff.users.toasts.deleteError'));
       }
     }
+  };
+
+  const getDateLocale = () => {
+    const lang = (i18n.language || 'en').toLowerCase();
+    if (lang.startsWith('ru')) return 'ru-RU';
+    if (lang.startsWith('uz')) return 'uz-UZ';
+    return 'en-US';
   };
 
   const resetForm = () => {
@@ -130,21 +138,19 @@ const UsersPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Foydalanuvchilar</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('nav.users')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + Yangi foydalanuvchi
+            + {t('staff.users.new')}
           </button>
         </div>
 
         <div className="mb-4">
-          <SearchBar onSearch={handleSearch} placeholder="Ism, email, rol bo'yicha qidirish..." />
+          <SearchBar onSearch={handleSearch} placeholder={t('staff.users.searchPlaceholder')} />
         </div>
 
         {/* Statistics */}
@@ -164,7 +170,7 @@ const UsersPage = () => {
               {users.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                    Foydalanuvchilar topilmadi
+                    {t('staff.users.empty')}
                   </td>
                 </tr>
               ) : (
@@ -175,20 +181,20 @@ const UsersPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getRoleBadge(user.role)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.created_at).toLocaleDateString('uz-UZ')}
+                      {new Date(user.created_at).toLocaleDateString(getDateLocale())}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
                         onClick={() => handleEdit(user)}
                         className="text-blue-600 hover:text-blue-900 mr-3"
                       >
-                        Tahrirlash
+                        {t('common.edit')}
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="text-red-600 hover:text-red-900"
                       >
-                        O'chirish
+                        {t('common.delete')}
                       </button>
                     </td>
                   </tr>
@@ -223,18 +229,17 @@ const UsersPage = () => {
             </p>
           </div>
         </div>
-      </div>
 
       {/* User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingUser ? 'Foydalanuvchini tahrirlash' : 'Yangi foydalanuvchi'}
+              {editingUser ? t('staff.users.modal.editTitle') : t('staff.users.modal.newTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Ism</label>
+                <label className="block text-gray-700 mb-2">{t('staff.users.fields.name')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -245,7 +250,7 @@ const UsersPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Email</label>
+                <label className="block text-gray-700 mb-2">{t('staff.users.fields.email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -257,7 +262,7 @@ const UsersPage = () => {
 
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">
-                  Parol {editingUser && '(bo\'sh qoldirish - o\'zgarmaydi)'}
+                  {t('staff.users.fields.password')} {editingUser && `(${t('staff.users.fields.passwordHint')})`}
                 </label>
                 <input
                   type="password"
@@ -265,19 +270,19 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required={!editingUser}
-                  placeholder={editingUser ? 'Yangi parol' : 'Parol'}
+                  placeholder={editingUser ? t('staff.users.placeholders.newPassword') : t('staff.users.placeholders.password')}
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Rol</label>
+                <label className="block text-gray-700 mb-2">{t('staff.users.fields.role')}</label>
                 <select
                   value={formData.role_id}
                   onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('staff.users.selectRole')}</option>
                   {roles.map((role) => (
                     <option key={role.id} value={role.id}>
                       {role.name} - {role.description}
@@ -291,14 +296,14 @@ const UsersPage = () => {
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                 >
-                  Saqlash
+                  {t('common.save')}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
                 >
-                  Bekor qilish
+                  {t('common.cancel')}
                 </button>
               </div>
             </form>

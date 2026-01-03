@@ -34,8 +34,13 @@ export const useBookingNotifications = () => {
   const notifyNewBooking = (booking) => {
     addNotification({
       type: 'booking',
-      message: `Yangi bron: ${booking.booking_number}`,
-      description: `${booking.guest?.first_name} ${booking.guest?.last_name} - Xona ${booking.room?.room_number}`,
+      messageKey: 'staff.notifications.messages.newBooking',
+      messageVars: { ref: booking.booking_number },
+      descriptionKey: 'staff.notifications.descriptions.guestRoomNumber',
+      descriptionVars: {
+        guest: `${booking.guest?.first_name || ''} ${booking.guest?.last_name || ''}`.trim(),
+        roomNumber: booking.room?.room_number
+      },
       sound: true
     });
   };
@@ -44,8 +49,10 @@ export const useBookingNotifications = () => {
   const notifyPayment = (payment) => {
     addNotification({
       type: 'payment',
-      message: `To'lov qabul qilindi: $${payment.amount}`,
-      description: `To'lov usuli: ${payment.payment_method}`,
+      messageKey: 'staff.notifications.messages.paymentReceived',
+      messageVars: { amount: payment.amount },
+      descriptionKey: 'staff.notifications.descriptions.paymentMethod',
+      descriptionVars: { method: payment.payment_method },
       sound: true
     });
   };
@@ -54,8 +61,12 @@ export const useBookingNotifications = () => {
   const notifyCheckIn = (booking) => {
     addNotification({
       type: 'checkin',
-      message: `Check-in: ${booking.booking_number}`,
-      description: `${booking.guest?.first_name} ${booking.guest?.last_name} xonaga kirdi`,
+      messageKey: 'staff.notifications.messages.checkInRef',
+      messageVars: { ref: booking.booking_number },
+      descriptionKey: 'staff.notifications.descriptions.guestCheckedIn',
+      descriptionVars: {
+        guest: `${booking.guest?.first_name || ''} ${booking.guest?.last_name || ''}`.trim(),
+      },
       sound: true
     });
   };
@@ -64,8 +75,12 @@ export const useBookingNotifications = () => {
   const notifyCheckOut = (booking) => {
     addNotification({
       type: 'checkout',
-      message: `Check-out: ${booking.booking_number}`,
-      description: `${booking.guest?.first_name} ${booking.guest?.last_name} xonadan chiqdi`,
+      messageKey: 'staff.notifications.messages.checkOutRef',
+      messageVars: { ref: booking.booking_number },
+      descriptionKey: 'staff.notifications.descriptions.guestCheckedOut',
+      descriptionVars: {
+        guest: `${booking.guest?.first_name || ''} ${booking.guest?.last_name || ''}`.trim(),
+      },
       sound: true
     });
   };
@@ -74,8 +89,12 @@ export const useBookingNotifications = () => {
   const notifyCancellation = (booking) => {
     addNotification({
       type: 'error',
-      message: `Bron bekor qilindi: ${booking.booking_number}`,
-      description: `${booking.guest?.first_name} ${booking.guest?.last_name}`,
+      messageKey: 'staff.notifications.messages.bookingCancelledRef',
+      messageVars: { ref: booking.booking_number },
+      descriptionKey: 'staff.notifications.descriptions.guestName',
+      descriptionVars: {
+        guest: `${booking.guest?.first_name || ''} ${booking.guest?.last_name || ''}`.trim(),
+      },
       sound: true
     });
   };
@@ -94,38 +113,46 @@ export const triggerNotification = (type, data) => {
   const notifications = {
     'new_booking': {
       type: 'booking',
-      message: `Yangi bron: #${data.booking_number || data.id}`,
-      description: data.guest_name || 'Yangi mehmon',
+      messageKey: 'staff.notifications.messages.newBooking',
+      messageVars: { ref: `#${data.booking_number || data.id}` },
+      descriptionKey: data.guest_name ? 'staff.notifications.descriptions.guestName' : 'staff.notifications.fallbacks.newGuest',
+      descriptionVars: data.guest_name ? { guest: data.guest_name } : undefined,
       sound: true
     },
     'payment_received': {
       type: 'payment',
-      message: `To'lov qabul qilindi: $${data.amount}`,
-      description: `Bron: #${data.booking_number || data.booking_id}`,
+      messageKey: 'staff.notifications.messages.paymentReceived',
+      messageVars: { amount: data.amount },
+      descriptionKey: 'staff.notifications.descriptions.bookingRef',
+      descriptionVars: { ref: `#${data.booking_number || data.booking_id}` },
       sound: true
     },
     'check_in': {
       type: 'checkin',
-      message: 'Mehmon check-in qilindi',
-      description: data.guest_name || 'Mehmon kirdi',
+      messageKey: 'staff.notifications.messages.checkIn',
+      descriptionKey: data.guest_name ? 'staff.notifications.descriptions.guestName' : 'staff.notifications.fallbacks.guestCheckedIn',
+      descriptionVars: data.guest_name ? { guest: data.guest_name } : undefined,
       sound: true
     },
     'check_out': {
       type: 'checkout',
-      message: 'Mehmon check-out qilindi',
-      description: data.guest_name || 'Mehmon chiqdi',
+      messageKey: 'staff.notifications.messages.checkOut',
+      descriptionKey: data.guest_name ? 'staff.notifications.descriptions.guestName' : 'staff.notifications.fallbacks.guestCheckedOut',
+      descriptionVars: data.guest_name ? { guest: data.guest_name } : undefined,
       sound: true
     },
     'booking_confirmed': {
       type: 'success',
-      message: 'Bron tasdiqlandi',
-      description: `Bron #${data.booking_number || data.id}`,
+      messageKey: 'staff.notifications.messages.bookingConfirmed',
+      descriptionKey: 'staff.notifications.descriptions.bookingRef',
+      descriptionVars: { ref: `#${data.booking_number || data.id}` },
       sound: false
     },
     'booking_cancelled': {
       type: 'error',
-      message: 'Bron bekor qilindi',
-      description: `Bron #${data.booking_number || data.id}`,
+      messageKey: 'staff.notifications.messages.bookingCancelled',
+      descriptionKey: 'staff.notifications.descriptions.bookingRef',
+      descriptionVars: { ref: `#${data.booking_number || data.id}` },
       sound: false
     }
   };

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { guestService } from '../services/guestService';
-import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const GuestsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -31,7 +32,7 @@ const GuestsPage = () => {
       setGuests(data);
       setLoading(false);
     } catch (error) {
-      toast.error('Mehmonlarni yuklashda xatolik');
+      toast.error(t('staff.guests.toasts.fetchError'));
       setLoading(false);
     }
   };
@@ -45,7 +46,7 @@ const GuestsPage = () => {
       const data = await guestService.search(searchQuery);
       setGuests(data);
     } catch (error) {
-      toast.error('Qidiruvda xatolik');
+      toast.error(t('staff.guests.toasts.searchError'));
     }
   };
 
@@ -54,16 +55,16 @@ const GuestsPage = () => {
     try {
       if (editingGuest) {
         await guestService.update(editingGuest.id, formData);
-        toast.success('Mehmon yangilandi');
+        toast.success(t('staff.guests.toasts.updated'));
       } else {
         await guestService.create(formData);
-        toast.success('Mehmon qo\'shildi');
+        toast.success(t('staff.guests.toasts.created'));
       }
       setShowModal(false);
       resetForm();
       fetchGuests();
     } catch (error) {
-      toast.error('Xatolik yuz berdi');
+      toast.error(t('staff.guests.toasts.genericError'));
     }
   };
 
@@ -81,13 +82,13 @@ const GuestsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Mehmonni o\'chirmoqchimisiz?')) {
+    if (window.confirm(t('staff.guests.confirmations.delete'))) {
       try {
         await guestService.delete(id);
-        toast.success('Mehmon o\'chirildi');
+        toast.success(t('staff.guests.toasts.deleted'));
         fetchGuests();
       } catch (error) {
-        toast.error('Mehmonni o\'chirishda xatolik');
+        toast.error(t('staff.guests.toasts.deleteError'));
       }
     }
   };
@@ -107,16 +108,14 @@ const GuestsPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Mehmonlar</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('nav.guests')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + Yangi mehmon
+            + {t('staff.guests.new')}
           </button>
         </div>
 
@@ -127,20 +126,20 @@ const GuestsPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Ism, email yoki telefon bo'yicha qidirish..."
+            placeholder={t('staff.guests.searchPlaceholder')}
             className="flex-1 px-4 py-2 border rounded-lg"
           />
           <button
             onClick={handleSearch}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
-            Qidirish
+            {t('common.search')}
           </button>
           <button
             onClick={() => { setSearchQuery(''); fetchGuests(); }}
             className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
           >
-            Tozalash
+            {t('common.clear')}
           </button>
         </div>
 
@@ -167,19 +166,19 @@ const GuestsPage = () => {
                       onClick={() => navigate(`/guests/${guest.id}`)}
                       className="text-green-600 hover:text-green-900 mr-3"
                     >
-                      Ko'rish
+                      {t('common.view')}
                     </button>
                     <button
                       onClick={() => handleEdit(guest)}
                       className="text-blue-600 hover:text-blue-900 mr-3"
                     >
-                      Tahrirlash
+                      {t('common.edit')}
                     </button>
                     <button
                       onClick={() => handleDelete(guest.id)}
                       className="text-red-600 hover:text-red-900"
                     >
-                      O'chirish
+                      {t('common.delete')}
                     </button>
                   </td>
                 </tr>
@@ -187,18 +186,17 @@ const GuestsPage = () => {
             </tbody>
           </table>
         </div>
-      </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingGuest ? 'Mehmonni tahrirlash' : 'Yangi mehmon'}
+              {editingGuest ? t('staff.guests.modal.editTitle') : t('staff.guests.modal.newTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Ism</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.firstName')}</label>
                 <input
                   type="text"
                   value={formData.first_name}
@@ -208,7 +206,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Familiya</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.lastName')}</label>
                 <input
                   type="text"
                   value={formData.last_name}
@@ -218,7 +216,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Email</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -228,7 +226,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Telefon</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.phone')}</label>
                 <input
                   type="text"
                   value={formData.phone}
@@ -238,7 +236,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Manzil</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.address')}</label>
                 <input
                   type="text"
                   value={formData.address}
@@ -247,7 +245,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">ID/Passport raqami</label>
+                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.idNumber')}</label>
                 <input
                   type="text"
                   value={formData.id_number}
@@ -260,14 +258,14 @@ const GuestsPage = () => {
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                 >
-                  Saqlash
+                  {t('common.save')}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
                 >
-                  Bekor qilish
+                  {t('common.cancel')}
                 </button>
               </div>
             </form>

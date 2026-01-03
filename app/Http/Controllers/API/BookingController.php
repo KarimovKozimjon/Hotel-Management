@@ -106,6 +106,18 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string',
         ]);
 
+        if (isset($validated['status']) && $validated['status'] === 'confirmed') {
+            $hasCompletedPayment = $booking->payments()
+                ->where('status', 'completed')
+                ->exists();
+
+            if (!$hasCompletedPayment) {
+                return response()->json([
+                    'message' => 'Booking cannot be confirmed until payment is completed',
+                ], 422);
+            }
+        }
+
         $booking->update($validated);
 
         return response()->json($booking->load(['guest', 'room.roomType']));
@@ -115,6 +127,14 @@ class BookingController extends Controller
     {
         if ($booking->status !== 'confirmed') {
             return response()->json(['message' => 'Only confirmed bookings can be checked in'], 422);
+        }
+
+        $hasCompletedPayment = $booking->payments()
+            ->where('status', 'completed')
+            ->exists();
+
+        if (!$hasCompletedPayment) {
+            return response()->json(['message' => 'Booking cannot be checked in until payment is completed'], 422);
         }
 
         $booking->update([

@@ -3,9 +3,11 @@ import { useGuestAuth } from '../../context/GuestAuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 function ChangePassword() {
   const { guest } = useGuestAuth();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     current_password: '',
     new_password: '',
@@ -20,12 +22,12 @@ function ChangePassword() {
     e.preventDefault();
     
     if (formData.new_password !== formData.new_password_confirmation) {
-      toast.error('Yangi parollar mos kelmaydi');
+      toast.error(t('guest.changePasswordPage.mismatch') || 'Yangi parollar mos kelmaydi');
       return;
     }
 
     if (formData.new_password.length < 6) {
-      toast.error('Parol kamida 6 ta belgidan iborat bo\'lishi kerak');
+      toast.error(t('guest.changePasswordPage.minLength') || "Parol kamida 6 ta belgidan iborat bo'lishi kerak");
       return;
     }
 
@@ -38,14 +40,14 @@ function ChangePassword() {
         password_confirmation: formData.new_password_confirmation
       });
 
-      toast.success('Parol muvaffaqiyatli o\'zgartirildi');
+      toast.success(t('guest.changePasswordPage.success') || "Parol muvaffaqiyatli o'zgartirildi");
       setFormData({
         current_password: '',
         new_password: '',
         new_password_confirmation: ''
       });
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Parolni o\'zgartirishda xatolik');
+      toast.error(error.response?.data?.message || (t('guest.changePasswordPage.error') || "Parolni o'zgartirishda xatolik"));
     } finally {
       setLoading(false);
     }
@@ -66,10 +68,10 @@ function ChangePassword() {
                 {/* Ikon */}
                 <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" /></svg>
               </span>
-              Parolni o'zgartirish
+              {t('guest.changePassword') || "Parolni o'zgartirish"}
             </h1>
             <p className="text-base md:text-lg text-blue-400">
-              Yangi xavfsiz parol o'rnating
+              {t('guest.changePasswordPage.subtitle') || "Yangi xavfsiz parol o'rnating"}
             </p>
           </motion.div>
         </div>
@@ -83,7 +85,7 @@ function ChangePassword() {
               transition={{ delay: 0.3 }}
               className="mb-6"
             >
-              <label className="block text-sm font-medium text-blue-700 mb-1">Joriy parol</label>
+              <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.changePasswordPage.current') || 'Joriy parol'}</label>
               <div className="relative">
                 <input
                     type={showCurrentPassword ? "text" : "password"}
@@ -91,7 +93,7 @@ function ChangePassword() {
                     onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
                     required
                     className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
-                    placeholder="Joriy parolingizni kiriting"
+                    placeholder={t('guest.changePasswordPage.currentPlaceholder') || 'Joriy parolingizni kiriting'}
                   />
                 <button
                   type="button"
@@ -109,7 +111,7 @@ function ChangePassword() {
               transition={{ delay: 0.4 }}
               className="mb-6"
             >
-              <label className="block text-sm font-medium text-blue-700 mb-1">Yangi parol</label>
+              <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.changePasswordPage.new') || 'Yangi parol'}</label>
               <div className="relative">
                 <input
                     type={showNewPassword ? "text" : "password"}
@@ -118,7 +120,7 @@ function ChangePassword() {
                     required
                     minLength="6"
                     className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
-                    placeholder="Yangi parolni kiriting (kamida 6 ta belgi)"
+                    placeholder={t('guest.changePasswordPage.newPlaceholder') || 'Yangi parolni kiriting (kamida 6 ta belgi)'}
                   />
                 <button
                   type="button"
@@ -136,7 +138,7 @@ function ChangePassword() {
               transition={{ delay: 0.5 }}
               className="mb-6"
             >
-              <label className="block text-sm font-medium text-blue-700 mb-1">Yangi parolni tasdiqlash</label>
+              <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.changePasswordPage.confirm') || 'Yangi parolni tasdiqlash'}</label>
               <div className="relative">
                 <input
                     type={showConfirmPassword ? "text" : "password"}
@@ -145,7 +147,7 @@ function ChangePassword() {
                     required
                     minLength="6"
                     className="w-full px-4 py-3 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
-                    placeholder="Yangi parolni qayta kiriting"
+                    placeholder={t('guest.changePasswordPage.confirmPlaceholder') || 'Yangi parolni qayta kiriting'}
                   />
                 <button
                   type="button"
@@ -165,7 +167,7 @@ function ChangePassword() {
                 disabled={loading}
                 className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? 'Yuklanmoqda...' : 'Saqlash'}
+                {loading ? (t('common.loading') || 'Yuklanmoqda...') : (t('common.save') || 'Saqlash')}
               </button>
             </div>
           </form>
