@@ -78,7 +78,7 @@ function ChangePassword() {
         </div>
       </div>
 
-      <div className="max-w-xl mx-auto mt-10 bg-white rounded-2xl shadow-md p-8 border border-gray-100">
+        <div className="max-w-xl mx-auto mt-10 bg-white rounded-2xl shadow-md p-6 sm:p-8 border border-gray-100 mx-4 sm:mx-auto">
           <form onSubmit={handleSubmit}>
             <motion.div
               initial={{ opacity: 0, x: -20 }}

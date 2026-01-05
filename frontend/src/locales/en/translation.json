@@ -20,6 +20,14 @@
     "reports": "Reports",
     "discounts": "Discounts",
     "messages": "Messages"
+    ,
+    "more": "More"
+    ,
+    "groups": {
+      "management": "Management",
+      "finance": "Finance",
+      "settings": "Settings"
+    }
   },
   "auth": {
     "email": "Email",
@@ -35,13 +43,107 @@
     "dashboard": {
       "title": "Dashboard",
       "totalRooms": "Total Rooms",
+      "totalBookings": "Total Bookings",
+      "totalGuests": "Total Guests",
+      "totalRevenue": "Total Revenue",
       "availableRooms": "Available Rooms",
       "occupiedRooms": "Occupied Rooms",
       "occupancyRate": "Occupancy %",
       "todayCheckins": "Today's Check-ins",
       "todayCheckouts": "Today's Check-outs",
       "todayRevenue": "Today's Revenue",
-      "monthRevenue": "Monthly Revenue"
+      "monthRevenue": "Monthly Revenue",
+      "availableRoomsLabel": "Available: {{value}} rooms",
+      "occupancyLabel": "Occupied: {{value}}%",
+      "registeredLabel": "Registered",
+      "paidPaymentsLabel": "Paid payments",
+      "todayCheckinsDescription": "Today {{value}} guests check in",
+      "todayCheckoutsDescription": "Today {{value}} guests check out",
+      "viewAllBookings": "View all bookings",
+      "quickActions": "Quick actions",
+      "actions": {
+        "viewCalendar": "View calendar",
+        "viewStats": "View statistics",
+        "newBooking": "New booking",
+        "addGuest": "Add guest"
+      },
+      "monthsShort": {
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dec"
+      },
+      "weekdaysShort": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "charts": {
+        "monthlyRevenueTitle": "Monthly revenue",
+        "weeklyOccupancyTitle": "Weekly occupancy",
+        "roomTypesDistributionTitle": "Room types distribution",
+        "legend": {
+          "revenueUsd": "Revenue (USD)",
+          "occupiedRooms": "Occupied rooms"
+        }
+      },
+      "recentBookings": {
+        "title": "Recent bookings",
+        "table": {
+          "bookingNumber": "Booking #",
+          "guest": "Guest",
+          "room": "Room",
+          "status": "Status"
+        }
+      },
+      "toast": {
+        "loadError": "Error loading dashboard data"
+      },
+      "calendar": {
+        "room": "Room",
+        "guest": "Guest",
+        "legendTitle": "Status legend",
+        "toast": {
+          "loadError": "Error loading bookings"
+        },
+        "messages": {
+          "next": "Next",
+          "previous": "Back",
+          "today": "Today",
+          "month": "Month",
+          "week": "Week",
+          "day": "Day",
+          "agenda": "Agenda",
+          "date": "Date",
+          "time": "Time",
+          "event": "Event",
+          "noEventsInRange": "No events in this range"
+        },
+        "modal": {
+          "title": "Booking details",
+          "bookingNumber": "Booking",
+          "status": "Status",
+          "room": "Room",
+          "roomPrefix": "Room",
+          "guest": "Guest",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "daysCount": "Nights",
+          "daysCountValue": "{{value}} night(s)"
+        }
+      }
     },
     "pages": {
       "rooms": {
@@ -51,6 +153,34 @@
         "searchPlaceholder": "Search by room number, type, status...",
         "confirmDelete": "Do you want to delete this room?",
         "imagesTitle": "Room Images",
+        "imageManager": {
+          "title": "Manage room images",
+          "previewAlt": "Selected image preview",
+          "fileHint": "PNG, JPG, GIF up to 5MB",
+          "galleryTitle": "Gallery ({{value}})",
+          "empty": "No images yet",
+          "primary": "Primary",
+          "confirmDelete": "Do you want to delete this image?",
+          "actions": {
+            "upload": "Upload",
+            "uploading": "Uploading...",
+            "clickToUpload": "Click to upload",
+            "orDragDrop": "or drag and drop",
+            "setPrimary": "Set primary",
+            "setPrimaryTitle": "Set as primary"
+          },
+          "toast": {
+            "selectImageFile": "Please select an image file",
+            "maxSize": "Max file size is 5MB",
+            "selectImage": "Please select an image",
+            "uploaded": "Image uploaded",
+            "uploadError": "Error uploading image",
+            "deleted": "Image deleted",
+            "deleteError": "Error deleting image",
+            "primarySet": "Primary image set",
+            "primaryError": "Error setting primary image"
+          }
+        },
         "actions": {
           "images": "Images"
         },
@@ -73,6 +203,40 @@
           "price": "Price",
           "status": "Status",
           "actions": "Actions"
+        }
+      },
+      "messages": {
+        "title": "Messages",
+        "summary": "Total: {{total}}, Unread: {{unread}}",
+        "filters": {
+          "all": "All",
+          "unread": "Unread",
+          "read": "Read"
+        },
+        "empty": "No messages found",
+        "table": {
+          "status": "Status",
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "message": "Message",
+          "date": "Date",
+          "actions": "Actions"
+        },
+        "badges": {
+          "new": "New",
+          "read": "Read"
+        },
+        "modal": {
+          "title": "Message details"
+        },
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "message": "Message",
+          "sentAt": "Sent at",
+          "ipAddress": "IP address"
         }
       },
       "bookings": {
@@ -306,6 +470,222 @@
           "bookingsLoadError": "Error loading bookings",
           "created": "Payment created",
           "createError": "Error creating payment"
+        }
+      },
+      "discounts": {
+        "title": "Discounts & Promo Codes",
+        "addNew": "Add discount",
+        "createTitle": "New discount",
+        "editTitle": "Edit discount",
+        "confirmDelete": "Do you want to delete this discount?",
+        "empty": "No discounts",
+        "table": {
+          "code": "Code",
+          "name": "Name",
+          "type": "Type",
+          "value": "Value",
+          "period": "Period",
+          "usage": "Usage",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "type": {
+          "percentage": "Percent",
+          "fixed": "Fixed"
+        },
+        "status": {
+          "disabled": "Disabled",
+          "pending": "Pending",
+          "expired": "Expired",
+          "limitReached": "Limit reached",
+          "active": "Active"
+        },
+        "value": {
+          "percent": "{{value}}%",
+          "max": "Max: {{value}}"
+        },
+        "form": {
+          "code": "Code",
+          "codePlaceholder": "SUMMER2024",
+          "name": "Name",
+          "namePlaceholder": "Summer discount",
+          "description": "Description",
+          "descriptionPlaceholder": "Discount details",
+          "type": "Type",
+          "value": "Value",
+          "valuePlaceholderPercent": "10",
+          "valuePlaceholderFixed": "50",
+          "minAmountUsd": "Minimum amount (USD)",
+          "minAmountPlaceholder": "100",
+          "maxDiscountUsd": "Maximum discount (USD)",
+          "maxDiscountPlaceholder": "50",
+          "usageLimit": "Usage limit",
+          "usageLimitPlaceholder": "100",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "active": "Active"
+        },
+        "actions": {
+          "create": "Create",
+          "update": "Update"
+        },
+        "toast": {
+          "loadError": "Error loading discounts",
+          "created": "Discount created",
+          "updated": "Discount updated",
+          "deleted": "Discount deleted",
+          "deleteError": "Error deleting discount",
+          "genericError": "Something went wrong"
+        }
+      },
+      "guestDetails": {
+        "notFound": "Guest not found",
+        "notVisitedYet": "Not visited yet",
+        "labels": {
+          "id": "ID"
+        },
+        "stats": {
+          "totalBookings": "Total bookings",
+          "totalSpent": "Total spent",
+          "completedStays": "Completed stays",
+          "averageRating": "Average rating"
+        },
+        "tabs": {
+          "overview": "Overview",
+          "bookings": "Bookings ({{value}})",
+          "payments": "Payments ({{value}})",
+          "reviews": "Reviews ({{value}})"
+        },
+        "sections": {
+          "personalInfo": "Personal information",
+          "statistics": "Statistics",
+          "recentActivity": "Recent activity"
+        },
+        "fields": {
+          "fullName": "Full name",
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address",
+          "lastVisit": "Last visit",
+          "cancelledBookings": "Cancelled",
+          "registeredAt": "Registered"
+        },
+        "bookingLabel": "Booking #{{value}}",
+        "reviewBookingLabel": "Booking: {{value}}",
+        "tables": {
+          "bookings": {
+            "booking": "Booking #",
+            "room": "Room",
+            "checkIn": "Check-in",
+            "checkOut": "Check-out",
+            "amount": "Amount",
+            "status": "Status"
+          },
+          "payments": {
+            "id": "ID",
+            "booking": "Booking",
+            "amount": "Amount",
+            "method": "Method",
+            "date": "Date",
+            "status": "Status"
+          }
+        },
+        "empty": {
+          "reviews": "No reviews"
+        },
+        "toast": {
+          "loadError": "Error loading guest details"
+        }
+      },
+      "reports": {
+        "title": "Reports & Analytics",
+        "exportCsv": "Download CSV",
+        "unknown": "Unknown",
+        "range": {
+          "week": "7 days",
+          "month": "Month",
+          "custom": "Custom"
+        },
+        "summary": {
+          "totalRevenue": "Total revenue",
+          "totalBookings": "Total bookings",
+          "averageOccupancy": "Occupancy",
+          "totalGuests": "Total guests",
+          "cancelledBookings": "Cancelled bookings",
+          "completedPayments": "Completed payments"
+        },
+        "charts": {
+          "dailyRevenue": "Daily revenue",
+          "dailyBookings": "Daily bookings",
+          "bookingStatus": "Booking status",
+          "roomTypePopularity": "Room type popularity",
+          "occupancyRate": "Occupancy rate",
+          "legend": {
+            "revenueUsd": "Revenue (USD)",
+            "bookings": "Bookings",
+            "occupancyPercent": "Occupancy (%)"
+          }
+        },
+        "table": {
+          "date": "Date",
+          "revenue": "Revenue",
+          "bookings": "Bookings"
+        },
+        "export": {
+          "report": "Report",
+          "filenamePrefix": "report"
+        },
+        "toast": {
+          "loadError": "Error loading report data",
+          "downloaded": "Report downloaded"
+        }
+      },
+      "reviews": {
+        "title": "Reviews management",
+        "searchPlaceholder": "Search by guest, room, comment...",
+        "noComment": "No comment",
+        "empty": "No reviews found",
+        "confirmDelete": "Are you sure you want to delete this review?",
+        "actions": {
+          "addReview": "Add review",
+          "create": "Create",
+          "update": "Update"
+        },
+        "stats": {
+          "totalReviews": "Total reviews",
+          "averageRating": "Average rating",
+          "fiveStarReviews": "5-star reviews",
+          "lowRatings": "Low ratings (<3)"
+        },
+        "table": {
+          "id": "ID",
+          "guest": "Guest",
+          "room": "Room",
+          "rating": "Rating",
+          "comment": "Comment",
+          "date": "Date",
+          "actions": "Actions"
+        },
+        "modal": {
+          "createTitle": "Add review",
+          "editTitle": "Edit review"
+        },
+        "form": {
+          "booking": "Booking",
+          "guest": "Guest",
+          "selectCompletedBooking": "Select a completed booking",
+          "bookingOption": "Booking #{{id}} - Room {{room}} - {{guest}}",
+          "selectGuest": "Select guest",
+          "autoSelectedHint": "Automatically selected from booking",
+          "rating": "Rating",
+          "comment": "Comment",
+          "commentPlaceholder": "Share your experience...",
+          "characterCount": "{{current}}/{{max}} characters"
+        },
+        "toast": {
+          "loadError": "Error loading reviews",
+          "saveError": "Failed to save review",
+          "deleteError": "Error deleting review"
         }
       },
       "guests": {
@@ -647,8 +1027,9 @@
     "reset": "Reset",
     "clear": "Clear",
     "loading": "Loading...",
-    "noResults": "No results found",
+      "noResults": "No results found",
     "confirm": "Confirm",
+    "confirmDelete": "Confirm deletion?",
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
@@ -693,12 +1074,18 @@
   "filter": {
     "title": "Search Filters",
     "roomType": "Room Type",
+    "all": "All",
+    "any": "Any",
     "minPrice": "Minimum Price",
     "maxPrice": "Maximum Price",
     "minCapacity": "Minimum Capacity",
+    "allFloors": "All floors",
+    "capacityOption": "{{value}}+ people",
+    "floorOption": "Floor {{value}}",
     "priceRange": "Price Range",
     "sortBy": "Sort By",
     "sortOptions": {
+      "default": "Default",
       "priceAsc": "Price: Low to High",
       "priceDesc": "Price: High to Low",
       "capacityAsc": "Capacity: Low to High",
@@ -708,6 +1095,25 @@
     "filtersApplied": "filters applied",
     "showFilters": "Show Filters",
     "hideFilters": "Hide Filters"
+  },
+  "roomTypeNames": {
+    "standard": "Standard Room",
+    "deluxe": "Deluxe Room",
+    "presidential": "Presidential Suite"
+  },
+  "roomTypeDescriptions": {
+    "standard": "A cozy, well-equipped room for a comfortable stay — ideal for solo travelers or couples. Includes essential amenities and a relaxing atmosphere.",
+    "deluxe": "A larger room with enhanced comfort and extra conveniences — perfect for guests who want more space. Features premium amenities for a better experience.",
+    "presidential": "Our most luxurious option with maximum space and comfort — designed for special occasions and premium stays. Includes top-level amenities and an elegant interior."
+  },
+  "amenities": {
+    "wifi": "Wi‑Fi",
+    "tv": "TV",
+    "airConditioning": "Air conditioning",
+    "miniBar": "Mini bar",
+    "balcony": "Balcony",
+    "kitchen": "Kitchen",
+    "jacuzzi": "Jacuzzi"
   },
   "payment": {
     "title": "Make Payment",

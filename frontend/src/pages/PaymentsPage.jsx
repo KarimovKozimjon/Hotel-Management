@@ -197,8 +197,9 @@ const PaymentsPage = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.payments.table.id')}</th>
@@ -239,7 +240,8 @@ const PaymentsPage = () => {
                 ))
               )}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
         {/* Summary */}

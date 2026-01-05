@@ -2,12 +2,18 @@
   "nav": {
     "home": "Главная",
     "rooms": "Номера",
+    "all": "Все",
+    "any": "Любой",
     "about": "О нас",
     "contact": "Контакты",
     "login": "Войти",
+    "allFloors": "Все этажи",
+    "capacityOption": "{{value}}+ человек",
+    "floorOption": "{{value}}-й этаж",
     "register": "Регистрация",
     "dashboard": "Панель",
     "bookings": "Бронирования",
+      "default": "По умолчанию",
     "guests": "Гости",
     "payments": "Платежи",
     "services": "Услуги",
@@ -19,7 +25,14 @@
     "backToHome": "Вернуться на главную",
     "reports": "Отчёты",
     "discounts": "Скидки",
-    "messages": "Сообщения"
+    "messages": "Сообщения",
+    "more": "Ещё"
+    ,
+    "groups": {
+      "management": "Управление",
+      "finance": "Финансы",
+      "settings": "Настройки"
+    }
   },
   "auth": {
     "email": "Email",
@@ -35,13 +48,30 @@
     "dashboard": {
       "title": "Панель управления",
       "totalRooms": "Всего номеров",
+      "totalBookings": "Всего бронирований",
+      "totalGuests": "Всего гостей",
+      "totalRevenue": "Общий доход",
       "availableRooms": "Свободные номера",
       "occupiedRooms": "Занятые номера",
       "occupancyRate": "Загрузка %",
       "todayCheckins": "Заезды сегодня",
       "todayCheckouts": "Выезды сегодня",
       "todayRevenue": "Доход сегодня",
-      "monthRevenue": "Доход за месяц"
+      "monthRevenue": "Доход за месяц",
+      "availableRoomsLabel": "Свободно: {{value}}",
+      "occupancyLabel": "Занято: {{value}}%",
+      "registeredLabel": "Зарегистрирован",
+      "paidPaymentsLabel": "Оплаченные платежи",
+      "todayCheckinsDescription": "Сегодня заезжают: {{value}}",
+      "todayCheckoutsDescription": "Сегодня выезжают: {{value}}",
+      "viewAllBookings": "Посмотреть все бронирования",
+      "quickActions": "Быстрые действия",
+      "actions": {
+        "viewCalendar": "Календарь",
+        "viewStats": "Статистика",
+        "newBooking": "Новая бронь",
+        "addGuest": "Добавить гостя"
+      }
       },
       "pages": {
         "rooms": {
@@ -75,16 +105,50 @@
             "actions": "Действия"
           }
         },
+        "messages": {
+          "title": "Сообщения",
+          "summary": "Всего: {{total}}, Непрочитано: {{unread}}",
+          "filters": {
+            "all": "Все",
+            "unread": "Непрочитанные",
+            "read": "Прочитанные"
+          },
+          "empty": "Сообщения не найдены",
+          "table": {
+            "status": "Статус",
+            "name": "Имя",
+            "email": "Email",
+            "phone": "Телефон",
+            "message": "Сообщение",
+            "date": "Дата",
+            "actions": "Действия"
+          },
+          "badges": {
+            "new": "Новое",
+            "read": "Прочитано"
+          },
+          "modal": {
+            "title": "Детали сообщения"
+          },
+          "fields": {
+            "name": "Имя",
+            "email": "Email",
+            "phone": "Телефон",
+            "message": "Сообщение",
+            "sentAt": "Время отправки",
+            "ipAddress": "IP-адрес"
+          }
+        },
         "bookings": {
           "addNew": "Добавить бронь",
           "createTitle": "Новая бронь",
           "editTitle": "Редактировать бронь",
           "searchPlaceholder": "Поиск по гостю, номеру, статусу...",
-          "confirmDelete": "Удалить эту бронь?",
-          "confirmCheckIn": "Выполнить check-in?",
-          "confirmCheckOut": "Выполнить check-out?",
-          "confirmCancel": "Отменить бронь?",
-          "confirmConfirm": "Подтвердить бронь?",
+          "confirmDelete": "Вы хотите удалить эту бронь?",
+          "confirmCheckIn": "Выполнить check-in гостя?",
+          "confirmCheckOut": "Выполнить check-out гостя?",
+          "confirmCancel": "Отменить эту бронь?",
+          "confirmConfirm": "Подтвердить эту бронь?",
           "table": {
             "guest": "Гость",
             "room": "Номер",
@@ -307,6 +371,222 @@
             "bookingsLoadError": "Ошибка загрузки броней",
             "created": "Платеж создан",
             "createError": "Ошибка создания платежа"
+          }
+        },
+        "discounts": {
+          "title": "Скидки и промокоды",
+          "addNew": "Добавить скидку",
+          "createTitle": "Новая скидка",
+          "editTitle": "Редактировать скидку",
+          "confirmDelete": "Удалить эту скидку?",
+          "empty": "Скидки не найдены",
+          "table": {
+            "code": "Код",
+            "name": "Название",
+            "type": "Тип",
+            "value": "Значение",
+            "period": "Период",
+            "usage": "Использовано",
+            "status": "Статус",
+            "actions": "Действия"
+          },
+          "type": {
+            "percentage": "Процент",
+            "fixed": "Фикс"
+          },
+          "status": {
+            "disabled": "Отключено",
+            "pending": "Ожидается",
+            "expired": "Истекло",
+            "limitReached": "Лимит исчерпан",
+            "active": "Активно"
+          },
+          "value": {
+            "percent": "{{value}}%",
+            "max": "Макс.: {{value}}"
+          },
+          "form": {
+            "code": "Код",
+            "codePlaceholder": "SUMMER2024",
+            "name": "Название",
+            "namePlaceholder": "Летняя скидка",
+            "description": "Описание",
+            "descriptionPlaceholder": "Детали скидки",
+            "type": "Тип",
+            "value": "Значение",
+            "valuePlaceholderPercent": "10",
+            "valuePlaceholderFixed": "50",
+            "minAmountUsd": "Минимальная сумма (USD)",
+            "minAmountPlaceholder": "100",
+            "maxDiscountUsd": "Максимальная скидка (USD)",
+            "maxDiscountPlaceholder": "50",
+            "usageLimit": "Лимит использования",
+            "usageLimitPlaceholder": "100",
+            "startDate": "Дата начала",
+            "endDate": "Дата окончания",
+            "active": "Активно"
+          },
+          "actions": {
+            "create": "Создать",
+            "update": "Обновить"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки скидок",
+            "created": "Скидка создана",
+            "updated": "Скидка обновлена",
+            "deleted": "Скидка удалена",
+            "deleteError": "Ошибка удаления скидки",
+            "genericError": "Произошла ошибка"
+          }
+        },
+        "guestDetails": {
+          "notFound": "Гость не найден",
+          "notVisitedYet": "Ещё не посещал(а)",
+          "labels": {
+            "id": "ID"
+          },
+          "stats": {
+            "totalBookings": "Всего броней",
+            "totalSpent": "Потрачено всего",
+            "completedStays": "Завершённых проживаний",
+            "averageRating": "Средний рейтинг"
+          },
+          "tabs": {
+            "overview": "Обзор",
+            "bookings": "Брони ({{value}})",
+            "payments": "Платежи ({{value}})",
+            "reviews": "Отзывы ({{value}})"
+          },
+          "sections": {
+            "personalInfo": "Личная информация",
+            "statistics": "Статистика",
+            "recentActivity": "Последняя активность"
+          },
+          "fields": {
+            "fullName": "ФИО",
+            "email": "Email",
+            "phone": "Телефон",
+            "address": "Адрес",
+            "lastVisit": "Последний визит",
+            "cancelledBookings": "Отменено",
+            "registeredAt": "Зарегистрирован"
+          },
+          "bookingLabel": "Бронь #{{value}}",
+          "reviewBookingLabel": "Бронь: {{value}}",
+          "tables": {
+            "bookings": {
+              "booking": "Бронь #",
+              "room": "Номер",
+              "checkIn": "Заезд",
+              "checkOut": "Выезд",
+              "amount": "Сумма",
+              "status": "Статус"
+            },
+            "payments": {
+              "id": "ID",
+              "booking": "Бронь",
+              "amount": "Сумма",
+              "method": "Способ",
+              "date": "Дата",
+              "status": "Статус"
+            }
+          },
+          "empty": {
+            "reviews": "Нет отзывов"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки данных гостя"
+          }
+        },
+        "reports": {
+          "title": "Отчеты и аналитика",
+          "exportCsv": "Скачать CSV",
+          "unknown": "Неизвестно",
+          "range": {
+            "week": "7 дней",
+            "month": "Месяц",
+            "custom": "Другое"
+          },
+          "summary": {
+            "totalRevenue": "Общий доход",
+            "totalBookings": "Всего броней",
+            "averageOccupancy": "Занятость",
+            "totalGuests": "Всего гостей",
+            "cancelledBookings": "Отменённые брони",
+            "completedPayments": "Оплаченные платежи"
+          },
+          "charts": {
+            "dailyRevenue": "Доход по дням",
+            "dailyBookings": "Брони по дням",
+            "bookingStatus": "Статусы броней",
+            "roomTypePopularity": "Популярность типов номеров",
+            "occupancyRate": "Процент занятости",
+            "legend": {
+              "revenueUsd": "Доход (USD)",
+              "bookings": "Брони",
+              "occupancyPercent": "Занято (%)"
+            }
+          },
+          "table": {
+            "date": "Дата",
+            "revenue": "Доход",
+            "bookings": "Брони"
+          },
+          "export": {
+            "report": "Отчет",
+            "filenamePrefix": "otchet"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки данных отчета",
+            "downloaded": "Отчет скачан"
+          }
+        },
+        "reviews": {
+          "title": "Управление отзывами",
+          "searchPlaceholder": "Поиск по гостю, номеру, комментарию...",
+          "noComment": "Нет комментария",
+          "empty": "Отзывы не найдены",
+          "confirmDelete": "Удалить этот отзыв?",
+          "actions": {
+            "addReview": "Добавить отзыв",
+            "create": "Создать",
+            "update": "Обновить"
+          },
+          "stats": {
+            "totalReviews": "Всего отзывов",
+            "averageRating": "Средний рейтинг",
+            "fiveStarReviews": "Отзывы на 5 звезд",
+            "lowRatings": "Низкие оценки (<3)"
+          },
+          "table": {
+            "id": "ID",
+            "guest": "Гость",
+            "room": "Номер",
+            "rating": "Рейтинг",
+            "comment": "Комментарий",
+            "date": "Дата",
+            "actions": "Действия"
+          },
+          "modal": {
+            "createTitle": "Добавить отзыв",
+            "editTitle": "Редактировать отзыв"
+          },
+          "form": {
+            "booking": "Бронь",
+            "guest": "Гость",
+            "selectCompletedBooking": "Выберите завершённую бронь",
+            "bookingOption": "Бронь #{{id}} - Номер {{room}} - {{guest}}",
+            "selectGuest": "Выберите гостя",
+            "autoSelectedHint": "Автоматически выбирается из брони",
+            "rating": "Рейтинг",
+            "comment": "Комментарий",
+            "commentPlaceholder": "Поделитесь впечатлениями...",
+            "characterCount": "{{current}}/{{max}} символов"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки отзывов",
+            "saveError": "Не удалось сохранить отзыв",
+            "deleteError": "Ошибка удаления отзыва"
           }
         },
         "guests": {
@@ -648,6 +928,7 @@
     "loading": "Загрузка...",
     "noResults": "Результаты не найдены",
     "confirm": "Подтвердить",
+    "confirmDelete": "Подтвердить удаление?",
     "back": "Назад",
     "next": "Далее",
     "submit": "Отправить",
@@ -692,12 +973,18 @@
   "filter": {
     "title": "Фильтры поиска",
     "roomType": "Тип номера",
+    "all": "Все",
+    "any": "Любой",
     "minPrice": "Мин. цена",
     "maxPrice": "Макс. цена",
     "minCapacity": "Мин. вместимость",
+    "allFloors": "Все этажи",
+    "capacityOption": "{{value}}+ человек",
+    "floorOption": "{{value}}-й этаж",
     "priceRange": "Диапазон цен",
     "sortBy": "Сортировать по",
     "sortOptions": {
+      "default": "По умолчанию",
       "priceAsc": "Цена: по возрастанию",
       "priceDesc": "Цена: по убыванию",
       "capacityAsc": "Вместимость: по возрастанию",
@@ -707,6 +994,25 @@
     "filtersApplied": "фильтров применено",
     "showFilters": "Показать фильтры",
     "hideFilters": "Скрыть фильтры"
+  },
+  "roomTypeNames": {
+    "standard": "Стандартный номер",
+    "deluxe": "Номер Делюкс",
+    "presidential": "Президентский люкс"
+  },
+  "roomTypeDescriptions": {
+    "standard": "Уютный и хорошо оснащённый номер для комфортного проживания — отличный вариант для одного гостя или пары. Включает основные удобства и спокойную атмосферу.",
+    "deluxe": "Более просторный номер с повышенным уровнем комфорта — подойдёт тем, кто ценит дополнительное пространство. Оснащён улучшенными удобствами для приятного отдыха.",
+    "presidential": "Самый роскошный вариант с максимальным пространством и комфортом — для особых случаев и премиального отдыха. Включает лучшие удобства и элегантный интерьер."
+  },
+  "amenities": {
+    "wifi": "Wi‑Fi",
+    "tv": "Телевизор",
+    "airConditioning": "Кондиционер",
+    "miniBar": "Мини‑бар",
+    "balcony": "Балкон",
+    "kitchen": "Кухня",
+    "jacuzzi": "Джакузи"
   },
   "payment": {
     "title": "Оплата",
@@ -735,4 +1041,5 @@
     "phone": "Телефон",
     "email": "Эл. почта"
   }
+
 }

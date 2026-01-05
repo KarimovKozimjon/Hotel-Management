@@ -121,7 +121,7 @@ function GuestLayout({ children }) {
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-2 flex-1 min-w-0 justify-center">
+            <div className="hidden xl:flex items-center space-x-2 flex-1 min-w-0 justify-center">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
@@ -164,12 +164,12 @@ function GuestLayout({ children }) {
 
             {/* Right Side - Profile & Actions */}
             <div className="flex items-center space-x-4">
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <LanguageSwitcher variant="dropdown" scrolled={scrolled} />
               </div>
 
               {/* Profile Dropdown */}
-              <div className="relative hidden lg:block">
+              <div className="relative hidden xl:block">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -248,7 +248,7 @@ function GuestLayout({ children }) {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg text-gray-800 hover:bg-indigo-50"
+                className="xl:hidden p-2 rounded-lg text-gray-800 hover:bg-indigo-50"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {mobileMenuOpen ? (
@@ -268,9 +268,12 @@ function GuestLayout({ children }) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="lg:hidden border-t border-gray-100"
+                className="xl:hidden border-t border-gray-100"
               >
                 <div className="px-4 py-6 space-y-2">
+                  <div className="pb-3">
+                    <LanguageSwitcher variant="dropdown" />
+                  </div>
                   {navItems.map((item) => (
                     <Link
                       key={item.path}

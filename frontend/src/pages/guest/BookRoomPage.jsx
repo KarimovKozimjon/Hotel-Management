@@ -5,6 +5,7 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { getRoomTypeAmenities, getRoomTypeDescription, getRoomTypeLabel } from '../../utils/roomTypeLabel';
 
 function BookRoomPage() {
   const { t, i18n } = useTranslation();
@@ -171,12 +172,12 @@ function BookRoomPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Date Search */}
-        <div className="bg-white border-2 border-purple-300 rounded-xl p-8 mb-10 shadow-lg animate-fade-in">
+        <div className="bg-white border-2 border-purple-300 rounded-xl p-4 sm:p-8 mb-10 shadow-lg animate-fade-in">
           <div className="flex items-center mb-4 gap-2">
             <span className="inline-block bg-purple-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-purple-500"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 7.5h18M4.5 7.5v9A2.25 2.25 0 006.75 18.75h10.5A2.25 2.25 0 0019.5 16.5v-9" /></svg></span>
             <h2 className="text-2xl font-bold text-purple-700">{t('guest.bookRoomPage.selectDatesTitle')}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             <div>
               <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
                 <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
@@ -281,7 +282,7 @@ function BookRoomPage() {
                   {room.images && room.images.length > 0 ? (
                     <img
                       src={room.images.find(img => img.is_primary)?.image_url || room.images[0]?.image_url}
-                      alt={room.room_type?.name}
+                      alt={getRoomTypeLabel(room.room_type, t)}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                       onError={(e) => {
                         e.target.src = room.room_type?.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800';
@@ -290,7 +291,7 @@ function BookRoomPage() {
                   ) : (
                     <img
                       src={room.room_type?.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800'}
-                      alt={room.room_type?.name}
+                      alt={getRoomTypeLabel(room.room_type, t)}
                       className="w-full h-full object-cover"
                     />
                   )}
@@ -305,7 +306,7 @@ function BookRoomPage() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                        {room.room_type?.name}
+                        {getRoomTypeLabel(room.room_type, t)}
                       </h3>
                       <p className="text-xs sm:text-sm text-gray-500">{t('guest.bookRoomPage.roomNumberShort', { number: room.room_number })}</p>
                     </div>
@@ -328,24 +329,40 @@ function BookRoomPage() {
                     </div>
                   </div>
 
-                  {room.room_type?.description && (
+                  {getRoomTypeDescription(room.room_type, t) && (
                     <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-2">
-                      {room.room_type.description}
+                      {getRoomTypeDescription(room.room_type, t)}
                     </p>
                   )}
 
-                  {room.room_type?.amenities && typeof room.room_type.amenities === 'string' && (
+                  {getRoomTypeAmenities(room.room_type, t).length > 0 && (
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2">{t('room.amenities')}:</p>
                       <div className="flex flex-wrap gap-1 sm:gap-2">
-                        {room.room_type.amenities.split(',').slice(0, 3).map((amenity, index) => (
+                            {(() => {
+                              const amenities = getRoomTypeAmenities(room.room_type, t);
+                              const maxAmenities = 3;
+                              const visible = amenities.slice(0, maxAmenities);
+                              const remaining = amenities.length - visible.length;
+
+                              return (
+                                <>
+                                  {visible.map((amenity, index) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
                           >
-                            {amenity.trim()}
+                            {amenity}
                           </span>
-                        ))}
+                                  ))}
+                                  {remaining > 0 && (
+                                    <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">
+                                      +{remaining}
+                                    </span>
+                                  )}
+                                </>
+                              );
+                            })()}
                       </div>
                     </div>
                   )}
@@ -376,10 +393,10 @@ function BookRoomPage() {
               <div className="bg-blue-50 p-3 sm:p-4 rounded-xl mb-4 sm:mb-6 shadow">
                 <h3 className="font-semibold mb-2 text-sm sm:text-base text-blue-700 flex items-center gap-1">
                   <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12h.008v.008H16.5V12z" /></svg></span>
-                  {selectedRoom.room_type?.name}
+                  {getRoomTypeLabel(selectedRoom.room_type, t)}
                 </h3>
                 <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.roomNumberShort', { number: selectedRoom.room_number })}</p>
-                <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                   <div>
                     <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.checkInShort')}</p>
                     <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_in_date).toLocaleDateString(locale)}</p>

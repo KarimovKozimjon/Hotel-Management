@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
+import Loader from '../../components/common/Loader';
 
 function MyBookingsPage() {
   const { t, i18n } = useTranslation();
@@ -293,8 +295,7 @@ function MyBookingsPage() {
               : { type: 'spring', stiffness: 320, damping: 28, mass: 0.7 }
           }
         >
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-blue-500">{t('common.loading')}</p>
+          <Loader message={t('common.loading')} />
         </motion.div>
       </motion.div>
     );
@@ -367,8 +368,8 @@ function MyBookingsPage() {
                 className="bg-white border border-blue-100 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+                    <div className="min-w-0">
                       <h3 className="text-lg font-semibold text-blue-700">
                         {t('guest.bookingsPage.bookingNumber', { id: booking.id })}
                       </h3>
@@ -376,14 +377,14 @@ function MyBookingsPage() {
                         {t('guest.bookingsPage.createdAt')}: {formatDate(booking.created_at)}
                       </p>
                     </div>
-                    {getStatusBadge(booking.status)}
+                    <div className="shrink-0">{getStatusBadge(booking.status)}</div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
                     <div>
                       <p className="text-sm text-blue-400 mb-1">{t('guest.bookingsPage.room')}</p>
-                      <p className="font-semibold text-blue-900">
-                        {booking.room?.room_type?.name} - {t('guest.bookRoomPage.roomNumberShort', { number: booking.room?.room_number })}
+                      <p className="font-semibold text-blue-900 break-words">
+                        {getRoomTypeLabel(booking.room?.room_type, t)} - {t('guest.bookRoomPage.roomNumberShort', { number: booking.room?.room_number })}
                       </p>
                     </div>
 
@@ -534,7 +535,7 @@ function MyBookingsPage() {
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                   <span className="text-gray-600">{t('guest.bookingsPage.room')}:</span>
                   <span className="font-semibold text-right">
-                    {paymentModal.room?.room_type?.name} - {t('guest.bookRoomPage.roomNumberShort', { number: paymentModal.room?.room_number })}
+                    {getRoomTypeLabel(paymentModal.room?.room_type, t)} - {t('guest.bookRoomPage.roomNumberShort', { number: paymentModal.room?.room_number })}
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t">
@@ -628,7 +629,7 @@ function MyBookingsPage() {
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                   <span className="text-gray-600">{t('guest.bookingsPage.room')}:</span>
                   <span className="font-semibold text-right">
-                    {reviewModal.room?.room_type?.name} - {t('guest.bookRoomPage.roomNumberShort', { number: reviewModal.room?.room_number })}
+                    {getRoomTypeLabel(reviewModal.room?.room_type, t)} - {t('guest.bookRoomPage.roomNumberShort', { number: reviewModal.room?.room_number })}
                   </span>
                 </div>
               </div>
@@ -719,7 +720,7 @@ function MyBookingsPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('guest.bookingsPage.room')}:</span>
                     <span className="font-semibold text-right">
-                      {cancelModal.room?.room_type?.name}
+                      {getRoomTypeLabel(cancelModal.room?.room_type, t)}
                     </span>
                   </div>
                   <div className="flex justify-between">

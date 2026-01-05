@@ -49,7 +49,7 @@ function GuestRegister() {
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full my-8"
+        className="bg-white rounded-lg shadow-xl p-5 sm:p-8 max-w-2xl w-full my-8"
         initial={{ opacity: 0, y: 18, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}

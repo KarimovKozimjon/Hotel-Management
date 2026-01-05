@@ -6,6 +6,7 @@ import Pagination from '../components/common/Pagination';
 import RoomImageManager from '../components/admin/RoomImageManager';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { getRoomTypeLabel } from '../utils/roomTypeLabel';
 
 const RoomsPage = () => {
   const { t } = useTranslation();
@@ -163,8 +164,9 @@ const RoomsPage = () => {
           <SearchBar onSearch={handleSearch} placeholder={t('admin.pages.rooms.searchPlaceholder')} />
         </div>
 
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.roomNumber')}</th>
@@ -181,7 +183,7 @@ const RoomsPage = () => {
                 .map((room) => (
                 <tr key={room.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{room.room_number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{room.room_type?.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getRoomTypeLabel(room.room_type, t)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{room.floor}</td>
                   <td className="px-6 py-4 whitespace-nowrap">${room.room_type?.base_price}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(room.status)}</td>
@@ -211,7 +213,8 @@ const RoomsPage = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
           <Pagination
             currentPage={currentPage}
             totalItems={filteredRooms.length}
@@ -249,7 +252,7 @@ const RoomsPage = () => {
                 >
                   <option value="">{t('common.select')}</option>
                   {roomTypes.map((type) => (
-                    <option key={type.id} value={type.id}>{type.name}</option>
+                    <option key={type.id} value={type.id}>{getRoomTypeLabel(type, t)}</option>
                   ))}
                 </select>
               </div>

@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getRoomTypeLabel } from '../utils/roomTypeLabel';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { format } from 'date-fns';
+import Loader from '../components/common/Loader';
 
 function GuestDetailsPage() {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [guest, setGuest] = useState(null);
@@ -21,6 +24,38 @@ function GuestDetailsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+
+  const formatUsd = (amount) => {
+    const numericAmount = Number(amount ?? 0);
+    return new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Number.isFinite(numericAmount) ? numericAmount : 0);
+  };
+
+  const formatDate = (dateValue) => {
+    if (!dateValue) return t('common.notAvailable');
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return t('common.notAvailable');
+    return new Intl.DateTimeFormat(i18n.language, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).format(date);
+  };
+
+  const resolveStatusLabel = (status) => {
+    const bookingKey = `booking.status.${status}`;
+    const paymentKey = `admin.pages.payments.status.${status}`;
+
+    const bookingTranslated = t(bookingKey);
+    if (bookingTranslated && bookingTranslated !== bookingKey) return bookingTranslated;
+
+    const paymentTranslated = t(paymentKey);
+    if (paymentTranslated && paymentTranslated !== paymentKey) return paymentTranslated;
+
+    return status;
+  };
 
   useEffect(() => {
     fetchGuestDetails();
@@ -80,7 +115,7 @@ function GuestDetailsPage() {
       });
 
     } catch (error) {
-      toast.error('Ma\'lumotlarni yuklashda xatolik');
+      toast.error(t('admin.pages.guestDetails.toast.loadError'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -89,39 +124,35 @@ function GuestDetailsPage() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Kutilmoqda' },
-      confirmed: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Tasdiqlangan' },
-      checked_in: { bg: 'bg-green-100', text: 'text-green-800', label: 'Keldi' },
-      checked_out: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Ketdi' },
-      cancelled: { bg: 'bg-red-100', text: 'text-red-800', label: 'Bekor' },
-      completed: { bg: 'bg-green-100', text: 'text-green-800', label: 'To\'landi' },
-      failed: { bg: 'bg-red-100', text: 'text-red-800', label: 'Xatolik' }
+      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+      confirmed: { bg: 'bg-blue-100', text: 'text-blue-800' },
+      checked_in: { bg: 'bg-green-100', text: 'text-green-800' },
+      checked_out: { bg: 'bg-gray-100', text: 'text-gray-800' },
+      cancelled: { bg: 'bg-red-100', text: 'text-red-800' },
+      completed: { bg: 'bg-green-100', text: 'text-green-800' },
+      failed: { bg: 'bg-red-100', text: 'text-red-800' }
     };
     const badge = badges[status] || badges.pending;
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
-        {badge.label}
+        {resolveStatusLabel(status)}
       </span>
     );
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Loader className="h-96" />;
   }
 
   if (!guest) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">Mehmon topilmadi</p>
+        <p className="text-gray-500 text-lg">{t('admin.pages.guestDetails.notFound')}</p>
         <button
           onClick={() => navigate('/guests')}
           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
         >
-          Orqaga
+          {t('common.back')}
         </button>
       </div>
     );
@@ -160,7 +191,7 @@ function GuestDetailsPage() {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-blue-100 text-sm">ID:</p>
+            <p className="text-blue-100 text-sm">{t('admin.pages.guestDetails.labels.id')}:</p>
             <p className="text-xl font-semibold">#{guest.id}</p>
           </div>
         </div>
@@ -171,7 +202,7 @@ function GuestDetailsPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Jami Bronlar</p>
+              <p className="text-gray-600 text-sm">{t('admin.pages.guestDetails.stats.totalBookings')}</p>
               <p className="text-3xl font-bold text-blue-600">{stats.totalBookings}</p>
             </div>
             <svg className="w-12 h-12 text-blue-600 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,8 +214,8 @@ function GuestDetailsPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Jami Xarajat</p>
-              <p className="text-3xl font-bold text-green-600">${stats.totalSpent.toFixed(2)}</p>
+              <p className="text-gray-600 text-sm">{t('admin.pages.guestDetails.stats.totalSpent')}</p>
+              <p className="text-3xl font-bold text-green-600">{formatUsd(stats.totalSpent)}</p>
             </div>
             <svg className="w-12 h-12 text-green-600 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -195,7 +226,7 @@ function GuestDetailsPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Tugallangan</p>
+              <p className="text-gray-600 text-sm">{t('admin.pages.guestDetails.stats.completedStays')}</p>
               <p className="text-3xl font-bold text-purple-600">{stats.completedStays}</p>
             </div>
             <svg className="w-12 h-12 text-purple-600 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +238,7 @@ function GuestDetailsPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">O'rtacha Baho</p>
+              <p className="text-gray-600 text-sm">{t('admin.pages.guestDetails.stats.averageRating')}</p>
               <p className="text-3xl font-bold text-yellow-600">⭐ {stats.averageRating}</p>
             </div>
             <svg className="w-12 h-12 text-yellow-600 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,25 +256,25 @@ function GuestDetailsPage() {
               onClick={() => setActiveTab('overview')}
               className={`px-6 py-3 font-medium ${activeTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              Umumiy
+              {t('admin.pages.guestDetails.tabs.overview')}
             </button>
             <button
               onClick={() => setActiveTab('bookings')}
               className={`px-6 py-3 font-medium ${activeTab === 'bookings' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              Bronlar ({bookings.length})
+              {t('admin.pages.guestDetails.tabs.bookings', { value: bookings.length })}
             </button>
             <button
               onClick={() => setActiveTab('payments')}
               className={`px-6 py-3 font-medium ${activeTab === 'payments' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              To'lovlar ({payments.length})
+              {t('admin.pages.guestDetails.tabs.payments', { value: payments.length })}
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
               className={`px-6 py-3 font-medium ${activeTab === 'reviews' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              Sharhlar ({reviews.length})
+              {t('admin.pages.guestDetails.tabs.reviews', { value: reviews.length })}
             </button>
           </div>
         </div>
@@ -254,43 +285,43 @@ function GuestDetailsPage() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Shaxsiy Ma'lumotlar</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t('admin.pages.guestDetails.sections.personalInfo')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">To'liq ism:</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.fullName')}:</span>
                       <span className="font-medium">{guest.first_name} {guest.last_name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.email')}:</span>
                       <span className="font-medium">{guest.email}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Telefon:</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.phone')}:</span>
                       <span className="font-medium">{guest.phone}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Manzil:</span>
-                      <span className="font-medium">{guest.address || 'Kiritilmagan'}</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.address')}:</span>
+                      <span className="font-medium">{guest.address || t('common.notAvailable')}</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Statistika</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t('admin.pages.guestDetails.sections.statistics')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Oxirgi tashrif:</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.lastVisit')}:</span>
                       <span className="font-medium">
-                        {stats.lastVisit ? format(new Date(stats.lastVisit), 'dd MMM yyyy') : 'Hali kelmagan'}
+                        {stats.lastVisit ? formatDate(stats.lastVisit) : t('admin.pages.guestDetails.notVisitedYet')}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Bekor qilingan:</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.cancelledBookings')}:</span>
                       <span className="font-medium text-red-600">{stats.cancelledBookings}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Ro'yxatdan o'tgan:</span>
-                      <span className="font-medium">{format(new Date(guest.created_at), 'dd MMM yyyy')}</span>
+                      <span className="text-gray-600">{t('admin.pages.guestDetails.fields.registeredAt')}:</span>
+                      <span className="font-medium">{formatDate(guest.created_at)}</span>
                     </div>
                   </div>
                 </div>
@@ -298,7 +329,7 @@ function GuestDetailsPage() {
 
               {/* Recent Activity */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">So'nggi Faoliyat</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('admin.pages.guestDetails.sections.recentActivity')}</h3>
                 <div className="space-y-3">
                   {bookings.slice(0, 3).map(booking => (
                     <div key={booking.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -309,9 +340,9 @@ function GuestDetailsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium">Bron #{booking.booking_number}</p>
+                          <p className="font-medium">{t('admin.pages.guestDetails.bookingLabel', { value: booking.booking_number })}</p>
                           <p className="text-sm text-gray-600">
-                            {format(new Date(booking.check_in_date), 'dd MMM')} - {format(new Date(booking.check_out_date), 'dd MMM yyyy')}
+                            {formatDate(booking.check_in_date)} - {formatDate(booking.check_out_date)}
                           </p>
                         </div>
                       </div>
@@ -329,12 +360,12 @@ function GuestDetailsPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bron #</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Xona</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kirish</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chiqish</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Summa</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Holat</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.booking')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.room')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.checkIn')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.checkOut')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.amount')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.bookings.status')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -342,11 +373,11 @@ function GuestDetailsPage() {
                     <tr key={booking.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap font-medium">{booking.booking_number}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {booking.room?.room_type?.name} #{booking.room?.room_number}
+                        {getRoomTypeLabel(booking.room?.room_type, t)} #{booking.room?.room_number}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">{booking.check_in_date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{booking.check_out_date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">${booking.total_amount}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{formatDate(booking.check_in_date)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{formatDate(booking.check_out_date)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{formatUsd(booking.total_amount)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(booking.status)}</td>
                     </tr>
                   ))}
@@ -361,12 +392,12 @@ function GuestDetailsPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bron</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Summa</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usul</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sana</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Holat</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.id')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.booking')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.amount')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.method')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.date')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guestDetails.tables.payments.status')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -376,10 +407,10 @@ function GuestDetailsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {bookings.find(b => b.id === payment.booking_id)?.booking_number}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold">${payment.amount}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold">{formatUsd(payment.amount)}</td>
                       <td className="px-6 py-4 whitespace-nowrap capitalize">{payment.payment_method}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {format(new Date(payment.created_at), 'dd MMM yyyy')}
+                        {formatDate(payment.created_at)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(payment.status)}</td>
                     </tr>
@@ -393,7 +424,7 @@ function GuestDetailsPage() {
           {activeTab === 'reviews' && (
             <div className="space-y-4">
               {reviews.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Sharhlar yo'q</p>
+                <p className="text-gray-500 text-center py-8">{t('admin.pages.guestDetails.empty.reviews')}</p>
               ) : (
                 reviews.map(review => (
                   <div key={review.id} className="bg-gray-50 rounded-lg p-4">
@@ -403,13 +434,15 @@ function GuestDetailsPage() {
                         <span className="text-xl font-bold">{review.rating}/5</span>
                       </div>
                       <span className="text-sm text-gray-500">
-                        {format(new Date(review.created_at), 'dd MMM yyyy')}
+                        {formatDate(review.created_at)}
                       </span>
                     </div>
                     <p className="text-gray-700">{review.comment}</p>
                     {review.booking_id && (
                       <p className="text-xs text-gray-500 mt-2">
-                        Bron: {bookings.find(b => b.id === review.booking_id)?.booking_number}
+                        {t('admin.pages.guestDetails.reviewBookingLabel', {
+                          value: bookings.find(b => b.id === review.booking_id)?.booking_number || t('common.notAvailable')
+                        })}
                       </p>
                     )}
                   </div>

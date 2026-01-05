@@ -8,6 +8,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
+import { getAmenityLabel, getRoomTypeDescription } from '../../utils/roomTypeLabel';
+import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
 
 function HomePage() {
   const { t } = useTranslation();
@@ -590,7 +592,7 @@ function HomePage() {
                       whileHover={{ scale: 1.1 }}
                       transition={{ duration: 0.4 }}
                       src={room.image} 
-                      alt={room.name}
+                      alt={getRoomTypeLabel(room.name, t)}
                       className="w-full h-full object-cover cursor-pointer"
                       onClick={() => {
                         setSelectedImage(room.image);
@@ -613,8 +615,8 @@ function HomePage() {
                     </motion.div>
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{room.name}</h3>
-                    <p className="text-gray-600 mb-4">{room.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{getRoomTypeLabel(room.name, t)}</h3>
+                    <p className="text-gray-600 mb-4">{getRoomTypeDescription(room, t)}</p>
                     <div className="flex flex-wrap gap-2 mb-6 flex-1">
                       <motion.span 
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -625,7 +627,15 @@ function HomePage() {
                       >
                         {room.capacity} {t('home.roomsSection.guests')}
                       </motion.span>
-                      {room.amenities?.map((amenity, idx) => (
+                      {(() => {
+                        const amenities = Array.isArray(room.amenities) ? room.amenities : [];
+                        const maxAmenities = 4;
+                        const visible = amenities.slice(0, maxAmenities);
+                        const remaining = amenities.length - visible.length;
+
+                        return (
+                          <>
+                            {visible.map((amenity, idx) => (
                         <motion.span 
                           key={idx}
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -633,11 +643,20 @@ function HomePage() {
                           viewport={{ once: true }}
                           transition={{ delay: idx * 0.1 }}
                           whileHover={{ scale: 1.05 }}
-                          className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium h-fit"
+                          className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium h-fit whitespace-nowrap"
                         >
-                          {amenity}
+                          {getAmenityLabel(amenity, t)}
                         </motion.span>
-                      ))}
+                            ))}
+
+                            {remaining > 0 && (
+                              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium h-fit whitespace-nowrap">
+                                +{remaining}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <Link
                       to="/guest/login"

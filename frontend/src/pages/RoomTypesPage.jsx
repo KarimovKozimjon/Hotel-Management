@@ -4,6 +4,7 @@ import { roomTypeService } from '../services/roomService';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 import { resolveAssetUrl } from '../services/api';
+import { getRoomTypeAmenities, getRoomTypeDescription, getRoomTypeLabel } from '../utils/roomTypeLabel';
 
 const DEFAULT_ROOM_TYPE_IMAGE = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800';
 
@@ -180,13 +181,13 @@ const RoomTypesPage = () => {
               <div className="h-48 overflow-hidden">
                 <img 
                   src={resolveAssetUrl(roomType.image_url) || DEFAULT_ROOM_TYPE_IMAGE} 
-                  alt={roomType.name}
+                  alt={getRoomTypeLabel(roomType, t)}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">{roomType.name}</h3>
-                <p className="text-gray-600 mb-4">{roomType.description}</p>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">{getRoomTypeLabel(roomType, t)}</h3>
+                <p className="text-gray-600 mb-4">{getRoomTypeDescription(roomType, t)}</p>
                 
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -204,14 +205,31 @@ const RoomTypesPage = () => {
                 <div className="mb-4">
                   <p className="text-sm font-medium text-gray-700 mb-2">{t('admin.pages.roomTypes.labels.amenities')}:</p>
                   <div className="flex flex-wrap gap-2">
-                    {roomType.amenities && roomType.amenities.map((amenity, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
-                      >
-                        {amenity}
-                      </span>
-                    ))}
+                    {(() => {
+                      const amenities = getRoomTypeAmenities(roomType, t);
+                      const maxAmenities = 4;
+                      const visible = amenities.slice(0, maxAmenities);
+                      const remaining = amenities.length - visible.length;
+
+                      return (
+                        <>
+                          {visible.map((amenity, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+                            >
+                              {amenity}
+                            </span>
+                          ))}
+
+                          {remaining > 0 && (
+                            <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                              +{remaining}
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 

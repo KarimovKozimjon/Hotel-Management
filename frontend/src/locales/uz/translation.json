@@ -2,12 +2,18 @@
   "nav": {
     "home": "Bosh sahifa",
     "rooms": "Xonalar",
+    "all": "Barchasi",
+    "any": "Har qanday",
     "about": "Biz haqimizda",
     "contact": "Bog'lanish",
     "login": "Kirish",
+    "allFloors": "Barcha qavatlar",
+    "capacityOption": "{{value}}+ kishi",
+    "floorOption": "{{value}}-qavat",
     "register": "Ro'yxatdan o'tish",
-    "dashboard": "Dashboard",
+    "dashboard": "Boshqaruv",
     "bookings": "Bronlar",
+      "default": "Standart",
     "guests": "Mehmonlar",
     "payments": "To'lovlar",
     "services": "Xizmatlar",
@@ -19,7 +25,14 @@
     "backToHome": "Bosh sahifaga qaytish",
     "reports": "Hisobotlar",
     "discounts": "Chegirmalar",
-    "messages": "Xabarlar"
+    "messages": "Xabarlar",
+    "more": "Boshqa"
+    ,
+    "groups": {
+      "management": "Boshqaruv",
+      "finance": "Moliya",
+      "settings": "Sozlamalar"
+    }
   },
   "auth": {
     "email": "Email",
@@ -33,15 +46,109 @@
   "admin": {
     "roleLabel": "Admin",
     "dashboard": {
-      "title": "Dashboard",
+      "title": "Boshqaruv paneli",
       "totalRooms": "Jami Xonalar",
+      "totalBookings": "Jami bronlar",
+      "totalGuests": "Jami mehmonlar",
+      "totalRevenue": "Jami daromad",
       "availableRooms": "Bo'sh Xonalar",
       "occupiedRooms": "Band Xonalar",
       "occupancyRate": "Bandlik %",
       "todayCheckins": "Bugungi Kirish",
       "todayCheckouts": "Bugungi Chiqish",
       "todayRevenue": "Bugungi Daromad",
-      "monthRevenue": "Oylik Daromad"
+      "monthRevenue": "Oylik Daromad",
+      "availableRoomsLabel": "Bo'sh: {{value}} xona",
+      "occupancyLabel": "Band: {{value}}%",
+      "registeredLabel": "Ro'yxatdan o'tgan",
+      "paidPaymentsLabel": "To'langan to'lovlar",
+      "todayCheckinsDescription": "Bugun {{value}} ta mehmon kiradi",
+      "todayCheckoutsDescription": "Bugun {{value}} ta mehmon chiqadi",
+      "viewAllBookings": "Barcha bronlarni ko'rish",
+      "quickActions": "Tezkor harakatlar",
+      "actions": {
+        "viewCalendar": "Kalendar ko'rish",
+        "viewStats": "Statistikani ko'rish",
+        "newBooking": "Yangi bron",
+        "addGuest": "Mehmon qo'shish"
+      },
+      "monthsShort": {
+        "jan": "Yan",
+        "feb": "Fev",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Iyn",
+        "jul": "Iyl",
+        "aug": "Avg",
+        "sep": "Sen",
+        "oct": "Okt",
+        "nov": "Noy",
+        "dec": "Dek"
+      },
+      "weekdaysShort": {
+        "mon": "Du",
+        "tue": "Se",
+        "wed": "Chor",
+        "thu": "Pay",
+        "fri": "Ju",
+        "sat": "Sha",
+        "sun": "Ya"
+      },
+      "charts": {
+        "monthlyRevenueTitle": "Oylik daromad",
+        "weeklyOccupancyTitle": "Haftalik bandlik",
+        "roomTypesDistributionTitle": "Xona turlari taqsimoti",
+        "legend": {
+          "revenueUsd": "Daromad (USD)",
+          "occupiedRooms": "Band xonalar"
+        }
+      },
+      "recentBookings": {
+        "title": "So'nggi bronlar",
+        "table": {
+          "bookingNumber": "Bron #",
+          "guest": "Mehmon",
+          "room": "Xona",
+          "status": "Holati"
+        }
+      },
+      "toast": {
+        "loadError": "Dashboard ma'lumotlarini yuklashda xatolik"
+      },
+      "calendar": {
+        "room": "Xona",
+        "guest": "Mehmon",
+        "legendTitle": "Holatlar",
+        "toast": {
+          "loadError": "Bronlarni yuklashda xatolik"
+        },
+        "messages": {
+          "next": "Keyingi",
+          "previous": "Oldingi",
+          "today": "Bugun",
+          "month": "Oy",
+          "week": "Hafta",
+          "day": "Kun",
+          "agenda": "Kun tartibi",
+          "date": "Sana",
+          "time": "Vaqt",
+          "event": "Hodisa",
+          "noEventsInRange": "Bu oraliqda hodisalar yo'q"
+        },
+        "modal": {
+          "title": "Bron tafsilotlari",
+          "bookingNumber": "Bron",
+          "status": "Holati",
+          "room": "Xona",
+          "roomPrefix": "Xona",
+          "guest": "Mehmon",
+          "checkIn": "Kirish",
+          "checkOut": "Chiqish",
+          "daysCount": "Tunlar",
+          "daysCountValue": "{{value}} tun"
+        }
+      }
     },
     "pages": {
       "rooms": {
@@ -51,6 +158,34 @@
         "searchPlaceholder": "Xona raqami, turi, holati bo'yicha qidirish...",
         "confirmDelete": "Xonani o'chirmoqchimisiz?",
         "imagesTitle": "Xona Rasmlari",
+        "imageManager": {
+          "title": "Xona rasmlarini boshqarish",
+          "previewAlt": "Tanlangan rasm ko'rinishi",
+          "fileHint": "PNG, JPG, GIF 5MB gacha",
+          "galleryTitle": "Galereya ({{value}})",
+          "empty": "Hali rasmlar yo'q",
+          "primary": "Asosiy",
+          "confirmDelete": "Bu rasmni o'chirmoqchimisiz?",
+          "actions": {
+            "upload": "Yuklash",
+            "uploading": "Yuklanmoqda...",
+            "clickToUpload": "Yuklash uchun bosing",
+            "orDragDrop": "yoki sudrab tashlang",
+            "setPrimary": "Asosiy qilish",
+            "setPrimaryTitle": "Asosiy rasm qilib belgilash"
+          },
+          "toast": {
+            "selectImageFile": "Iltimos rasm faylini tanlang",
+            "maxSize": "Maksimal fayl hajmi 5MB",
+            "selectImage": "Iltimos rasm tanlang",
+            "uploaded": "Rasm yuklandi",
+            "uploadError": "Rasm yuklashda xatolik",
+            "deleted": "Rasm o'chirildi",
+            "deleteError": "Rasmni o'chirishda xatolik",
+            "primarySet": "Asosiy rasm belgilandi",
+            "primaryError": "Asosiy rasmni belgilashda xatolik"
+          }
+        },
         "actions": {
           "images": "Rasmlar"
         },
@@ -75,6 +210,40 @@
           "actions": "Amallar"
         }
       },
+      "messages": {
+        "title": "Xabarlar",
+        "summary": "Jami: {{total}} ta, O'qilmagan: {{unread}} ta",
+        "filters": {
+          "all": "Barchasi",
+          "unread": "O'qilmagan",
+          "read": "O'qilgan"
+        },
+        "empty": "Xabarlar topilmadi",
+        "table": {
+          "status": "Holat",
+          "name": "Ism",
+          "email": "Email",
+          "phone": "Telefon",
+          "message": "Xabar",
+          "date": "Sana",
+          "actions": "Amallar"
+        },
+        "badges": {
+          "new": "Yangi",
+          "read": "O'qilgan"
+        },
+        "modal": {
+          "title": "Xabar tafsilotlari"
+        },
+        "fields": {
+          "name": "Ism",
+          "email": "Email",
+          "phone": "Telefon",
+          "message": "Xabar",
+          "sentAt": "Yuborilgan vaqti",
+          "ipAddress": "IP Manzil"
+        }
+      },
       "bookings": {
         "addNew": "Yangi bron",
         "createTitle": "Yangi bron",
@@ -84,7 +253,7 @@
         "confirmCheckIn": "Mehmonni check-in qilmoqchimisiz?",
         "confirmCheckOut": "Mehmonni check-out qilmoqchimisiz?",
         "confirmCancel": "Bronni bekor qilmoqchimisiz?",
-        "confirmConfirm": "Bronni tasdiqlashni xohlaysizmi?",
+        "confirmConfirm": "Bronni tasdiqlamoqchimisiz?",
         "table": {
           "guest": "Mehmon",
           "room": "Xona",
@@ -99,7 +268,7 @@
           "room": "Xona",
           "checkInDate": "Kirish sanasi",
           "checkOutDate": "Chiqish sanasi",
-          "totalAmount": "Umumiy summa (USD)",
+          "totalAmount": "Jami summa (USD)",
           "status": "Holati"
         },
         "actions": {
@@ -306,6 +475,222 @@
           "bookingsLoadError": "Bronlarni yuklashda xatolik",
           "created": "To'lov muvaffaqiyatli yaratildi",
           "createError": "To'lov yaratishda xatolik"
+        }
+      },
+      "discounts": {
+        "title": "Chegirmalar va Promo Kodlar",
+        "addNew": "Yangi chegirma",
+        "createTitle": "Yangi chegirma",
+        "editTitle": "Chegirmani tahrirlash",
+        "confirmDelete": "Chegirmani o'chirmoqchimisiz?",
+        "empty": "Chegirmalar yo'q",
+        "table": {
+          "code": "Kod",
+          "name": "Nomi",
+          "type": "Turi",
+          "value": "Qiymat",
+          "period": "Muddat",
+          "usage": "Ishlatildi",
+          "status": "Holat",
+          "actions": "Harakatlar"
+        },
+        "type": {
+          "percentage": "Foiz",
+          "fixed": "Fix"
+        },
+        "status": {
+          "disabled": "O'chirilgan",
+          "pending": "Kutilmoqda",
+          "expired": "Muddati o'tgan",
+          "limitReached": "Limit tugagan",
+          "active": "Faol"
+        },
+        "value": {
+          "percent": "{{value}}%",
+          "max": "Max: {{value}}"
+        },
+        "form": {
+          "code": "Kod",
+          "codePlaceholder": "SUMMER2024",
+          "name": "Nomi",
+          "namePlaceholder": "Yozgi chegirma",
+          "description": "Tavsif",
+          "descriptionPlaceholder": "Chegirma haqida ma'lumot",
+          "type": "Turi",
+          "value": "Qiymat",
+          "valuePlaceholderPercent": "10",
+          "valuePlaceholderFixed": "50",
+          "minAmountUsd": "Minimal summa (USD)",
+          "minAmountPlaceholder": "100",
+          "maxDiscountUsd": "Maksimal chegirma (USD)",
+          "maxDiscountPlaceholder": "50",
+          "usageLimit": "Ishlatish limiti",
+          "usageLimitPlaceholder": "100",
+          "startDate": "Boshlanish sanasi",
+          "endDate": "Tugash sanasi",
+          "active": "Faol"
+        },
+        "actions": {
+          "create": "Qo'shish",
+          "update": "Yangilash"
+        },
+        "toast": {
+          "loadError": "Chegirmalarni yuklashda xatolik",
+          "created": "Chegirma qo'shildi",
+          "updated": "Chegirma yangilandi",
+          "deleted": "Chegirma o'chirildi",
+          "deleteError": "O'chirishda xatolik",
+          "genericError": "Xatolik yuz berdi"
+        }
+      },
+      "guestDetails": {
+        "notFound": "Mehmon topilmadi",
+        "notVisitedYet": "Hali tashrif buyurmagan",
+        "labels": {
+          "id": "ID"
+        },
+        "stats": {
+          "totalBookings": "Jami bronlar",
+          "totalSpent": "Jami sarflangan",
+          "completedStays": "Yakunlangan turar joylar",
+          "averageRating": "O'rtacha baho"
+        },
+        "tabs": {
+          "overview": "Umumiy",
+          "bookings": "Bronlar ({{value}})",
+          "payments": "To'lovlar ({{value}})",
+          "reviews": "Sharhlar ({{value}})"
+        },
+        "sections": {
+          "personalInfo": "Shaxsiy ma'lumotlar",
+          "statistics": "Statistika",
+          "recentActivity": "So'nggi faollik"
+        },
+        "fields": {
+          "fullName": "To'liq ism",
+          "email": "Email",
+          "phone": "Telefon",
+          "address": "Manzil",
+          "lastVisit": "So'nggi tashrif",
+          "cancelledBookings": "Bekor qilingan",
+          "registeredAt": "Ro'yxatdan o'tgan"
+        },
+        "bookingLabel": "Bron #{{value}}",
+        "reviewBookingLabel": "Bron: {{value}}",
+        "tables": {
+          "bookings": {
+            "booking": "Bron #",
+            "room": "Xona",
+            "checkIn": "Kirish",
+            "checkOut": "Chiqish",
+            "amount": "Summa",
+            "status": "Holat"
+          },
+          "payments": {
+            "id": "ID",
+            "booking": "Bron",
+            "amount": "Summa",
+            "method": "To'lov turi",
+            "date": "Sana",
+            "status": "Holat"
+          }
+        },
+        "empty": {
+          "reviews": "Sharhlar yo'q"
+        },
+        "toast": {
+          "loadError": "Mehmon ma'lumotlarini yuklashda xatolik"
+        }
+      },
+      "reports": {
+        "title": "Hisobotlar va tahlil",
+        "exportCsv": "CSV yuklab olish",
+        "unknown": "Noma'lum",
+        "range": {
+          "week": "7 kun",
+          "month": "Oy",
+          "custom": "Boshqa"
+        },
+        "summary": {
+          "totalRevenue": "Umumiy daromad",
+          "totalBookings": "Jami bronlar",
+          "averageOccupancy": "Bandlik",
+          "totalGuests": "Jami mehmonlar",
+          "cancelledBookings": "Bekor qilingan bronlar",
+          "completedPayments": "To'langan to'lovlar"
+        },
+        "charts": {
+          "dailyRevenue": "Kunlik daromad",
+          "dailyBookings": "Kunlik bronlar",
+          "bookingStatus": "Bronlar holati",
+          "roomTypePopularity": "Xona turlari mashhurligi",
+          "occupancyRate": "Band xonalar foizi",
+          "legend": {
+            "revenueUsd": "Daromad (USD)",
+            "bookings": "Bronlar",
+            "occupancyPercent": "Band (%)"
+          }
+        },
+        "table": {
+          "date": "Sana",
+          "revenue": "Daromad",
+          "bookings": "Bronlar"
+        },
+        "export": {
+          "report": "Hisobot",
+          "filenamePrefix": "hisobot"
+        },
+        "toast": {
+          "loadError": "Ma'lumotlarni yuklashda xatolik",
+          "downloaded": "Hisobot yuklab olindi!"
+        }
+      },
+      "reviews": {
+        "title": "Sharhlarni boshqarish",
+        "searchPlaceholder": "Mehmon, xona, sharh bo'yicha qidirish...",
+        "noComment": "Izoh yo'q",
+        "empty": "Sharhlar topilmadi",
+        "confirmDelete": "Bu sharhni o'chirmoqchimisiz?",
+        "actions": {
+          "addReview": "Sharh qo'shish",
+          "create": "Yaratish",
+          "update": "Yangilash"
+        },
+        "stats": {
+          "totalReviews": "Jami sharhlar",
+          "averageRating": "O'rtacha baho",
+          "fiveStarReviews": "5 yulduzli sharhlar",
+          "lowRatings": "Past baholar (<3)"
+        },
+        "table": {
+          "id": "ID",
+          "guest": "Mehmon",
+          "room": "Xona",
+          "rating": "Baho",
+          "comment": "Izoh",
+          "date": "Sana",
+          "actions": "Amallar"
+        },
+        "modal": {
+          "createTitle": "Sharh qo'shish",
+          "editTitle": "Sharhni tahrirlash"
+        },
+        "form": {
+          "booking": "Bron",
+          "guest": "Mehmon",
+          "selectCompletedBooking": "Yakunlangan bronni tanlang",
+          "bookingOption": "Bron #{{id}} - Xona {{room}} - {{guest}}",
+          "selectGuest": "Mehmonni tanlang",
+          "autoSelectedHint": "Bron bo'yicha avtomatik tanlanadi",
+          "rating": "Baho",
+          "comment": "Izoh",
+          "commentPlaceholder": "Tajribangiz bilan o'rtoqlashing...",
+          "characterCount": "{{current}}/{{max}} ta belgi"
+        },
+        "toast": {
+          "loadError": "Sharhlarni yuklashda xatolik",
+          "saveError": "Sharhni saqlab bo'lmadi",
+          "deleteError": "Sharhni o'chirishda xatolik"
         }
       },
       "guests": {
@@ -645,6 +1030,7 @@
     "loading": "Yuklanmoqda...",
     "noResults": "Natija topilmadi",
     "confirm": "Tasdiqlash",
+    "confirmDelete": "O'chirishni tasdiqlaysizmi?",
     "back": "Orqaga",
     "next": "Keyingi",
     "submit": "Yuborish",
@@ -689,12 +1075,18 @@
   "filter": {
     "title": "Qidiruv filterlari",
     "roomType": "Xona turi",
+    "all": "Barchasi",
+    "any": "Har qanday",
     "minPrice": "Minimal narx",
     "maxPrice": "Maksimal narx",
     "minCapacity": "Minimal sig'im",
+    "allFloors": "Barcha qavatlar",
+    "capacityOption": "{{value}}+ kishi",
+    "floorOption": "{{value}}-qavat",
     "priceRange": "Narx oralig'i",
     "sortBy": "Saralash",
     "sortOptions": {
+      "default": "Standart",
       "priceAsc": "Narx: Arzondan qimmatga",
       "priceDesc": "Narx: Qimmatdan arzonga",
       "capacityAsc": "Sig'im: Kamdan ko'pga",
@@ -704,6 +1096,25 @@
     "filtersApplied": "filter qo'llanildi",
     "showFilters": "Filtrlarni ko'rsatish",
     "hideFilters": "Filtrlarni yashirish"
+  },
+  "roomTypeNames": {
+    "standard": "Standart xona",
+    "deluxe": "Deluxe xona",
+    "presidential": "Prezident lyuks"
+  },
+  "roomTypeDescriptions": {
+    "standard": "Shinam va qulay xona — yakka mehmon yoki juftlik uchun ideal. Asosiy qulayliklar, sokin muhit va yoqimli dam olish uchun mo'ljallangan.",
+    "deluxe": "Kengroq va qulayroq xona — ko'proq joy va qo'shimcha qulayliklarni xohlagan mehmonlar uchun. Dam olishni yanada maroqli qiladigan xizmatlar bilan ta'minlangan.",
+    "presidential": "Eng hashamatli lyuks — maksimal qulaylik va kenglikni istaganlar uchun. Maxsus kunlar va premium dam olish uchun mo'ljallangan, yuqori darajadagi qulayliklarga ega."
+  },
+  "amenities": {
+    "wifi": "Wi‑Fi",
+    "tv": "Televizor",
+    "airConditioning": "Konditsioner",
+    "miniBar": "Mini bar",
+    "balcony": "Balkon",
+    "kitchen": "Oshxona",
+    "jacuzzi": "Jakuzi"
   },
   "payment": {
     "title": "To'lov qilish",
@@ -732,4 +1143,5 @@
     "phone": "Telefon",
     "email": "Email"
   }
+
 }

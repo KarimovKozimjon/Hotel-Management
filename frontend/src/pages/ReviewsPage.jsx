@@ -3,8 +3,12 @@ import reviewService from '../services/reviewService';
 import { bookingService } from '../services/bookingService';
 import { guestService } from '../services/guestService';
 import SearchBar from '../components/common/SearchBar';
+import Loader from '../components/common/Loader';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 function ReviewsPage() {
+  const { t, i18n } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -19,6 +23,9 @@ function ReviewsPage() {
     comment: '',
   });
 
+  const formatDate = (date) =>
+    new Intl.DateTimeFormat(i18n.language).format(new Date(date));
+
   useEffect(() => {
     fetchReviews();
     fetchBookings();
@@ -31,6 +38,7 @@ function ReviewsPage() {
       setReviews(data);
       setFilteredReviews(data);
     } catch (error) {
+      toast.error(t('admin.pages.reviews.toast.loadError'));
       console.error('Error fetching reviews:', error);
     } finally {
       setLoading(false);
@@ -39,9 +47,9 @@ function ReviewsPage() {
 
   const handleSearch = (searchTerm) => {
     const filtered = reviews.filter(review =>
-      review.guest?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.booking?.room?.room_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.comment?.toLowerCase().includes(searchTerm.toLowerCase())
+      (review.guest?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (review.booking?.room?.room_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (review.comment || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredReviews(filtered);
   };
@@ -113,16 +121,17 @@ function ReviewsPage() {
       closeModal();
     } catch (error) {
       console.error('Error saving review:', error);
-      alert(error.response?.data?.error || 'Failed to save review');
+      alert(error.response?.data?.error || t('admin.pages.reviews.toast.saveError'));
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
+    if (window.confirm(t('admin.pages.reviews.confirmDelete'))) {
       try {
         await reviewService.delete(id);
         fetchReviews();
       } catch (error) {
+        toast.error(t('admin.pages.reviews.toast.deleteError'));
         console.error('Error deleting review:', error);
       }
     }
@@ -139,33 +148,33 @@ function ReviewsPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <Loader className="h-64" />;
   }
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Reviews Management</h1>
+        <h1 className="text-2xl font-bold">{t('admin.pages.reviews.title')}</h1>
         <button
           onClick={() => openModal()}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Add Review
+          {t('admin.pages.reviews.actions.addReview')}
         </button>
       </div>
 
       <div className="mb-4">
-        <SearchBar onSearch={handleSearch} placeholder="Mehmon, xona, sharh bo'yicha qidirish..." />
+        <SearchBar onSearch={handleSearch} placeholder={t('admin.pages.reviews.searchPlaceholder')} />
       </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Total Reviews</h3>
+          <h3 className="text-gray-500 text-sm">{t('admin.pages.reviews.stats.totalReviews')}</h3>
           <p className="text-2xl font-bold">{reviews.length}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Average Rating</h3>
+          <h3 className="text-gray-500 text-sm">{t('admin.pages.reviews.stats.averageRating')}</h3>
           <p className="text-2xl font-bold">
             {reviews.length > 0
               ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
@@ -173,13 +182,13 @@ function ReviewsPage() {
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">5 Star Reviews</h3>
+          <h3 className="text-gray-500 text-sm">{t('admin.pages.reviews.stats.fiveStarReviews')}</h3>
           <p className="text-2xl font-bold">
             {reviews.filter(r => r.rating === 5).length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Low Ratings (&lt;3)</h3>
+          <h3 className="text-gray-500 text-sm">{t('admin.pages.reviews.stats.lowRatings')}</h3>
           <p className="text-2xl font-bold text-red-600">
             {reviews.filter(r => r.rating < 3).length}
           </p>
@@ -187,17 +196,18 @@ function ReviewsPage() {
       </div>
 
       {/* Reviews Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="bg-white rounded-lg shadow">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Guest</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Room</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comment</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.id')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.guest')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.room')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.rating')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.comment')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.date')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.reviews.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -205,10 +215,10 @@ function ReviewsPage() {
               <tr key={review.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{review.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {review.guest?.name || 'N/A'}
+                  {review.guest?.name || t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {review.booking?.room?.room_number || 'N/A'}
+                  {review.booking?.room?.room_number || t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <span className={`font-semibold ${getRatingColor(review.rating)}`}>
@@ -216,31 +226,32 @@ function ReviewsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm max-w-xs truncate">
-                  {review.comment || 'No comment'}
+                  {review.comment || t('admin.pages.reviews.noComment')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(review.created_at).toLocaleDateString()}
+                  {formatDate(review.created_at)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     onClick={() => openModal(review)}
                     className="text-blue-600 hover:text-blue-900 mr-3"
                   >
-                    Edit
+                    {t('common.edit')}
                   </button>
                   <button
                     onClick={() => handleDelete(review.id)}
                     className="text-red-600 hover:text-red-900"
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
         {reviews.length === 0 && (
-          <div className="text-center py-8 text-gray-500">No reviews found</div>
+          <div className="text-center py-8 text-gray-500">{t('admin.pages.reviews.empty')}</div>
         )}
       </div>
 
@@ -249,13 +260,13 @@ function ReviewsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">
-              {editingReview ? 'Edit Review' : 'Add Review'}
+              {editingReview ? t('admin.pages.reviews.modal.editTitle') : t('admin.pages.reviews.modal.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               {!editingReview && (
                 <>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">Booking</label>
+                    <label className="block text-sm font-medium mb-2">{t('admin.pages.reviews.form.booking')}</label>
                     <select
                       value={formData.booking_id}
                       onChange={(e) => {
@@ -269,17 +280,21 @@ function ReviewsPage() {
                       className="w-full px-3 py-2 border rounded-lg"
                       required
                     >
-                      <option value="">Select a completed booking</option>
+                      <option value="">{t('admin.pages.reviews.form.selectCompletedBooking')}</option>
                       {bookings.map((booking) => (
                         <option key={booking.id} value={booking.id}>
-                          Booking #{booking.id} - Room {booking.room?.room_number} - {booking.guest?.name}
+                          {t('admin.pages.reviews.form.bookingOption', {
+                            id: booking.id,
+                            room: booking.room?.room_number || t('common.notAvailable'),
+                            guest: booking.guest?.name || t('common.notAvailable')
+                          })}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">Guest</label>
+                    <label className="block text-sm font-medium mb-2">{t('admin.pages.reviews.form.guest')}</label>
                     <select
                       value={formData.guest_id}
                       onChange={(e) => setFormData({ ...formData, guest_id: e.target.value })}
@@ -287,20 +302,20 @@ function ReviewsPage() {
                       required
                       disabled
                     >
-                      <option value="">Select guest</option>
+                      <option value="">{t('admin.pages.reviews.form.selectGuest')}</option>
                       {guests.map((guest) => (
                         <option key={guest.id} value={guest.id}>
                           {guest.name}
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">Automatically selected from booking</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('admin.pages.reviews.form.autoSelectedHint')}</p>
                   </div>
                 </>
               )}
 
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Rating</label>
+                <label className="block text-sm font-medium mb-2">{t('admin.pages.reviews.form.rating')}</label>
                 <div className="flex items-center space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -317,17 +332,20 @@ function ReviewsPage() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Comment</label>
+                <label className="block text-sm font-medium mb-2">{t('admin.pages.reviews.form.comment')}</label>
                 <textarea
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   rows="4"
                   maxLength="1000"
-                  placeholder="Share your experience..."
+                  placeholder={t('admin.pages.reviews.form.commentPlaceholder')}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.comment.length}/1000 characters
+                  {t('admin.pages.reviews.form.characterCount', {
+                    current: formData.comment.length,
+                    max: 1000
+                  })}
                 </p>
               </div>
 
@@ -337,13 +355,13 @@ function ReviewsPage() {
                   onClick={closeModal}
                   className="px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 >
-                  {editingReview ? 'Update' : 'Create'}
+                  {editingReview ? t('admin.pages.reviews.actions.update') : t('admin.pages.reviews.actions.create')}
                 </button>
               </div>
             </form>

@@ -20,34 +20,40 @@ import {
 } from 'recharts';
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const formatUsd = (value) =>
+    new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Number(value || 0));
+
   // Sample data for charts (backend dan kelishi kerak)
   const revenueData = [
-    { name: 'Yan', revenue: 4000 },
-    { name: 'Fev', revenue: 3000 },
-    { name: 'Mar', revenue: 5000 },
-    { name: 'Apr', revenue: 4500 },
-    { name: 'May', revenue: 6000 },
-    { name: 'Iyun', revenue: 5500 },
-    { name: 'Iyul', revenue: 7000 },
-    { name: 'Avg', revenue: 6500 },
-    { name: 'Sen', revenue: 8000 },
-    { name: 'Okt', revenue: 7500 },
-    { name: 'Noy', revenue: 9000 },
-    { name: 'Dek', revenue: 8500 },
+    { name: t('admin.dashboard.monthsShort.jan'), revenue: 4000 },
+    { name: t('admin.dashboard.monthsShort.feb'), revenue: 3000 },
+    { name: t('admin.dashboard.monthsShort.mar'), revenue: 5000 },
+    { name: t('admin.dashboard.monthsShort.apr'), revenue: 4500 },
+    { name: t('admin.dashboard.monthsShort.may'), revenue: 6000 },
+    { name: t('admin.dashboard.monthsShort.jun'), revenue: 5500 },
+    { name: t('admin.dashboard.monthsShort.jul'), revenue: 7000 },
+    { name: t('admin.dashboard.monthsShort.aug'), revenue: 6500 },
+    { name: t('admin.dashboard.monthsShort.sep'), revenue: 8000 },
+    { name: t('admin.dashboard.monthsShort.oct'), revenue: 7500 },
+    { name: t('admin.dashboard.monthsShort.nov'), revenue: 9000 },
+    { name: t('admin.dashboard.monthsShort.dec'), revenue: 8500 },
   ];
 
   const occupancyData = [
-    { name: 'Dush', value: 15 },
-    { name: 'Sesh', value: 10 },
-    { name: 'Chor', value: 20 },
-    { name: 'Pay', value: 18 },
-    { name: 'Juma', value: 25 },
-    { name: 'Shan', value: 30 },
-    { name: 'Yak', value: 28 },
+    { name: t('admin.dashboard.weekdaysShort.mon'), value: 15 },
+    { name: t('admin.dashboard.weekdaysShort.tue'), value: 10 },
+    { name: t('admin.dashboard.weekdaysShort.wed'), value: 20 },
+    { name: t('admin.dashboard.weekdaysShort.thu'), value: 18 },
+    { name: t('admin.dashboard.weekdaysShort.fri'), value: 25 },
+    { name: t('admin.dashboard.weekdaysShort.sat'), value: 30 },
+    { name: t('admin.dashboard.weekdaysShort.sun'), value: 28 },
   ];
 
   const roomTypeData = [
@@ -66,7 +72,7 @@ const Dashboard = () => {
       const data = await dashboardService.getStats();
       setStats(data);
     } catch (error) {
-      toast.error('Ma\'lumotlarni yuklashda xatolik!');
+      toast.error(t('admin.dashboard.toast.loadError'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +82,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
-        <h1 className="text-3xl font-bold mb-6">{t('admin.dashboard.title') || 'Dashboard'}</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('admin.dashboard.title')}</h1>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -118,14 +124,14 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-2">{t('admin.dashboard.todayRevenue') || 'Bugungi Daromad'}</h3>
             <div className="text-2xl font-bold text-green-600">
-              ${stats?.stats?.today_revenue?.toLocaleString() || 0}
+              {formatUsd(stats?.stats?.today_revenue)}
             </div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-2">{t('admin.dashboard.monthRevenue') || 'Oylik Daromad'}</h3>
             <div className="text-2xl font-bold text-green-600">
-              ${stats?.stats?.month_revenue?.toLocaleString() || 0}
+              {formatUsd(stats?.stats?.month_revenue)}
             </div>
           </div>
         </div>
@@ -134,7 +140,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Revenue Chart */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-bold mb-4">Oylik Daromad Grafigi 📊</h3>
+            <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.monthlyRevenueTitle')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -147,7 +153,7 @@ const Dashboard = () => {
                   dataKey="revenue"
                   stroke="#3B82F6"
                   strokeWidth={2}
-                  name="Daromad ($)"
+                  name={t('admin.dashboard.charts.legend.revenueUsd')}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -155,7 +161,7 @@ const Dashboard = () => {
 
           {/* Occupancy Chart */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-bold mb-4">Haftalik Bandlik 📈</h3>
+            <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.weeklyOccupancyTitle')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={occupancyData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -163,7 +169,7 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#10B981" name="Band xonalar" />
+                <Bar dataKey="value" fill="#10B981" name={t('admin.dashboard.charts.legend.occupiedRooms')} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -171,7 +177,7 @@ const Dashboard = () => {
 
         {/* Room Types Distribution */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-xl font-bold mb-4">Xona Turlari Taqsimoti 🥧</h3>
+          <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.roomTypesDistributionTitle')}</h3>
           <div className="flex justify-center">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -198,22 +204,22 @@ const Dashboard = () => {
 
         {/* Recent Bookings */}
         <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-bold mb-4">So'nggi Bronlar</h3>
+          <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.recentBookings.title')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Bron raqami
+                    {t('admin.dashboard.recentBookings.table.bookingNumber')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Mehmon
+                    {t('admin.dashboard.recentBookings.table.guest')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Xona
+                    {t('admin.dashboard.recentBookings.table.room')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Holat
+                    {t('admin.dashboard.recentBookings.table.status')}
                   </th>
                 </tr>
               </thead>
@@ -229,7 +235,9 @@ const Dashboard = () => {
                         booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {booking.status}
+                        {t(`booking.status.${booking.status}`) === `booking.status.${booking.status}`
+                          ? booking.status
+                          : t(`booking.status.${booking.status}`)}
                       </span>
                     </td>
                   </tr>

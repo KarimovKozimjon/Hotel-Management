@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import roomImageService from '../../services/roomImageService';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { getRoomTypeAmenities, getRoomTypeDescription, getRoomTypeLabel } from '../../utils/roomTypeLabel';
+import Loader from '../../components/common/Loader';
 
 function PublicRoomsPage() {
+  const { t } = useTranslation();
   const [roomTypes, setRoomTypes] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [roomImages, setRoomImages] = useState({});
@@ -54,7 +58,7 @@ function PublicRoomsPage() {
 
   const groupedByType = {};
   filteredRooms.forEach(room => {
-    const typeName = room.room_type?.name || 'Other';
+    const typeName = room.room_type ? getRoomTypeLabel(room.room_type, t) : 'Other';
     if (!groupedByType[typeName]) {
       groupedByType[typeName] = {
         type: room.room_type,
@@ -65,14 +69,7 @@ function PublicRoomsPage() {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Yuklanmoqda...</p>
-        </div>
-      </div>
-    );
+    return <Loader fullScreen className="bg-gray-50" />;
   }
 
   return (
@@ -100,7 +97,7 @@ function PublicRoomsPage() {
               <option value="">Barchasi</option>
               {roomTypes.map((type) => (
                 <option key={type.id} value={type.id}>
-                  {type.name} - ${type.price_per_night}/kecha
+                  {getRoomTypeLabel(type, t)} - ${type.base_price}/kecha
                 </option>
               ))}
             </select>
@@ -125,27 +122,44 @@ function PublicRoomsPage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">{typeName}</h2>
-                  <p className="text-gray-600 mt-1">{data.type?.description}</p>
+                  <p className="text-gray-600 mt-1">{getRoomTypeDescription(data.type, t)}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-bold text-blue-600">
-                    ${data.type?.price_per_night}
+                    ${data.type?.base_price}
                   </div>
                   <div className="text-sm text-gray-600">har kecha</div>
                 </div>
               </div>
 
               {/* Amenities */}
-              {data.type?.amenities && (
+              {getRoomTypeAmenities(data.type, t).length > 0 && (
                 <div className="mb-6 flex flex-wrap gap-2">
-                  {data.type.amenities.split(',').map((amenity, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
-                    >
-                      ✓ {amenity.trim()}
-                    </span>
-                  ))}
+                  {(() => {
+                    const amenities = getRoomTypeAmenities(data.type, t);
+                    const maxAmenities = 6;
+                    const visible = amenities.slice(0, maxAmenities);
+                    const remaining = amenities.length - visible.length;
+
+                    return (
+                      <>
+                        {visible.map((amenity, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                          >
+                            ✓ {amenity}
+                          </span>
+                        ))}
+
+                        {remaining > 0 && (
+                          <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                            +{remaining}
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 

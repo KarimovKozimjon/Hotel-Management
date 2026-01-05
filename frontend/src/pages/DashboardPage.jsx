@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import RoomAvailabilityCalendar from '../components/admin/RoomAvailabilityCalendar';
 import NotificationDemo from '../components/demo/NotificationDemo';
 
 function DashboardPage() {
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState({
     totalRooms: 0,
     totalBookings: 0,
@@ -17,6 +19,14 @@ function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
+
+  const formatUsd = (amount) => {
+    const numericAmount = Number(amount ?? 0);
+    return new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Number.isFinite(numericAmount) ? numericAmount : 0);
+  };
 
   useEffect(() => {
     fetchDashboardStats();
@@ -81,7 +91,7 @@ function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Boshqaruv paneli</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('admin.dashboard.title')}</h1>
         <button
           onClick={() => setShowCalendar(!showCalendar)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base flex items-center gap-2"
@@ -89,7 +99,7 @@ function DashboardPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          {showCalendar ? 'Statistikani ko\'rish' : 'Kalendar ko\'rish'}
+          {showCalendar ? t('admin.dashboard.actions.viewStats') : t('admin.dashboard.actions.viewCalendar')}
         </button>
       </div>
 
@@ -105,7 +115,7 @@ function DashboardPage() {
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm mb-1">Jami xonalar</p>
+                  <p className="text-blue-100 text-sm mb-1">{t('admin.dashboard.totalRooms')}</p>
                   <p className="text-3xl font-bold">{stats.totalRooms}</p>
                 </div>
                 <div className="bg-blue-400 bg-opacity-30 rounded-full p-3">
@@ -115,7 +125,7 @@ function DashboardPage() {
                 </div>
               </div>
               <p className="text-blue-100 text-xs mt-3">
-                Bo'sh: {stats.availableRooms} xona
+                {t('admin.dashboard.availableRoomsLabel', { value: stats.availableRooms })}
               </p>
             </div>
 
@@ -123,7 +133,7 @@ function DashboardPage() {
             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm mb-1">Jami bronlar</p>
+                  <p className="text-green-100 text-sm mb-1">{t('admin.dashboard.totalBookings')}</p>
                   <p className="text-3xl font-bold">{stats.totalBookings}</p>
                 </div>
                 <div className="bg-green-400 bg-opacity-30 rounded-full p-3">
@@ -133,7 +143,7 @@ function DashboardPage() {
                 </div>
               </div>
               <p className="text-green-100 text-xs mt-3">
-                Band: {stats.occupancyRate}%
+                {t('admin.dashboard.occupancyLabel', { value: stats.occupancyRate })}
               </p>
             </div>
 
@@ -141,7 +151,7 @@ function DashboardPage() {
             <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm mb-1">Jami mehmonlar</p>
+                  <p className="text-purple-100 text-sm mb-1">{t('admin.dashboard.totalGuests')}</p>
                   <p className="text-3xl font-bold">{stats.totalGuests}</p>
                 </div>
                 <div className="bg-purple-400 bg-opacity-30 rounded-full p-3">
@@ -151,7 +161,7 @@ function DashboardPage() {
                 </div>
               </div>
               <p className="text-purple-100 text-xs mt-3">
-                Ro'yxatdan o'tgan
+                {t('admin.dashboard.registeredLabel')}
               </p>
             </div>
 
@@ -159,8 +169,8 @@ function DashboardPage() {
             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-yellow-100 text-sm mb-1">Jami daromad</p>
-                  <p className="text-3xl font-bold">${stats.totalRevenue.toFixed(0)}</p>
+                  <p className="text-yellow-100 text-sm mb-1">{t('admin.dashboard.totalRevenue')}</p>
+                  <p className="text-3xl font-bold">{formatUsd(stats.totalRevenue)}</p>
                 </div>
                 <div className="bg-yellow-400 bg-opacity-30 rounded-full p-3">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +179,7 @@ function DashboardPage() {
                 </div>
               </div>
               <p className="text-yellow-100 text-xs mt-3">
-                To'langan to'lovlar
+                {t('admin.dashboard.paidPaymentsLabel')}
               </p>
             </div>
           </div>
@@ -179,45 +189,45 @@ function DashboardPage() {
             {/* Today Check-ins */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Bugungi kirishlar</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('admin.dashboard.todayCheckins')}</h2>
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
                   {stats.todayCheckIns}
                 </span>
               </div>
               <p className="text-gray-600 text-sm">
-                Bugun {stats.todayCheckIns} ta mehmon kiradi
+                {t('admin.dashboard.todayCheckinsDescription', { value: stats.todayCheckIns })}
               </p>
               <Link 
                 to="/bookings" 
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-3 inline-block"
               >
-                Barcha bronlarni ko'rish →
+                {t('admin.dashboard.viewAllBookings')} →
               </Link>
             </div>
 
             {/* Today Check-outs */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Bugungi chiqishlar</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('admin.dashboard.todayCheckouts')}</h2>
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
                   {stats.todayCheckOuts}
                 </span>
               </div>
               <p className="text-gray-600 text-sm">
-                Bugun {stats.todayCheckOuts} ta mehmon chiqadi
+                {t('admin.dashboard.todayCheckoutsDescription', { value: stats.todayCheckOuts })}
               </p>
               <Link 
                 to="/bookings" 
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-3 inline-block"
               >
-                Barcha bronlarni ko'rish →
+                {t('admin.dashboard.viewAllBookings')} →
               </Link>
             </div>
           </div>
 
           {/* Quick Actions */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tezkor harakatlar</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.dashboard.quickActions')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 to="/bookings"
@@ -226,7 +236,7 @@ function DashboardPage() {
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">Yangi bron</span>
+                <span className="text-sm font-medium text-gray-900">{t('admin.dashboard.actions.newBooking')}</span>
               </Link>
 
               <Link
@@ -236,7 +246,7 @@ function DashboardPage() {
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">Mehmon qo'shish</span>
+                <span className="text-sm font-medium text-gray-900">{t('admin.dashboard.actions.addGuest')}</span>
               </Link>
 
               <Link
@@ -246,7 +256,7 @@ function DashboardPage() {
                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">Xonalar</span>
+                <span className="text-sm font-medium text-gray-900">{t('nav.rooms')}</span>
               </Link>
 
               <Link
@@ -256,7 +266,7 @@ function DashboardPage() {
                 <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">To'lovlar</span>
+                <span className="text-sm font-medium text-gray-900">{t('nav.payments')}</span>
               </Link>
             </div>
           </div>
