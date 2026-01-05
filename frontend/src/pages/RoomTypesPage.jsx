@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { roomTypeService } from '../services/roomService';
-import Navbar from '../components/common/Navbar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl } from '../services/api';
+
+const DEFAULT_ROOM_TYPE_IMAGE = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800';
 
 const RoomTypesPage = () => {
+  const { t, i18n } = useTranslation();
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -25,13 +29,21 @@ const RoomTypesPage = () => {
     fetchRoomTypes();
   }, []);
 
+  const formatUsd = (amount) => {
+    const numericAmount = Number(amount ?? 0);
+    return new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Number.isFinite(numericAmount) ? numericAmount : 0);
+  };
+
   const fetchRoomTypes = async () => {
     try {
       const data = await roomTypeService.getAll();
       setRoomTypes(data);
       setLoading(false);
     } catch (error) {
-      toast.error('Xona turlarini yuklashda xatolik');
+      toast.error(t('admin.pages.roomTypes.toast.loadError'));
       setLoading(false);
     }
   };
@@ -61,18 +73,18 @@ const RoomTypesPage = () => {
         submitData.append('_method', 'PUT');
         const result = await roomTypeService.update(editingRoomType.id, submitData);
         console.log('Update result:', result);
-        toast.success('Xona turi yangilandi');
+        toast.success(t('admin.pages.roomTypes.toast.updated'));
       } else {
         const result = await roomTypeService.create(submitData);
         console.log('Create result:', result);
-        toast.success('Xona turi qo\'shildi');
+        toast.success(t('admin.pages.roomTypes.toast.created'));
       }
       setShowModal(false);
       resetForm();
       fetchRoomTypes();
     } catch (error) {
       console.error('Submit error:', error);
-      toast.error(error.response?.data?.message || 'Xatolik yuz berdi');
+      toast.error(error.response?.data?.message || t('admin.pages.roomTypes.toast.genericError'));
     }
   };
 
@@ -86,18 +98,18 @@ const RoomTypesPage = () => {
       amenities: roomType.amenities || [],
       image_url: roomType.image_url || ''
     });
-    setImagePreview(roomType.image_url || null);
+    setImagePreview(resolveAssetUrl(roomType.image_url) || DEFAULT_ROOM_TYPE_IMAGE);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Xona turini o\'chirmoqchimisiz?')) {
+    if (window.confirm(t('admin.pages.roomTypes.confirmDelete'))) {
       try {
         await roomTypeService.delete(id);
-        toast.success('Xona turi o\'chirildi');
+        toast.success(t('admin.pages.roomTypes.toast.deleted'));
         fetchRoomTypes();
       } catch (error) {
-        toast.error('Xona turini o\'chirishda xatolik');
+        toast.error(t('admin.pages.roomTypes.toast.deleteError'));
       }
     }
   };
@@ -149,16 +161,15 @@ const RoomTypesPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Xona turlari</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('admin.pages.roomTypes.title')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + Yangi tur
+            {t('admin.pages.roomTypes.addNew')}
           </button>
         </div>
 
@@ -166,32 +177,32 @@ const RoomTypesPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roomTypes.map((roomType) => (
             <div key={roomType.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {roomType.image_url && (
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={roomType.image_url} 
-                    alt={roomType.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={resolveAssetUrl(roomType.image_url) || DEFAULT_ROOM_TYPE_IMAGE} 
+                  alt={roomType.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="p-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{roomType.name}</h3>
                 <p className="text-gray-600 mb-4">{roomType.description}</p>
                 
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-sm text-gray-500">Sig'imi</p>
-                    <p className="text-lg font-semibold">{roomType.capacity} kishi</p>
+                    <p className="text-sm text-gray-500">{t('admin.pages.roomTypes.labels.capacity')}</p>
+                    <p className="text-lg font-semibold">
+                      {t('admin.pages.roomTypes.labels.capacityValue', { value: roomType.capacity })}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Narxi</p>
-                    <p className="text-2xl font-bold text-blue-600">${roomType.base_price}</p>
+                    <p className="text-sm text-gray-500">{t('admin.pages.roomTypes.labels.price')}</p>
+                    <p className="text-2xl font-bold text-blue-600">{formatUsd(roomType.base_price)}</p>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Qulayliklar:</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">{t('admin.pages.roomTypes.labels.amenities')}:</p>
                   <div className="flex flex-wrap gap-2">
                     {roomType.amenities && roomType.amenities.map((amenity, index) => (
                       <span
@@ -205,7 +216,7 @@ const RoomTypesPage = () => {
                 </div>
 
                 <div className="text-sm text-gray-500 mb-4">
-                  Xonalar: {roomType.rooms_count || 0} ta
+                  {t('admin.pages.roomTypes.labels.roomsCountValue', { value: roomType.rooms_count || 0 })}
                 </div>
 
                 <div className="flex gap-2">
@@ -213,13 +224,13 @@ const RoomTypesPage = () => {
                     onClick={() => handleEdit(roomType)}
                     className="flex-1 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100"
                   >
-                    Tahrirlash
+                    {t('common.edit')}
                   </button>
                   <button
                     onClick={() => handleDelete(roomType.id)}
                     className="flex-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100"
                   >
-                    O'chirish
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -229,7 +240,7 @@ const RoomTypesPage = () => {
 
         {roomTypes.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Xona turlari topilmadi</p>
+            <p className="text-gray-500 text-lg">{t('admin.pages.roomTypes.empty')}</p>
           </div>
         )}
       </div>
@@ -239,11 +250,13 @@ const RoomTypesPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">
-              {editingRoomType ? 'Xona turini tahrirlash' : 'Yangi xona turi'}
+              {editingRoomType
+                ? t('admin.pages.roomTypes.editTitle')
+                : t('admin.pages.roomTypes.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Nomi</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.name')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -254,7 +267,7 @@ const RoomTypesPage = () => {
               </div>
               
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Tavsif</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.description')}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -265,7 +278,7 @@ const RoomTypesPage = () => {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-gray-700 mb-2">Sig'imi</label>
+                  <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.capacity')}</label>
                   <input
                     type="number"
                     value={formData.capacity}
@@ -276,7 +289,7 @@ const RoomTypesPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2">Narxi ($)</label>
+                  <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.priceUsd')}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -289,7 +302,7 @@ const RoomTypesPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Rasm</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.image')}</label>
                 <div className="mb-2">
                   {imagePreview && (
                     <img 
@@ -304,22 +317,23 @@ const RoomTypesPage = () => {
                     onChange={handleImageChange}
                     className="w-full px-3 py-2 border rounded-lg"
                   />
-                  <p className="text-sm text-gray-500 mt-1">yoki URL kiriting:</p>
+                  <p className="text-sm text-gray-500 mt-1">{t('admin.pages.roomTypes.form.orEnterUrl')}:</p>
                   <input
                     type="url"
                     value={formData.image_url}
                     onChange={(e) => {
-                      setFormData({ ...formData, image_url: e.target.value });
-                      setImagePreview(e.target.value);
+                      const nextValue = e.target.value;
+                      setFormData({ ...formData, image_url: nextValue });
+                      setImagePreview(resolveAssetUrl(nextValue) || DEFAULT_ROOM_TYPE_IMAGE);
                     }}
                     className="w-full px-3 py-2 border rounded-lg mt-1"
-                    placeholder="https://example.com/image.jpg"
+                    placeholder={t('admin.pages.roomTypes.form.imageUrlPlaceholder')}
                   />
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Qulayliklar</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.roomTypes.form.amenities')}</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -327,14 +341,14 @@ const RoomTypesPage = () => {
                     onChange={(e) => setAmenityInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                     className="flex-1 px-3 py-2 border rounded-lg"
-                    placeholder="Qulaylik qo'shish"
+                    placeholder={t('admin.pages.roomTypes.form.addAmenityPlaceholder')}
                   />
                   <button
                     type="button"
                     onClick={addAmenity}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                   >
-                    Qo'shish
+                    {t('common.add')}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -361,14 +375,14 @@ const RoomTypesPage = () => {
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                 >
-                  Saqlash
+                  {t('common.save')}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
                 >
-                  Bekor qilish
+                  {t('common.cancel')}
                 </button>
               </div>
             </form>

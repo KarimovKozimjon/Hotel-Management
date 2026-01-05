@@ -18,7 +18,7 @@ function NotificationDemo() {
       action: () => addNotification({
         type: 'payment',
         message: 'To\'lov qabul qilindi: $250',
-        description: 'Bron #BK12345 - Click.uz',
+        description: 'Bron #BK12345 - Karta to\'lovi',
         sound: true
       })
     },

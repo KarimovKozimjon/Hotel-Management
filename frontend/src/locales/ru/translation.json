@@ -16,7 +16,10 @@
     "reviews": "Отзывы",
     "logout": "Выйти",
     "gallery": "Галерея",
-    "backToHome": "Вернуться на главную"
+    "backToHome": "Вернуться на главную",
+    "reports": "Отчёты",
+    "discounts": "Скидки",
+    "messages": "Сообщения"
   },
   "auth": {
     "email": "Email",
@@ -26,6 +29,324 @@
     "register": "Регистрация",
     "loggingIn": "Вход...",
     "or": "или"
+  },
+  "admin": {
+    "roleLabel": "Админ",
+    "dashboard": {
+      "title": "Панель управления",
+      "totalRooms": "Всего номеров",
+      "availableRooms": "Свободные номера",
+      "occupiedRooms": "Занятые номера",
+      "occupancyRate": "Загрузка %",
+      "todayCheckins": "Заезды сегодня",
+      "todayCheckouts": "Выезды сегодня",
+      "todayRevenue": "Доход сегодня",
+      "monthRevenue": "Доход за месяц"
+      },
+      "pages": {
+        "rooms": {
+          "addNew": "Добавить номер",
+          "createTitle": "Новый номер",
+          "editTitle": "Редактировать номер",
+          "searchPlaceholder": "Поиск по номеру, типу, статусу...",
+          "confirmDelete": "Удалить этот номер?",
+          "imagesTitle": "Фото номера",
+          "actions": {
+            "images": "Фото"
+          },
+          "form": {
+            "roomType": "Тип номера"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки номеров",
+            "roomTypesLoadError": "Ошибка загрузки типов номеров",
+            "created": "Номер добавлен",
+            "updated": "Номер обновлён",
+            "deleted": "Номер удалён",
+            "deleteError": "Ошибка удаления номера",
+            "genericError": "Произошла ошибка"
+          },
+          "table": {
+            "roomNumber": "Номер",
+            "type": "Тип",
+            "floor": "Этаж",
+            "price": "Цена",
+            "status": "Статус",
+            "actions": "Действия"
+          }
+        },
+        "bookings": {
+          "addNew": "Добавить бронь",
+          "createTitle": "Новая бронь",
+          "editTitle": "Редактировать бронь",
+          "searchPlaceholder": "Поиск по гостю, номеру, статусу...",
+          "confirmDelete": "Удалить эту бронь?",
+          "confirmCheckIn": "Выполнить check-in?",
+          "confirmCheckOut": "Выполнить check-out?",
+          "confirmCancel": "Отменить бронь?",
+          "confirmConfirm": "Подтвердить бронь?",
+          "table": {
+            "guest": "Гость",
+            "room": "Номер",
+            "checkIn": "Заезд",
+            "checkOut": "Выезд",
+            "amount": "Сумма",
+            "status": "Статус",
+            "actions": "Действия"
+          },
+          "form": {
+            "guest": "Гость",
+            "room": "Номер",
+            "checkInDate": "Дата заезда",
+            "checkOutDate": "Дата выезда",
+            "totalAmount": "Итоговая сумма (USD)",
+            "status": "Статус"
+          },
+          "actions": {
+            "confirm": "Подтвердить",
+            "cancel": "Отменить",
+            "checkIn": "Check-in",
+            "checkOut": "Check-out"
+          },
+          "notifications": {
+            "checkInTitle": "Гость прошёл check-in",
+            "checkOutTitle": "Гость прошёл check-out",
+            "cancelTitle": "Бронь отменена",
+            "confirmTitle": "Бронь подтверждена",
+            "bookingNumber": "Бронь #{{id}}"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки броней",
+            "guestsLoadError": "Ошибка загрузки гостей",
+            "roomsLoadError": "Ошибка загрузки номеров",
+            "created": "Бронь создана",
+            "updated": "Бронь обновлена",
+            "deleted": "Бронь удалена",
+            "deleteError": "Ошибка удаления брони",
+            "checkInSuccess": "Check-in выполнен",
+            "checkInError": "Ошибка check-in",
+            "checkOutSuccess": "Check-out выполнен",
+            "checkOutError": "Ошибка check-out",
+            "cancelSuccess": "Бронь отменена",
+            "cancelError": "Ошибка отмены брони",
+            "confirmSuccess": "Бронь подтверждена",
+            "confirmError": "Ошибка подтверждения брони",
+            "genericError": "Произошла ошибка"
+          }
+        },
+        "roomTypes": {
+          "title": "Типы номеров",
+          "addNew": "Добавить тип",
+          "createTitle": "Новый тип номера",
+          "editTitle": "Редактировать тип номера",
+          "confirmDelete": "Удалить этот тип номера?",
+          "empty": "Типы номеров не найдены",
+          "roomsCount": "Номера",
+          "labels": {
+            "capacity": "Вместимость",
+            "capacityValue": "{{value}} чел.",
+            "price": "Цена",
+            "amenities": "Удобства",
+            "roomsCountValue": "Номера: {{value}}"
+          },
+          "form": {
+            "name": "Название",
+            "description": "Описание",
+            "capacity": "Вместимость",
+            "priceUsd": "Цена (USD)",
+            "image": "Изображение",
+            "orEnterUrl": "или введите URL",
+            "imageUrlPlaceholder": "https://example.com/image.jpg",
+            "amenities": "Удобства",
+            "addAmenityPlaceholder": "Добавить удобство"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки типов номеров",
+            "created": "Тип номера добавлен",
+            "updated": "Тип номера обновлён",
+            "deleted": "Тип номера удалён",
+          "select": "Выберите",
+            "deleteError": "Ошибка удаления типа номера",
+            "genericError": "Произошла ошибка"
+          }
+        },
+        "users": {
+          "title": "Пользователи",
+          "addNew": "Добавить пользователя",
+          "createTitle": "Новый пользователь",
+          "editTitle": "Редактировать пользователя",
+          "searchPlaceholder": "Поиск по имени, email, роли...",
+          "confirmDelete": "Удалить этого пользователя?",
+          "notAvailable": "Н/Д",
+          "empty": "Пользователи не найдены",
+          "total": "Всего пользователей",
+          "stats": {
+            "admins": "Админы",
+            "managers": "Менеджеры",
+            "staff": "Сотрудники"
+          },
+          "table": {
+            "id": "ID",
+            "name": "Имя",
+            "email": "Email",
+            "role": "Роль",
+            "createdAt": "Создан",
+            "actions": "Действия"
+          },
+          "form": {
+            "name": "Имя",
+            "role": "Роль",
+            "passwordOptional": "оставьте пустым — не изменится",
+            "newPasswordPlaceholder": "Новый пароль",
+            "passwordPlaceholder": "Пароль"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки пользователей",
+            "rolesLoadError": "Ошибка загрузки ролей",
+            "created": "Пользователь добавлен",
+            "updated": "Пользователь обновлён",
+            "deleted": "Пользователь удалён",
+            "deleteError": "Ошибка удаления пользователя",
+            "genericError": "Произошла ошибка"
+          }
+        },
+        "services": {
+          "addNew": "Добавить услугу",
+          "createTitle": "Новая услуга",
+          "editTitle": "Редактировать услугу",
+          "searchPlaceholder": "Поиск по названию услуги, категории...",
+          "confirmDelete": "Удалить эту услугу?",
+          "addToBookingTitle": "Добавить услугу к бронированию",
+          "empty": "Услуги не найдены",
+          "status": {
+            "active": "Активно",
+            "inactive": "Неактивно"
+          },
+          "category": {
+            "room_service": "Room service",
+            "laundry": "Прачечная",
+            "restaurant": "Ресторан",
+            "spa": "Spa",
+            "transport": "Транспорт",
+            "other": "Другое"
+          },
+          "actions": {
+            "addToBooking": "Добавить к брони",
+            "add": "Добавить"
+          },
+          "form": {
+            "name": "Название",
+            "description": "Описание",
+            "price": "Цена (USD)",
+            "category": "Категория",
+            "active": "Активно",
+            "booking": "Бронь",
+            "roomPrefix": "Номер",
+            "quantity": "Количество",
+            "total": "Итого"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки услуг",
+            "bookingsLoadError": "Ошибка загрузки броней",
+            "created": "Услуга добавлена",
+            "updated": "Услуга обновлена",
+            "deleted": "Услуга удалена",
+            "deleteError": "Ошибка удаления услуги",
+            "genericError": "Произошла ошибка",
+            "addedToBooking": "Услуга добавлена к бронированию"
+          }
+        },
+        "payments": {
+          "addNew": "Добавить платеж",
+          "createTitle": "Новый платеж",
+          "searchPlaceholder": "Поиск по гостю, способу оплаты, transaction ID...",
+          "empty": "Платежи не найдены",
+          "total": "Всего платежей",
+          "filters": {
+            "status": "Статус",
+            "method": "Способ оплаты",
+            "all": "Все",
+            "apply": "Применить фильтр"
+          },
+          "status": {
+            "pending": "Ожидается",
+            "completed": "Оплачено",
+            "failed": "Ошибка",
+            "refunded": "Возврат"
+          },
+          "method": {
+            "cash": "Наличные",
+            "card": "Карта"
+          },
+          "table": {
+            "id": "ID",
+            "guest": "Гость",
+            "amount": "Сумма",
+            "method": "Способ",
+            "status": "Статус",
+            "date": "Дата"
+          },
+          "summary": {
+            "paid": "Оплачено",
+            "pending": "Ожидается",
+            "failed": "Ошибка"
+          },
+          "form": {
+            "booking": "Бронь",
+            "roomPrefix": "Номер",
+            "amount": "Сумма (USD)",
+            "method": "Способ оплаты",
+            "transactionId": "Transaction ID (необязательно)",
+            "transactionPlaceholder": "TRX123456",
+            "notes": "Комментарий (необязательно)",
+            "notesPlaceholder": "Дополнительные детали...",
+            "save": "Сохранить платеж"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки платежей",
+            "bookingsLoadError": "Ошибка загрузки броней",
+            "created": "Платеж создан",
+            "createError": "Ошибка создания платежа"
+          }
+        },
+        "guests": {
+          "addNew": "Добавить гостя",
+          "createTitle": "Новый гость",
+          "editTitle": "Редактировать гостя",
+          "searchPlaceholder": "Поиск по имени, email или телефону...",
+          "confirmDelete": "Удалить этого гостя?",
+          "table": {
+            "firstName": "Имя",
+            "lastName": "Фамилия",
+            "email": "Email",
+            "phone": "Телефон",
+            "actions": "Действия"
+          },
+          "form": {
+            "firstName": "Имя",
+            "lastName": "Фамилия",
+            "email": "Email",
+            "phone": "Телефон",
+            "address": "Адрес",
+            "idNumber": "ID/номер паспорта"
+          },
+          "toast": {
+            "loadError": "Ошибка загрузки гостей",
+            "searchError": "Ошибка поиска",
+            "created": "Гость добавлен",
+            "updated": "Гость обновлён",
+            "deleted": "Гость удалён",
+            "deleteError": "Ошибка удаления гостя",
+            "genericError": "Произошла ошибка"
+          }
+        }
+      }
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "new": "новых",
+    "markAllRead": "Отметить все прочитанными",
+    "empty": "Уведомлений нет"
   },
   "home": {
     "title": "Добро пожаловать в Grand Hotel!",
@@ -153,17 +474,162 @@
     "myBookings": "Мои бронирования",
     "bookRoom": "Забронировать номер",
     "paymentHistory": "История платежей",
+    "viewPaymentHistory": "Посмотреть платежи",
+    "toast": {
+      "sessionExpired": "Сессия истекла. Пожалуйста, войдите снова."
+    },
+    "bookRoomPage": {
+      "subtitle": "Выберите доступный номер и забронируйте его",
+      "selectDatesTitle": "Выберите даты",
+      "stayDuration": "Срок проживания",
+      "roomNumberShort": "Номер #{{number}}",
+      "people": "чел.",
+      "floorSuffix": "этаж",
+      "bookAction": "Забронировать",
+      "checkInShort": "Заезд",
+      "checkOutShort": "Выезд",
+      "daysCount": "Количество дней",
+      "specialRequestsPlaceholder": "Например: высокий этаж, вид из окна и т.д.",
+      "days": "{{count}} день",
+      "days_plural": "{{count}} дней",
+      "roomsFoundText": "Найдено номеров: {{count}}",
+      "tryDifferentFilters": "Попробуйте поиск с другими фильтрами",
+      "selectDatesForSearch": "Выберите даты для поиска",
+      "toast": {
+        "loadRoomTypesError": "Ошибка загрузки типов номеров",
+        "selectDates": "Пожалуйста, выберите даты заезда и выезда",
+        "roomsFound": "Найдено номеров: {{count}}",
+        "roomsNotFound": "Номера не найдены",
+        "loadRoomsError": "Ошибка загрузки номеров",
+        "bookedSuccess": "Номер успешно забронирован!",
+        "bookingError": "Ошибка при бронировании"
+      }
+    },
     "profile": "Мой профиль",
+    "profilePage": {
+      "subtitle": "Просматривайте и редактируйте личные данные",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Email",
+      "emailReadOnly": "Email нельзя изменить",
+      "phone": "Телефон",
+      "passportNumber": "Номер паспорта",
+      "dateOfBirth": "Дата рождения",
+      "nationality": "Национальность",
+      "address": "Адрес",
+      "accountInfoTitle": "Данные аккаунта",
+      "accountStatusTitle": "Статус аккаунта",
+      "accountStatusSubtitle": "Ваш аккаунт активен",
+      "accountStatusActive": "Активен",
+      "changePasswordSubtitle": "Обновите пароль",
+      "changeAction": "Изменить →",
+      "deleteAccountTitle": "Удалить аккаунт",
+      "deleteAccountSubtitle": "Удалить аккаунт навсегда",
+      "deleteConfirm": "Вы действительно хотите удалить аккаунт?",
+      "toast": {
+        "updated": "Профиль успешно обновлён",
+        "updateError": "Ошибка при обновлении профиля",
+        "deleted": "Аккаунт успешно удалён",
+        "deleteError": "Ошибка при удалении аккаунта"
+      }
+    },
     "changePassword": "Изменить пароль",
+    "changePasswordPage": {
+      "subtitle": "Обновите пароль",
+      "currentPassword": "Текущий пароль",
+      "currentPasswordPlaceholder": "Введите текущий пароль",
+      "newPassword": "Новый пароль",
+      "newPasswordPlaceholder": "Введите новый пароль (минимум {{count}} символов)",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Повторите новый пароль",
+      "toast": {
+        "mismatch": "Пароли не совпадают",
+        "minLength": "Пароль должен быть минимум {{count}} символов",
+        "success": "Пароль успешно обновлён",
+        "error": "Ошибка обновления пароля"
+      }
+    },
     "welcome": "Добро пожаловать",
     "totalBookings": "Всего бронирований",
+    "upcomingBookings": "Предстоящие бронирования",
     "activeBookings": "Активные бронирования",
     "totalSpent": "Всего потрачено",
     "reviewsSubmitted": "Отзывы",
     "quickLinks": "Быстрые ссылки",
     "viewAllBookings": "Все бронирования",
     "makeNewBooking": "Новое бронирование",
-    "manageProfile": "Управление профилем"
+    "manageProfile": "Управление профилем",
+    "dashboardSubtitle": "Портал гостей — ваша личная панель",
+    "personalInfo": "Личная информация",
+    "phone": "Телефон",
+    "passportNumber": "Номер паспорта",
+    "nationality": "Национальность",
+    "editProfile": "Редактировать профиль",
+    "loadError": "Ошибка загрузки данных",
+    "bookingStatus": {
+      "pending": "Ожидается",
+      "confirmed": "Подтверждено",
+      "checkedIn": "Заезд выполнен",
+      "checkedOut": "Выезд выполнен",
+      "cancelled": "Отменено"
+    },
+    "bookings": {
+      "subtitle": "Смотрите все бронирования здесь",
+      "emptyTitle": "Бронирования не найдены",
+      "emptySubtitle": "Вы еще не бронировали номера",
+      "toast": {
+        "loadError": "Ошибка загрузки бронирований",
+        "cancelled": "Бронирование отменено",
+        "cancelError": "Ошибка отмены бронирования"
+      }
+    },
+    "bookingsPage": {
+      "bookingNumber": "Бронь #{{id}}",
+      "bookingNumberLabel": "Номер брони",
+      "createdAt": "Создано",
+      "room": "Номер",
+      "invoice": "Счёт",
+      "payAction": "Оплатить",
+      "payNow": "Оплатить",
+      "leaveReview": "Оставить отзыв",
+      "ratingLabel": "Оценка (1-5 звёзд)",
+      "commentLabel": "Комментарий",
+      "reviewPlaceholder": "Напишите о вашем опыте...",
+      "cancelTitle": "Отменить бронирование",
+      "cancelPrompt": "Вы хотите отменить это бронирование?",
+      "amount": "Сумма",
+      "cancelPolicy": "Условия отмены: отмените не позднее чем за 24 часа до заезда для полного возврата.",
+      "keepBooking": "Нет, оставить",
+      "confirmCancel": "Да, отменить",
+      "paymentNotes": "Оплата выполнена через {{method}}",
+      "payment": {
+        "cardHint": "Visa, Mastercard",
+        "cashHint": "Оплата на ресепшене"
+      }
+    },
+    "invoice": {
+      "toast": {
+        "downloading": "Загрузка счета..."
+      }
+    },
+    "reviews": {
+      "toast": {
+        "added": "Отзыв успешно отправлен!",
+        "addError": "Ошибка отправки отзыва"
+      }
+    },
+    "paymentHistoryPage": {
+      "roomFallback": "Номер",
+      "empty": "Платежи не найдены.",
+      "method": "Способ оплаты",
+      "status": "Статус",
+      "statusCompleted": "Оплачено",
+      "date": "Дата",
+      "bookingNumber": "Номер бронирования",
+      "toast": {
+        "loadError": "Ошибка загрузки истории платежей"
+      }
+    }
   },
   "common": {
     "search": "Поиск",
@@ -175,6 +641,7 @@
     "edit": "Редактировать",
     "add": "Добавить",
     "view": "Просмотр",
+    "select": "Выберите",
     "apply": "Применить",
     "reset": "Сбросить",
     "clear": "Очистить",
@@ -184,7 +651,8 @@
     "back": "Назад",
     "next": "Далее",
     "submit": "Отправить",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "notAvailable": "Н/Д"
   },
   "booking": {
     "title": "Забронировать номер",
@@ -201,8 +669,10 @@
     "status": {
       "pending": "Ожидание",
       "confirmed": "Подтверждено",
-      "checkedIn": "Заселен",
-      "checkedOut": "Выселен",
+      "checkedIn": "Заезд выполнен",
+      "checkedOut": "Выезд выполнен",
+      "checked_in": "Заезд выполнен",
+      "checked_out": "Выезд выполнен",
       "cancelled": "Отменено"
     }
   },
@@ -250,7 +720,10 @@
     "payme": "Payme",
     "paymentSuccess": "Оплата успешна",
     "paymentError": "Ошибка оплаты",
-    "totalAmount": "Общая сумма"
+    "paid": "Оплачено",
+    "unpaid": "Не оплачено",
+    "totalAmount": "Общая сумма",
+    "amountMissing": "Сумма платежа не найдена"
   },
   "footer": {
     "aboutUs": "О нас",

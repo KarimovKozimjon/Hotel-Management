@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { dashboardService } from '../../services/dashboardService';
-import Navbar from '../common/Navbar';
 import Loader from '../common/Loader';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import {
   LineChart,
   Line,
@@ -20,6 +20,7 @@ import {
 } from 'recharts';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,43 +75,40 @@ const Dashboard = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+    <div className="min-h-screen">
+        <h1 className="text-3xl font-bold mb-6">{t('admin.dashboard.title') || 'Dashboard'}</h1>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Jami Xonalar</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.totalRooms') || 'Jami Xonalar'}</div>
             <div className="text-3xl font-bold text-blue-600">{stats?.stats?.total_rooms}</div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Bo'sh Xonalar</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.availableRooms') || "Bo'sh Xonalar"}</div>
             <div className="text-3xl font-bold text-green-600">{stats?.stats?.available_rooms}</div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Band Xonalar</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.occupiedRooms') || 'Band Xonalar'}</div>
             <div className="text-3xl font-bold text-orange-600">{stats?.stats?.occupied_rooms}</div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Bandlik %</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.occupancyRate') || 'Bandlik %'}</div>
             <div className="text-3xl font-bold text-purple-600">{stats?.occupancy_rate}%</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Bugungi Kirish</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.todayCheckins') || 'Bugungi Kirish'}</div>
             <div className="text-3xl font-bold text-blue-600">{stats?.stats?.today_checkins}</div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-gray-500 text-sm">Bugungi Chiqish</div>
+            <div className="text-gray-500 text-sm">{t('admin.dashboard.todayCheckouts') || 'Bugungi Chiqish'}</div>
             <div className="text-3xl font-bold text-red-600">{stats?.stats?.today_checkouts}</div>
           </div>
         </div>
@@ -118,14 +116,14 @@ const Dashboard = () => {
         {/* Revenue */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold mb-2">Bugungi Daromad</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('admin.dashboard.todayRevenue') || 'Bugungi Daromad'}</h3>
             <div className="text-2xl font-bold text-green-600">
               ${stats?.stats?.today_revenue?.toLocaleString() || 0}
             </div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold mb-2">Oylik Daromad</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('admin.dashboard.monthRevenue') || 'Oylik Daromad'}</h3>
             <div className="text-2xl font-bold text-green-600">
               ${stats?.stats?.month_revenue?.toLocaleString() || 0}
             </div>
@@ -240,7 +238,6 @@ const Dashboard = () => {
             </table>
           </div>
         </div>
-      </div>
     </div>
   );
 };

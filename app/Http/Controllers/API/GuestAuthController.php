@@ -105,7 +105,7 @@ class GuestAuthController extends Controller
     public function myBookings(Request $request)
     {
         $bookings = $request->user()->bookings()
-            ->with(['room.roomType', 'payments', 'services'])
+            ->with(['room.roomType', 'payments', 'services', 'reviews'])
             ->latest()
             ->get();
 

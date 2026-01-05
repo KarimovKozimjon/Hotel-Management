@@ -51,15 +51,10 @@ class BookingController extends Controller
 
         // Check room availability
         $isAvailable = !Booking::where('room_id', $validated['room_id'])
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('check_in_date', [$validated['check_in_date'], $validated['check_out_date']])
-                      ->orWhereBetween('check_out_date', [$validated['check_in_date'], $validated['check_out_date']])
-                      ->orWhere(function ($q) use ($validated) {
-                          $q->where('check_in_date', '<=', $validated['check_in_date'])
-                            ->where('check_out_date', '>=', $validated['check_out_date']);
-                      });
-            })
             ->whereIn('status', ['confirmed', 'checked_in'])
+            // Overlap check using a half-open interval: [check_in, check_out)
+            ->where('check_in_date', '<', $validated['check_out_date'])
+            ->where('check_out_date', '>', $validated['check_in_date'])
             ->exists();
 
         if (!$isAvailable) {

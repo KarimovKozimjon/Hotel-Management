@@ -16,7 +16,10 @@
     "reviews": "Reviews",
     "logout": "Logout",
     "gallery": "Gallery",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "reports": "Reports",
+    "discounts": "Discounts",
+    "messages": "Messages"
   },
   "auth": {
     "email": "Email",
@@ -26,6 +29,323 @@
     "register": "Register",
     "loggingIn": "Logging in...",
     "or": "or"
+  },
+  "admin": {
+    "roleLabel": "Admin",
+    "dashboard": {
+      "title": "Dashboard",
+      "totalRooms": "Total Rooms",
+      "availableRooms": "Available Rooms",
+      "occupiedRooms": "Occupied Rooms",
+      "occupancyRate": "Occupancy %",
+      "todayCheckins": "Today's Check-ins",
+      "todayCheckouts": "Today's Check-outs",
+      "todayRevenue": "Today's Revenue",
+      "monthRevenue": "Monthly Revenue"
+    },
+    "pages": {
+      "rooms": {
+        "addNew": "Add room",
+        "createTitle": "New room",
+        "editTitle": "Edit room",
+        "searchPlaceholder": "Search by room number, type, status...",
+        "confirmDelete": "Do you want to delete this room?",
+        "imagesTitle": "Room Images",
+        "actions": {
+          "images": "Images"
+        },
+        "form": {
+          "roomType": "Room Type"
+        },
+        "toast": {
+          "loadError": "Error loading rooms",
+          "roomTypesLoadError": "Error loading room types",
+          "created": "Room created",
+          "updated": "Room updated",
+          "deleted": "Room deleted",
+          "deleteError": "Error deleting room",
+          "genericError": "Something went wrong"
+        },
+        "table": {
+          "roomNumber": "Room #",
+          "type": "Type",
+          "floor": "Floor",
+          "price": "Price",
+          "status": "Status",
+          "actions": "Actions"
+        }
+      },
+      "bookings": {
+        "addNew": "Add booking",
+        "createTitle": "New booking",
+        "editTitle": "Edit booking",
+        "searchPlaceholder": "Search by guest, room, status...",
+        "confirmDelete": "Do you want to delete this booking?",
+        "confirmCheckIn": "Do you want to check-in the guest?",
+        "confirmCheckOut": "Do you want to check-out the guest?",
+        "confirmCancel": "Do you want to cancel this booking?",
+        "confirmConfirm": "Do you want to confirm this booking?",
+        "table": {
+          "guest": "Guest",
+          "room": "Room",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "amount": "Amount",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "form": {
+          "guest": "Guest",
+          "room": "Room",
+          "checkInDate": "Check-in date",
+          "checkOutDate": "Check-out date",
+          "totalAmount": "Total amount (USD)",
+          "status": "Status"
+        },
+        "actions": {
+          "confirm": "Confirm",
+          "cancel": "Cancel",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out"
+        },
+        "notifications": {
+          "checkInTitle": "Guest checked-in",
+          "checkOutTitle": "Guest checked-out",
+          "cancelTitle": "Booking cancelled",
+          "confirmTitle": "Booking confirmed",
+          "bookingNumber": "Booking #{{id}}"
+        },
+        "toast": {
+          "loadError": "Error loading bookings",
+          "guestsLoadError": "Error loading guests",
+          "roomsLoadError": "Error loading rooms",
+          "created": "Booking created",
+          "updated": "Booking updated",
+          "deleted": "Booking deleted",
+          "deleteError": "Error deleting booking",
+          "checkInSuccess": "Check-in completed",
+          "checkInError": "Error during check-in",
+          "checkOutSuccess": "Check-out completed",
+          "checkOutError": "Error during check-out",
+          "cancelSuccess": "Booking cancelled",
+          "cancelError": "Error cancelling booking",
+          "confirmSuccess": "Booking confirmed",
+          "confirmError": "Error confirming booking",
+          "genericError": "Something went wrong"
+        }
+      },
+      "roomTypes": {
+        "title": "Room Types",
+        "addNew": "Add room type",
+        "createTitle": "New room type",
+        "editTitle": "Edit room type",
+        "confirmDelete": "Do you want to delete this room type?",
+        "empty": "No room types found",
+        "roomsCount": "Rooms",
+        "labels": {
+          "capacity": "Capacity",
+          "capacityValue": "{{value}} guests",
+          "price": "Price",
+          "amenities": "Amenities",
+          "roomsCountValue": "Rooms: {{value}}"
+        },
+        "form": {
+          "name": "Name",
+          "description": "Description",
+          "capacity": "Capacity",
+          "priceUsd": "Price (USD)",
+          "image": "Image",
+          "orEnterUrl": "or enter URL",
+          "imageUrlPlaceholder": "https://example.com/image.jpg",
+          "amenities": "Amenities",
+          "addAmenityPlaceholder": "Add amenity"
+        },
+        "toast": {
+          "loadError": "Error loading room types",
+          "created": "Room type created",
+          "updated": "Room type updated",
+          "deleted": "Room type deleted",
+          "deleteError": "Error deleting room type",
+          "genericError": "Something went wrong"
+        }
+      },
+      "users": {
+        "title": "Users",
+        "addNew": "Add user",
+        "createTitle": "New user",
+        "editTitle": "Edit user",
+        "searchPlaceholder": "Search by name, email, role...",
+        "confirmDelete": "Do you want to delete this user?",
+        "notAvailable": "N/A",
+        "empty": "No users found",
+        "total": "Total users",
+        "stats": {
+          "admins": "Admins",
+          "managers": "Managers",
+          "staff": "Staff"
+        },
+        "table": {
+          "id": "ID",
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "createdAt": "Created",
+          "actions": "Actions"
+        },
+        "form": {
+          "name": "Name",
+          "role": "Role",
+          "passwordOptional": "leave empty to keep unchanged",
+          "newPasswordPlaceholder": "New password",
+          "passwordPlaceholder": "Password"
+        },
+        "toast": {
+          "loadError": "Error loading users",
+          "rolesLoadError": "Error loading roles",
+          "created": "User created",
+          "updated": "User updated",
+          "deleted": "User deleted",
+          "deleteError": "Error deleting user",
+          "genericError": "Something went wrong"
+        }
+      },
+      "services": {
+        "addNew": "Add service",
+        "createTitle": "New service",
+        "editTitle": "Edit service",
+        "searchPlaceholder": "Search by service name, category...",
+        "confirmDelete": "Do you want to delete this service?",
+        "addToBookingTitle": "Add service to booking",
+        "empty": "No services found",
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "category": {
+          "room_service": "Room service",
+          "laundry": "Laundry",
+          "restaurant": "Restaurant",
+          "spa": "Spa",
+          "transport": "Transport",
+          "other": "Other"
+        },
+        "actions": {
+          "addToBooking": "Add to booking",
+          "add": "Add"
+        },
+        "form": {
+          "name": "Name",
+          "description": "Description",
+          "price": "Price (USD)",
+          "category": "Category",
+          "active": "Active",
+          "booking": "Booking",
+          "roomPrefix": "Room",
+          "quantity": "Quantity",
+          "total": "Total"
+        },
+        "toast": {
+          "loadError": "Error loading services",
+          "bookingsLoadError": "Error loading bookings",
+          "created": "Service created",
+          "updated": "Service updated",
+          "deleted": "Service deleted",
+          "deleteError": "Error deleting service",
+          "genericError": "Something went wrong",
+          "addedToBooking": "Service added to booking"
+        }
+      },
+      "payments": {
+        "addNew": "Add payment",
+        "createTitle": "New payment",
+        "searchPlaceholder": "Search by guest, payment method, transaction ID...",
+        "empty": "No payments found",
+        "total": "Total payments",
+        "filters": {
+          "status": "Status",
+          "method": "Payment method",
+          "all": "All",
+          "apply": "Apply filters"
+        },
+        "status": {
+          "pending": "Pending",
+          "completed": "Completed",
+          "failed": "Failed",
+          "refunded": "Refunded"
+        },
+        "method": {
+          "cash": "Cash",
+          "card": "Card"
+        },
+        "table": {
+          "id": "ID",
+          "guest": "Guest",
+          "amount": "Amount",
+          "method": "Method",
+          "status": "Status",
+          "date": "Date"
+        },
+        "summary": {
+          "paid": "Paid",
+          "pending": "Pending",
+          "failed": "Failed"
+        },
+        "form": {
+          "booking": "Booking",
+          "roomPrefix": "Room",
+          "amount": "Amount (USD)",
+          "method": "Payment method",
+          "transactionId": "Transaction ID (optional)",
+          "transactionPlaceholder": "TRX123456",
+          "notes": "Notes (optional)",
+          "notesPlaceholder": "Additional details...",
+          "save": "Save payment"
+        },
+        "toast": {
+          "loadError": "Error loading payments",
+          "bookingsLoadError": "Error loading bookings",
+          "created": "Payment created",
+          "createError": "Error creating payment"
+        }
+      },
+      "guests": {
+        "addNew": "Add guest",
+        "createTitle": "New guest",
+        "editTitle": "Edit guest",
+        "searchPlaceholder": "Search by name, email, or phone...",
+        "confirmDelete": "Do you want to delete this guest?",
+        "table": {
+          "firstName": "First name",
+          "lastName": "Last name",
+          "email": "Email",
+          "phone": "Phone",
+          "actions": "Actions"
+        },
+        "form": {
+          "firstName": "First name",
+          "lastName": "Last name",
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address",
+          "idNumber": "ID/Passport number"
+        },
+        "toast": {
+          "loadError": "Error loading guests",
+          "searchError": "Search error",
+          "created": "Guest created",
+          "updated": "Guest updated",
+          "deleted": "Guest deleted",
+          "deleteError": "Error deleting guest",
+          "genericError": "Something went wrong"
+        }
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "new": "new",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications"
   },
   "home": {
     "title": "Welcome to Grand Hotel!",
@@ -153,17 +473,164 @@
     "myBookings": "My Bookings",
     "bookRoom": "Book Room",
     "paymentHistory": "Payment History",
+    "viewPaymentHistory": "View your payments",
+    "toast": {
+      "sessionExpired": "Session expired. Please log in again."
+    },
+    "bookRoomPage": {
+      "subtitle": "Choose an available room and book it",
+      "selectDatesTitle": "Select dates",
+      "stayDuration": "Length of stay",
+      "roomNumberShort": "Room #{{number}}",
+      "people": "people",
+      "floorSuffix": "floor",
+      "bookAction": "Book",
+      "checkInShort": "Check-in",
+      "checkOutShort": "Check-out",
+      "daysCount": "Number of days",
+      "specialRequestsPlaceholder": "For example: higher floor, window view, etc.",
+      "days": "{{count}} day",
+      "days_plural": "{{count}} days",
+      "roomsFoundText": "{{count}} room found",
+      "roomsFoundText_plural": "{{count}} rooms found",
+      "tryDifferentFilters": "Try searching with different filters",
+      "selectDatesForSearch": "Select dates to search",
+      "toast": {
+        "loadRoomTypesError": "Failed to load room types",
+        "selectDates": "Please select check-in and check-out dates",
+        "roomsFound": "{{count}} room found",
+        "roomsFound_plural": "{{count}} rooms found",
+        "roomsNotFound": "No rooms found",
+        "loadRoomsError": "Failed to load rooms",
+        "bookedSuccess": "Room booked successfully!",
+        "bookingError": "Booking failed"
+      }
+    },
     "profile": "My Profile",
+    "profilePage": {
+      "subtitle": "View and edit your personal information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "emailReadOnly": "Email cannot be changed",
+      "phone": "Phone",
+      "passportNumber": "Passport number",
+      "dateOfBirth": "Date of birth",
+      "nationality": "Nationality",
+      "address": "Address",
+      "accountInfoTitle": "Account information",
+      "accountStatusTitle": "Account status",
+      "accountStatusSubtitle": "Your account is active",
+      "accountStatusActive": "Active",
+      "changePasswordSubtitle": "Update your password",
+      "changeAction": "Change →",
+      "deleteAccountTitle": "Delete account",
+      "deleteAccountSubtitle": "Delete your account permanently",
+      "deleteConfirm": "Are you sure you want to delete your account?",
+      "toast": {
+        "updated": "Profile updated successfully",
+        "updateError": "Failed to update profile",
+        "deleted": "Account deleted successfully",
+        "deleteError": "Failed to delete account"
+      }
+    },
     "changePassword": "Change Password",
+    "changePasswordPage": {
+      "subtitle": "Update your password",
+      "currentPassword": "Current password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter new password (min {{count}} characters)",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter new password",
+      "toast": {
+        "mismatch": "Passwords do not match",
+        "minLength": "Password must be at least {{count}} characters",
+        "success": "Password updated successfully",
+        "error": "Failed to update password"
+      }
+    },
     "welcome": "Welcome",
     "totalBookings": "Total Bookings",
+    "upcomingBookings": "Upcoming Bookings",
     "activeBookings": "Active Bookings",
     "totalSpent": "Total Spent",
     "reviewsSubmitted": "Reviews",
     "quickLinks": "Quick Links",
     "viewAllBookings": "View All Bookings",
     "makeNewBooking": "Make New Booking",
-    "manageProfile": "Manage Profile"
+    "manageProfile": "Manage Profile",
+    "dashboardSubtitle": "Guest portal — your personal dashboard",
+    "personalInfo": "Personal Information",
+    "phone": "Phone",
+    "passportNumber": "Passport Number",
+    "nationality": "Nationality",
+    "editProfile": "Edit Profile",
+    "loadError": "Error loading data",
+    "bookingStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "checkedIn": "Checked in",
+      "checkedOut": "Checked out",
+      "cancelled": "Cancelled"
+    },
+    "bookings": {
+      "subtitle": "See all your bookings here",
+      "emptyTitle": "No bookings found",
+      "emptySubtitle": "You haven't booked any rooms yet",
+      "toast": {
+        "loadError": "Error loading bookings",
+        "cancelled": "Booking cancelled",
+        "cancelError": "Error cancelling booking"
+      }
+    },
+    "bookingsPage": {
+      "bookingNumber": "Booking #{{id}}",
+      "bookingNumberLabel": "Booking #",
+      "createdAt": "Created",
+      "room": "Room",
+      "invoice": "Invoice",
+      "payAction": "Pay",
+      "payNow": "Pay",
+      "leaveReview": "Leave a review",
+      "ratingLabel": "Rating (1-5 stars)",
+      "commentLabel": "Comment",
+      "reviewPlaceholder": "Write about your experience...",
+      "cancelTitle": "Cancel booking",
+      "cancelPrompt": "Do you want to cancel this booking?",
+      "amount": "Amount",
+      "cancelPolicy": "Cancellation policy: cancel at least 24 hours before arrival for a full refund.",
+      "keepBooking": "No, keep",
+      "confirmCancel": "Yes, cancel",
+      "paymentNotes": "Payment completed via {{method}}",
+      "payment": {
+        "cardHint": "Visa, Mastercard",
+        "cashHint": "Pay at reception"
+      }
+    },
+    "invoice": {
+      "toast": {
+        "downloading": "Downloading invoice..."
+      }
+    },
+    "reviews": {
+      "toast": {
+        "added": "Review submitted successfully!",
+        "addError": "Error submitting review"
+      }
+    },
+    "paymentHistoryPage": {
+      "roomFallback": "Room",
+      "empty": "No payments found.",
+      "method": "Payment method",
+      "status": "Status",
+      "statusCompleted": "Paid",
+      "date": "Date",
+      "bookingNumber": "Booking number",
+      "toast": {
+        "loadError": "Error loading payment history"
+      }
+    }
   },
   "common": {
     "search": "Search",
@@ -175,6 +642,7 @@
     "edit": "Edit",
     "add": "Add",
     "view": "View",
+    "select": "Select",
     "apply": "Apply",
     "reset": "Reset",
     "clear": "Clear",
@@ -184,7 +652,8 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
-    "close": "Close"
+    "close": "Close",
+    "notAvailable": "N/A"
   },
   "booking": {
     "title": "Book a Room",
@@ -203,6 +672,8 @@
       "confirmed": "Confirmed",
       "checkedIn": "Checked In",
       "checkedOut": "Checked Out",
+      "checked_in": "Checked In",
+      "checked_out": "Checked Out",
       "cancelled": "Cancelled"
     }
   },
@@ -250,7 +721,10 @@
     "payme": "Payme",
     "paymentSuccess": "Payment successful",
     "paymentError": "Payment error",
-    "totalAmount": "Total Amount"
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "totalAmount": "Total Amount",
+    "amountMissing": "Payment amount not found"
   },
   "footer": {
     "aboutUs": "About Us",

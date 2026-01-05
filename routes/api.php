@@ -13,8 +13,8 @@ use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\InvoiceController;
-use App\Http\Controllers\API\PaymentGatewayController;
 use App\Http\Controllers\API\DiscountController;
 use App\Http\Controllers\RoomImageController;
 use Illuminate\Http\Request;
@@ -35,10 +35,7 @@ Route::get('/public/room-types', [RoomTypeController::class, 'publicIndex']);
 // Public route - Contact form
 Route::post('/contact', [ContactController::class, 'store']);
 
-// Payment Gateway Webhooks (public - called by payment providers)
-Route::post('/payment/click/prepare', [PaymentGatewayController::class, 'clickPrepare']);
-Route::post('/payment/click/complete', [PaymentGatewayController::class, 'clickComplete']);
-Route::post('/payment/payme/webhook', [PaymentGatewayController::class, 'paymeWebhook']);
+// Payment gateways removed. Only cash/card payments are supported.
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -69,12 +66,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rooms - Admin and Manager can modify, all can view
     Route::middleware('role:Admin,Manager')->group(function () {
         Route::post('/rooms', [RoomController::class, 'store']);
-        Route::put('/rooms/{id}', [RoomController::class, 'update']);
-        Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
+        Route::put('/rooms/{room}', [RoomController::class, 'update']);
+        Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
     });
     Route::get('/rooms', [RoomController::class, 'index']);
     Route::get('/rooms/available', [RoomController::class, 'available']);
-    Route::get('/rooms/{id}', [RoomController::class, 'show']);
+    Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
     // Room Images - Admin can manage
     Route::middleware('role:Admin,Manager')->group(function () {
@@ -104,10 +101,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Payments - All authenticated users
     Route::apiResource('payments', PaymentController::class);
 
-    // Payment Gateway - Initiate payments
-    Route::post('/payment/initiate', [PaymentGatewayController::class, 'initiate']);
-    Route::get('/payment/status', [PaymentGatewayController::class, 'checkStatus']);
-
     // Services - Admin and Manager can modify, all can view
     Route::middleware('role:Admin,Manager')->group(function () {
         Route::post('/services', [ServiceController::class, 'store']);
@@ -122,6 +115,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reviews/booking/{bookingId}', [ReviewController::class, 'getByBooking']);
     Route::get('/reviews/guest/{guestId}', [ReviewController::class, 'getByGuest']);
     Route::apiResource('reviews', ReviewController::class);
+
+    // Notifications - Admin only
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    });
 
     // Discounts/Promo Codes - Admin and Manager
     Route::middleware('role:Admin,Manager')->group(function () {

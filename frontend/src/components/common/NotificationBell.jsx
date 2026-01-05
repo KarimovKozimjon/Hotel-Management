@@ -1,10 +1,22 @@
 import { useState } from 'react';
 import { useNotifications } from '../../context/NotificationContext';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 function NotificationBell() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [showPanel, setShowPanel] = useState(false);
+  const { t } = useTranslation();
+
+  const renderText = (notification, field) => {
+    if (field === 'message' && notification?.i18nKey) {
+      return t(notification.i18nKey, notification.i18nParams);
+    }
+    if (field === 'description' && notification?.i18nDescriptionKey) {
+      return t(notification.i18nDescriptionKey, notification.i18nDescriptionParams);
+    }
+    return notification?.[field];
+  };
 
   const getIcon = (type) => {
     switch (type) {
@@ -93,9 +105,11 @@ function NotificationBell() {
             <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Bildirishnomalar
+                  {t('notifications.title') || 'Bildirishnomalar'}
                   {unreadCount > 0 && (
-                    <span className="ml-2 text-sm text-blue-600">({unreadCount} yangi)</span>
+                    <span className="ml-2 text-sm text-blue-600">
+                      ({unreadCount} {t('notifications.new') || 'yangi'})
+                    </span>
                   )}
                 </h3>
                 {notifications.length > 0 && (
@@ -103,7 +117,7 @@ function NotificationBell() {
                     onClick={markAllAsRead}
                     className="text-sm text-blue-600 hover:text-blue-700"
                   >
-                    Hammasini o'qilgan
+                    {t('notifications.markAllRead') || "Hammasini o'qilgan"}
                   </button>
                 )}
               </div>
@@ -116,7 +130,7 @@ function NotificationBell() {
                   <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <p className="text-gray-500">Bildirishnomalar yo'q</p>
+                  <p className="text-gray-500">{t('notifications.empty') || "Bildirishnomalar yo'q"}</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
@@ -137,11 +151,11 @@ function NotificationBell() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                            {notification.message}
+                            {renderText(notification, 'message')}
                           </p>
                           {notification.description && (
                             <p className="text-xs text-gray-500 mt-1">
-                              {notification.description}
+                              {renderText(notification, 'description')}
                             </p>
                           )}
                           <p className="text-xs text-gray-400 mt-1">

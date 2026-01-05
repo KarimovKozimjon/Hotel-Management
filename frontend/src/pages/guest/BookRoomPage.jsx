@@ -3,9 +3,15 @@ import { useGuestAuth } from '../../context/GuestAuthContext';
 import AdvancedSearchFilters from '../../components/common/AdvancedSearchFilters';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 function BookRoomPage() {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { guest } = useGuestAuth();
+
+  const locale = i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'ru' ? 'ru-RU' : 'en-US';
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -39,7 +45,7 @@ function BookRoomPage() {
       const response = await api.get('/public/room-types');
       setRoomTypes(response.data);
     } catch (error) {
-      toast.error('Xona turlarini yuklashda xatolik');
+      toast.error(t('guest.bookRoomPage.toast.loadRoomTypesError'));
     } finally {
       setLoading(false);
     }
@@ -47,7 +53,7 @@ function BookRoomPage() {
 
   const handleSearch = async () => {
     if (!searchFilters.check_in_date || !searchFilters.check_out_date) {
-      toast.error('Iltimos, kirish va chiqish sanalarini tanlang');
+      toast.error(t('guest.bookRoomPage.toast.selectDates'));
       return;
     }
 
@@ -67,14 +73,19 @@ function BookRoomPage() {
           total: roomsArr.length,
           filters: response.data.filters_applied || {}
         });
-        toast.success(`${roomsArr.length} ta xona topildi`);
+        toast.success(t('guest.bookRoomPage.toast.roomsFound', { count: roomsArr.length }));
       } else {
         setRooms([]);
         setSearchResults({ total: 0, filters: {} });
-        toast.info('Xonalar topilmadi');
+        toast.info(t('guest.bookRoomPage.toast.roomsNotFound'));
       }
     } catch (error) {
-      toast.error('Xonalarni yuklashda xatolik');
+      const errors = error.response?.data?.errors;
+      if (errors) {
+        Object.values(errors).forEach((err) => toast.error(err[0]));
+      } else {
+        toast.error(error.response?.data?.message || t('guest.bookRoomPage.toast.loadRoomsError'));
+      }
       setRooms([]);
     } finally {
       setLoading(false);
@@ -88,7 +99,7 @@ function BookRoomPage() {
 
   const handleBookRoom = (room) => {
     if (!searchFilters.check_in_date || !searchFilters.check_out_date) {
-      toast.error('Iltimos, kirish va chiqish sanalarini tanlang');
+      toast.error(t('guest.bookRoomPage.toast.selectDates'));
       return;
     }
     setSelectedRoom(room);
@@ -110,21 +121,21 @@ function BookRoomPage() {
         special_requests: bookingData.special_requests,
       });
 
-      toast.success('Xona muvaffaqiyatli bron qilindi!');
+      toast.success(t('guest.bookRoomPage.toast.bookedSuccess'));
       setShowModal(false);
       setSelectedRoom(null);
       setBookingData({ number_of_adults: 1, number_of_children: 0, special_requests: '' });
       
       // Redirect to my bookings
       setTimeout(() => {
-        window.location.href = '/guest/my-bookings';
+        navigate('/guest/my-bookings');
       }, 1500);
     } catch (error) {
       const errors = error.response?.data?.errors;
       if (errors) {
         Object.values(errors).forEach(err => toast.error(err[0]));
       } else {
-        toast.error(error.response?.data?.error || 'Bronlashda xatolik');
+        toast.error(error.response?.data?.message || error.response?.data?.error || t('guest.bookRoomPage.toast.bookingError'));
       }
     } finally {
       setLoading(false);
@@ -150,10 +161,10 @@ function BookRoomPage() {
         <div className="container mx-auto px-4 py-8 flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-white drop-shadow mb-2 flex items-center gap-2">
             <span className="inline-block bg-white/20 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-yellow-300"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v1.5M3 7.5h18M3 7.5v9A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5v-9M7.5 12h.008v.008H7.5V12zm4.5 0h.008v.008H12V12zm4.5 0h.008v.008H16.5V12z" /></svg></span>
-            Xona bron qilish
+            {t('guest.bookRoom')}
           </h1>
           <p className="text-sm text-blue-100">
-            Mavjud xonalardan birini tanlang va bron qiling
+            {t('guest.bookRoomPage.subtitle')}
           </p>
         </div>
       </div>
@@ -163,13 +174,13 @@ function BookRoomPage() {
         <div className="bg-white border-2 border-purple-300 rounded-xl p-8 mb-10 shadow-lg animate-fade-in">
           <div className="flex items-center mb-4 gap-2">
             <span className="inline-block bg-purple-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-purple-500"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 7.5h18M4.5 7.5v9A2.25 2.25 0 006.75 18.75h10.5A2.25 2.25 0 0019.5 16.5v-9" /></svg></span>
-            <h2 className="text-2xl font-bold text-purple-700">Sana tanlang</h2>
+            <h2 className="text-2xl font-bold text-purple-700">{t('guest.bookRoomPage.selectDatesTitle')}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
               <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
                 <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
-                Kirish sanasi *
+                {t('booking.checkIn')} *
               </label>
               <input
                 type="date"
@@ -184,7 +195,7 @@ function BookRoomPage() {
             <div>
               <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
                 <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-6l-4-2" /></svg></span>
-                Chiqish sanasi *
+                {t('booking.checkOut')} *
               </label>
               <input
                 type="date"
@@ -207,7 +218,7 @@ function BookRoomPage() {
                 className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-xl shadow-lg font-semibold text-base hover:scale-105 hover:shadow-xl transition-all disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg></span>
-                Qidirish
+                {t('common.search')}
               </button>
             </div>
           </div>
@@ -215,7 +226,7 @@ function BookRoomPage() {
           {calculateDays() > 0 && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
-                📊 Qolish muddati: <span className="font-bold">{calculateDays()} kun</span>
+                {t('guest.bookRoomPage.stayDuration')}: <span className="font-bold">{t('guest.bookRoomPage.days', { count: calculateDays() })}</span>
               </p>
             </div>
           )}
@@ -239,7 +250,7 @@ function BookRoomPage() {
           <div className="mb-8">
             <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <p className="text-base font-semibold text-gray-900">
-                {searchResults.total} ta xona topildi
+                {t('guest.bookRoomPage.roomsFoundText', { count: searchResults.total })}
               </p>
             </div>
           </div>
@@ -249,16 +260,16 @@ function BookRoomPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-blue-700">Yuklanmoqda...</p>
+            <p className="mt-4 text-blue-700">{t('common.loading')}</p>
           </div>
         ) : rooms.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
-            <span className="text-6xl mb-4 block">🚫</span>
-            <h3 className="text-xl font-semibold text-blue-700 mb-2">Xonalar topilmadi</h3>
+            <span className="text-6xl mb-4 block" aria-hidden="true">—</span>
+            <h3 className="text-xl font-semibold text-blue-700 mb-2">{t('room.noRooms')}</h3>
             <p className="text-base text-blue-500">
               {searchFilters.check_in_date && searchFilters.check_out_date 
-                ? 'Boshqa filtrlar bilan qidiring' 
-                : 'Qidiruv uchun sanalarni tanlang'}
+                ? t('guest.bookRoomPage.tryDifferentFilters')
+                : t('guest.bookRoomPage.selectDatesForSearch')}
             </p>
           </div>
         ) : (
@@ -285,7 +296,7 @@ function BookRoomPage() {
                   )}
                   <div className="absolute top-2 right-2">
                     <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-lg">
-                      Mavjud
+                      {t('room.available')}
                     </span>
                   </div>
                 </div>
@@ -296,21 +307,21 @@ function BookRoomPage() {
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900">
                         {room.room_type?.name}
                       </h3>
-                      <p className="text-xs sm:text-sm text-gray-500">Xona #{room.room_number}</p>
+                      <p className="text-xs sm:text-sm text-gray-500">{t('guest.bookRoomPage.roomNumberShort', { number: room.room_number })}</p>
                     </div>
                   </div>
 
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-xs sm:text-sm">
-                      <span className="text-gray-600">Sig'imi:</span>
-                      <span className="font-semibold">{room.room_type?.capacity} kishi</span>
+                      <span className="text-gray-600">{t('room.capacity')}:</span>
+                      <span className="font-semibold">{room.room_type?.capacity} {t('guest.bookRoomPage.people')}</span>
                     </div>
                     <div className="flex justify-between text-xs sm:text-sm">
-                      <span className="text-gray-600">Qavat:</span>
-                      <span className="font-semibold">{room.floor}-qavat</span>
+                      <span className="text-gray-600">{t('room.floor')}:</span>
+                      <span className="font-semibold">{room.floor}-{t('guest.bookRoomPage.floorSuffix')}</span>
                     </div>
                     <div className="flex justify-between text-xs sm:text-sm">
-                      <span className="text-gray-600">Narx (kunlik):</span>
+                      <span className="text-gray-600">{t('room.price')}:</span>
                       <span className="font-semibold text-green-600">
                         ${room.room_type?.base_price}
                       </span>
@@ -325,7 +336,7 @@ function BookRoomPage() {
 
                   {room.room_type?.amenities && typeof room.room_type.amenities === 'string' && (
                     <div className="mb-4">
-                      <p className="text-xs text-gray-500 mb-2">Qulayliklar:</p>
+                      <p className="text-xs text-gray-500 mb-2">{t('room.amenities')}:</p>
                       <div className="flex flex-wrap gap-1 sm:gap-2">
                         {room.room_type.amenities.split(',').slice(0, 3).map((amenity, index) => (
                           <span
@@ -343,7 +354,7 @@ function BookRoomPage() {
                     onClick={() => handleBookRoom(room)}
                     className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base transition-all"
                   >
-                    Bron qilish
+                    {t('guest.bookRoomPage.bookAction')}
                   </button>
                 </div>
               </div>
@@ -359,7 +370,7 @@ function BookRoomPage() {
             <div className="p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
                 <span className="inline-block bg-blue-100 rounded-full p-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-blue-600"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
-                Bronni tasdiqlang
+                {t('booking.confirmBooking')}
               </h2>
 
               <div className="bg-blue-50 p-3 sm:p-4 rounded-xl mb-4 sm:mb-6 shadow">
@@ -367,21 +378,21 @@ function BookRoomPage() {
                   <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-blue-700"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12h.008v.008H16.5V12z" /></svg></span>
                   {selectedRoom.room_type?.name}
                 </h3>
-                <p className="text-xs sm:text-sm text-blue-500">Xona #{selectedRoom.room_number}</p>
+                <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.roomNumberShort', { number: selectedRoom.room_number })}</p>
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
-                    <p className="text-xs sm:text-sm text-blue-500">Kirish</p>
-                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_in_date).toLocaleDateString('uz-UZ')}</p>
+                    <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.checkInShort')}</p>
+                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_in_date).toLocaleDateString(locale)}</p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-blue-500">Chiqish</p>
-                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_out_date).toLocaleDateString('uz-UZ')}</p>
+                    <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.checkOutShort')}</p>
+                    <p className="font-semibold text-sm sm:text-base">{new Date(searchFilters.check_out_date).toLocaleDateString(locale)}</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-blue-100">
-                  <p className="text-xs sm:text-sm text-blue-500">Kunlar soni: <span className="font-semibold">{calculateDays()}</span></p>
+                  <p className="text-xs sm:text-sm text-blue-500">{t('guest.bookRoomPage.daysCount')}: <span className="font-semibold">{calculateDays()}</span></p>
                   <p className="text-base sm:text-lg font-bold text-blue-700 mt-2">
-                    Jami: ${calculateTotal()}
+                    {t('booking.totalPrice')}: ${calculateTotal()}
                   </p>
                 </div>
               </div>
@@ -390,7 +401,7 @@ function BookRoomPage() {
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
                     <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
-                    Kattalar soni *
+                    {t('booking.adults')} *
                   </label>
                   <input
                     type="number"
@@ -406,7 +417,7 @@ function BookRoomPage() {
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
                     <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-6l-4-2" /></svg></span>
-                    Bolalar soni
+                    {t('booking.children')}
                   </label>
                   <input
                     type="number"
@@ -420,14 +431,14 @@ function BookRoomPage() {
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
                     <span className="inline-block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /></svg></span>
-                    Maxsus so'rovlar
+                    {t('booking.specialRequests')}
                   </label>
                   <textarea
                     value={bookingData.special_requests}
                     onChange={(e) => setBookingData({ ...bookingData, special_requests: e.target.value })}
                     className="w-full px-2 py-1.5 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base focus:border-blue-400 focus:shadow-lg transition-all min-h-[32px]"
                     rows="3"
-                    placeholder="Masalan: Yuqori qavatdagi xona, oyna ko'rinishi, va h.k."
+                    placeholder={t('guest.bookRoomPage.specialRequestsPlaceholder')}
                   />
                 </div>
               </div>
@@ -441,14 +452,14 @@ function BookRoomPage() {
                   className="flex-1 px-4 py-2 border-2 border-blue-200 rounded-xl hover:bg-blue-50 text-sm sm:text-base transition-all shadow"
                   disabled={loading}
                 >
-                  Bekor qilish
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleConfirmBooking}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-2 rounded-xl hover:scale-105 hover:shadow-xl disabled:bg-gray-400 text-sm sm:text-base transition-all shadow-lg font-semibold"
                   disabled={loading}
                 >
-                  {loading ? 'Saqlanmoqda...' : 'Tasdiqlash'}
+                  {loading ? t('common.loading') : t('common.confirm')}
                 </button>
               </div>
             </div>
