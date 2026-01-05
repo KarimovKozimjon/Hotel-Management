@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import roomImageService from '../../services/roomImageService';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 const RoomImageManager = ({ roomId, onImagesChange }) => {
+  const { t } = useTranslation();
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -32,12 +34,12 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
 
   const handleFile = (file) => {
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+      toast.error(t('admin.pages.rooms.imageManager.toast.selectImageFile'));
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB');
+      toast.error(t('admin.pages.rooms.imageManager.toast.maxSize'));
       return;
     }
 
@@ -70,7 +72,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      toast.error('Please select an image');
+      toast.error(t('admin.pages.rooms.imageManager.toast.selectImage'));
       return;
     }
 
@@ -82,12 +84,12 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
       formData.append('order', images.length);
 
       await roomImageService.uploadImage(roomId, formData);
-      toast.success('Image uploaded successfully!');
+      toast.success(t('admin.pages.rooms.imageManager.toast.uploaded'));
       setSelectedFile(null);
       setPreviewUrl(null);
       fetchImages();
     } catch (error) {
-      toast.error('Failed to upload image');
+      toast.error(t('admin.pages.rooms.imageManager.toast.uploadError'));
       console.error('Upload error:', error);
     } finally {
       setUploading(false);
@@ -95,14 +97,14 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
   };
 
   const handleDelete = async (imageId) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    if (!confirm(t('admin.pages.rooms.imageManager.confirmDelete'))) return;
 
     try {
       await roomImageService.deleteImage(roomId, imageId);
-      toast.success('Image deleted successfully!');
+      toast.success(t('admin.pages.rooms.imageManager.toast.deleted'));
       fetchImages();
     } catch (error) {
-      toast.error('Failed to delete image');
+      toast.error(t('admin.pages.rooms.imageManager.toast.deleteError'));
       console.error('Delete error:', error);
     }
   };
@@ -110,10 +112,10 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
   const handleSetPrimary = async (imageId) => {
     try {
       await roomImageService.setPrimary(roomId, imageId);
-      toast.success('Primary image set!');
+      toast.success(t('admin.pages.rooms.imageManager.toast.primarySet'));
       fetchImages();
     } catch (error) {
-      toast.error('Failed to set primary image');
+      toast.error(t('admin.pages.rooms.imageManager.toast.primaryError'));
       console.error('Set primary error:', error);
     }
   };
@@ -122,7 +124,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
     <div className="space-y-6">
       {/* Upload Area */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Upload Room Images</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('admin.pages.rooms.imageManager.title')}</h3>
         
         {/* Drag & Drop Zone */}
         <div
@@ -137,7 +139,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
             <div className="space-y-4">
               <img
                 src={previewUrl}
-                alt="Preview"
+                alt={t('admin.pages.rooms.imageManager.previewAlt')}
                 className="max-h-64 mx-auto rounded-lg shadow"
               />
               <div className="flex gap-2 justify-center">
@@ -146,7 +148,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                   disabled={uploading}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {uploading ? 'Uploading...' : 'Upload Image'}
+                  {uploading ? t('admin.pages.rooms.imageManager.actions.uploading') : t('admin.pages.rooms.imageManager.actions.upload')}
                 </button>
                 <button
                   onClick={() => {
@@ -155,7 +157,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                   }}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -179,9 +181,9 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                   htmlFor="file-upload"
                   className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Click to upload
+                  {t('admin.pages.rooms.imageManager.actions.clickToUpload')}
                 </label>
-                <span className="text-gray-600"> or drag and drop</span>
+                <span className="text-gray-600"> {t('admin.pages.rooms.imageManager.actions.orDragDrop')}</span>
                 <input
                   id="file-upload"
                   type="file"
@@ -191,7 +193,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                 />
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                PNG, JPG, GIF up to 5MB
+                {t('admin.pages.rooms.imageManager.fileHint')}
               </p>
             </>
           )}
@@ -201,12 +203,12 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
       {/* Image Gallery */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          Room Images ({images.length})
+          {t('admin.pages.rooms.imageManager.galleryTitle', { value: images.length })}
         </h3>
         
         {images.length === 0 ? (
           <p className="text-gray-500 text-center py-8">
-            No images uploaded yet
+            {t('admin.pages.rooms.imageManager.empty')}
           </p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -224,7 +226,7 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                 {/* Primary Badge */}
                 {image.is_primary && (
                   <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                    Primary
+                    {t('admin.pages.rooms.imageManager.primary')}
                   </div>
                 )}
 
@@ -234,17 +236,17 @@ const RoomImageManager = ({ roomId, onImagesChange }) => {
                     <button
                       onClick={() => handleSetPrimary(image.id)}
                       className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                      title="Set as primary"
+                      title={t('admin.pages.rooms.imageManager.actions.setPrimaryTitle')}
                     >
-                      Set Primary
+                      {t('admin.pages.rooms.imageManager.actions.setPrimary')}
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(image.id)}
                     className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                    title="Delete"
+                    title={t('common.delete')}
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>

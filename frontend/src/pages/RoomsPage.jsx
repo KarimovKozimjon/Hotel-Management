@@ -6,6 +6,7 @@ import Pagination from '../components/common/Pagination';
 import RoomImageManager from '../components/admin/RoomImageManager';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { getRoomTypeLabel } from '../utils/roomTypeLabel';
 
 const RoomsPage = () => {
   const { t } = useTranslation();
@@ -39,7 +40,7 @@ const RoomsPage = () => {
       setFilteredRooms(data);
       setLoading(false);
     } catch (error) {
-      toast.error(t('staff.rooms.toasts.fetchError'));
+      toast.error(t('admin.pages.rooms.toast.loadError'));
       setLoading(false);
     }
   };
@@ -60,7 +61,7 @@ const RoomsPage = () => {
       const data = await roomTypeService.getAll();
       setRoomTypes(data);
     } catch (error) {
-      toast.error(t('staff.rooms.toasts.roomTypesFetchError'));
+      toast.error(t('admin.pages.rooms.toast.roomTypesLoadError'));
     }
   };
 
@@ -69,10 +70,10 @@ const RoomsPage = () => {
     try {
       if (editingRoom) {
         await roomService.update(editingRoom.id, formData);
-        toast.success(t('staff.rooms.toasts.updated'));
+        toast.success(t('admin.pages.rooms.toast.updated'));
       } else {
         await roomService.create(formData);
-        toast.success(t('staff.rooms.toasts.created'));
+        toast.success(t('admin.pages.rooms.toast.created'));
       }
       setShowModal(false);
       resetForm();
@@ -83,7 +84,7 @@ const RoomsPage = () => {
         (error?.response?.data?.errors
           ? Object.values(error.response.data.errors).flat().join(' ')
           : null) ||
-        t('staff.rooms.toasts.genericError');
+        t('admin.pages.rooms.toast.genericError');
       toast.error(message);
     }
   };
@@ -101,13 +102,13 @@ const RoomsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(t('staff.rooms.confirmations.delete'))) {
+    if (window.confirm(t('admin.pages.rooms.confirmDelete'))) {
       try {
         await roomService.delete(id);
-        toast.success(t('staff.rooms.toasts.deleted'));
+        toast.success(t('admin.pages.rooms.toast.deleted'));
         fetchRooms();
       } catch (error) {
-        toast.error(t('staff.rooms.toasts.deleteError'));
+        toast.error(t('admin.pages.rooms.toast.deleteError'));
       }
     }
   };
@@ -130,6 +131,7 @@ const RoomsPage = () => {
       maintenance: 'bg-yellow-100 text-yellow-800',
       cleaning: 'bg-blue-100 text-blue-800'
     };
+
     const labels = {
       available: t('room.available'),
       occupied: t('room.occupied'),
@@ -146,31 +148,33 @@ const RoomsPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">{t('nav.rooms')}</h1>
-        <button
-          onClick={() => { resetForm(); setShowModal(true); }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          + {t('staff.rooms.new')}
-        </button>
-      </div>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">{t('nav.rooms')}</h1>
+          <button
+            onClick={() => { resetForm(); setShowModal(true); }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            + {t('admin.pages.rooms.addNew')}
+          </button>
+        </div>
 
-      <div>
-        <SearchBar onSearch={handleSearch} placeholder={t('staff.rooms.searchPlaceholder')} />
-      </div>
+        <div className="mb-4">
+          <SearchBar onSearch={handleSearch} placeholder={t('admin.pages.rooms.searchPlaceholder')} />
+        </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('staff.rooms.headers.roomNumber')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('staff.rooms.headers.type')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('room.floor')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('staff.rooms.headers.price')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('staff.rooms.headers.status')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('staff.rooms.headers.actions')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.roomNumber')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.type')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.floor')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.price')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.status')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.rooms.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -179,7 +183,7 @@ const RoomsPage = () => {
                 .map((room) => (
                 <tr key={room.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{room.room_number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{room.room_type?.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getRoomTypeLabel(room.room_type, t)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{room.floor}</td>
                   <td className="px-6 py-4 whitespace-nowrap">${room.room_type?.base_price}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(room.status)}</td>
@@ -191,7 +195,7 @@ const RoomsPage = () => {
                       }}
                       className="text-purple-600 hover:text-purple-900 mr-3"
                     >
-                      {t('staff.rooms.actions.images')}
+                      {t('admin.pages.rooms.actions.images')}
                     </button>
                     <button
                       onClick={() => handleEdit(room)}
@@ -209,7 +213,8 @@ const RoomsPage = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
           <Pagination
             currentPage={currentPage}
             totalItems={filteredRooms.length}
@@ -217,13 +222,14 @@ const RoomsPage = () => {
             onPageChange={setCurrentPage}
           />
         </div>
+      </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingRoom ? t('staff.rooms.modal.editTitle') : t('staff.rooms.modal.newTitle')}
+              {editingRoom ? t('admin.pages.rooms.editTitle') : t('admin.pages.rooms.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -237,16 +243,16 @@ const RoomsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.rooms.fields.roomType')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.rooms.form.roomType')}</label>
                 <select
                   value={formData.room_type_id}
                   onChange={(e) => setFormData({ ...formData, room_type_id: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
                 >
-                  <option value="">{t('staff.rooms.fields.select')}</option>
+                  <option value="">{t('common.select')}</option>
                   {roomTypes.map((type) => (
-                    <option key={type.id} value={type.id}>{type.name}</option>
+                    <option key={type.id} value={type.id}>{getRoomTypeLabel(type, t)}</option>
                   ))}
                 </select>
               </div>
@@ -261,7 +267,7 @@ const RoomsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.rooms.headers.status')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.rooms.table.status')}</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -307,7 +313,7 @@ const RoomsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">{t('staff.rooms.imagesTitle')}</h2>
+              <h2 className="text-2xl font-bold">{t('admin.pages.rooms.imagesTitle')}</h2>
               <button
                 onClick={() => {
                   setShowImageModal(false);

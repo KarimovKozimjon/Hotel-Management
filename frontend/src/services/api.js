@@ -35,11 +35,19 @@ const api = axios.create({
   },
 });
 
+const getAuthContext = (config) => {
+  const raw = config?.headers?.['X-Auth-Context'] ?? config?.headers?.['x-auth-context'];
+  if (typeof raw === 'string') return raw.toLowerCase();
+  return null;
+};
+
 // Add token to requests
 api.interceptors.request.use(
   (config) => {
-    // For guest routes, use guest token
-    if (config.url.startsWith('/guest/')) {
+    const authContext = getAuthContext(config);
+
+    // For guest routes (or explicitly guest-marked requests), use guest token
+    if (config.url.startsWith('/guest/') || authContext === 'guest') {
       const guestToken = localStorage.getItem('guestToken');
       if (guestToken) {
         config.headers.Authorization = `Bearer ${guestToken}`;
@@ -63,8 +71,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      const authContext = getAuthContext(error.config);
       // Check if it's a guest route
-      if (error.config?.url?.startsWith('/guest/')) {
+      if (error.config?.url?.startsWith('/guest/') || authContext === 'guest') {
         localStorage.removeItem('guestToken');
         localStorage.removeItem('guest');
         window.location.href = '/guest/login';

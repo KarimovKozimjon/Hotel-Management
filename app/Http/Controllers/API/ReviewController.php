@@ -5,7 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Booking;
+use App\Models\User;
+use App\Notifications\NewReviewSubmitted;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -54,6 +57,14 @@ class ReviewController extends Controller
 
         $review = Review::create($request->all());
         $review->load(['booking.room', 'guest']);
+
+        $admins = User::whereHas('role', function ($q) {
+            $q->where('name', 'admin');
+        })->get();
+
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new NewReviewSubmitted($review));
+        }
 
         return response()->json($review, 201);
     }

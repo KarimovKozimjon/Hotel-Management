@@ -37,7 +37,7 @@ function LanguageSwitcher({ variant = 'dropdown', scrolled = true }) {
 
   // Dropdown variant (mobile-friendly)
   return (
-    <div className="relative group">
+    <div className="relative inline-block group">
       <select
         value={i18n.language}
         onChange={(e) => changeLanguage(e.target.value)}

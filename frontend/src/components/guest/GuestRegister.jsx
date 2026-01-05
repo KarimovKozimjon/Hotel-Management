@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useGuestAuth } from '../../context/GuestAuthContext';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 function GuestRegister() {
   const navigate = useNavigate();
@@ -41,8 +42,18 @@ function GuestRegister() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full my-8">
+    <motion.div
+      className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+    >
+      <motion.div
+        className="bg-white rounded-lg shadow-xl p-5 sm:p-8 max-w-2xl w-full my-8"
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+      >
         <h2 className="text-3xl font-bold text-center mb-2">🏨 Ro'yxatdan o'tish</h2>
         <p className="text-gray-600 text-center mb-8">Mehmonlar kabineti</p>
 
@@ -183,8 +194,8 @@ function GuestRegister() {
             ← Xodimlar paneliga qaytish
           </Link>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

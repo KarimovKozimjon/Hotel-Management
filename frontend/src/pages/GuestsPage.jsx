@@ -32,7 +32,7 @@ const GuestsPage = () => {
       setGuests(data);
       setLoading(false);
     } catch (error) {
-      toast.error(t('staff.guests.toasts.fetchError'));
+      toast.error(t('admin.pages.guests.toast.loadError'));
       setLoading(false);
     }
   };
@@ -46,7 +46,7 @@ const GuestsPage = () => {
       const data = await guestService.search(searchQuery);
       setGuests(data);
     } catch (error) {
-      toast.error(t('staff.guests.toasts.searchError'));
+      toast.error(t('admin.pages.guests.toast.searchError'));
     }
   };
 
@@ -55,16 +55,16 @@ const GuestsPage = () => {
     try {
       if (editingGuest) {
         await guestService.update(editingGuest.id, formData);
-        toast.success(t('staff.guests.toasts.updated'));
+        toast.success(t('admin.pages.guests.toast.updated'));
       } else {
         await guestService.create(formData);
-        toast.success(t('staff.guests.toasts.created'));
+        toast.success(t('admin.pages.guests.toast.created'));
       }
       setShowModal(false);
       resetForm();
       fetchGuests();
     } catch (error) {
-      toast.error(t('staff.guests.toasts.genericError'));
+      toast.error(t('admin.pages.guests.toast.genericError'));
     }
   };
 
@@ -82,13 +82,13 @@ const GuestsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(t('staff.guests.confirmations.delete'))) {
+    if (window.confirm(t('admin.pages.guests.confirmDelete'))) {
       try {
         await guestService.delete(id);
-        toast.success(t('staff.guests.toasts.deleted'));
+        toast.success(t('admin.pages.guests.toast.deleted'));
         fetchGuests();
       } catch (error) {
-        toast.error(t('staff.guests.toasts.deleteError'));
+        toast.error(t('admin.pages.guests.toast.deleteError'));
       }
     }
   };
@@ -108,14 +108,15 @@ const GuestsPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">{t('nav.guests')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + {t('staff.guests.new')}
+            + {t('admin.pages.guests.addNew')}
           </button>
         </div>
 
@@ -126,7 +127,7 @@ const GuestsPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder={t('staff.guests.searchPlaceholder')}
+            placeholder={t('admin.pages.guests.searchPlaceholder')}
             className="flex-1 px-4 py-2 border rounded-lg"
           />
           <button
@@ -143,15 +144,16 @@ const GuestsPage = () => {
           </button>
         </div>
 
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ism</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Familiya</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefon</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amallar</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guests.table.firstName')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guests.table.lastName')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guests.table.email')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guests.table.phone')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.guests.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -184,19 +186,21 @@ const GuestsPage = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
+      </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingGuest ? t('staff.guests.modal.editTitle') : t('staff.guests.modal.newTitle')}
+              {editingGuest ? t('admin.pages.guests.editTitle') : t('admin.pages.guests.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.firstName')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.firstName')}</label>
                 <input
                   type="text"
                   value={formData.first_name}
@@ -206,7 +210,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.lastName')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.lastName')}</label>
                 <input
                   type="text"
                   value={formData.last_name}
@@ -216,7 +220,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.email')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -226,7 +230,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.phone')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.phone')}</label>
                 <input
                   type="text"
                   value={formData.phone}
@@ -236,7 +240,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.address')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.address')}</label>
                 <input
                   type="text"
                   value={formData.address}
@@ -245,7 +249,7 @@ const GuestsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.guests.fields.idNumber')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.guests.form.idNumber')}</label>
                 <input
                   type="text"
                   value={formData.id_number}

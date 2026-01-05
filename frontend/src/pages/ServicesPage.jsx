@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 const ServicesPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -34,6 +34,16 @@ const ServicesPage = () => {
     fetchBookings();
   }, []);
 
+  const formatUsd = (value) => {
+    const numberValue = Number(value);
+    return new Intl.NumberFormat(i18n.language || 'en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(numberValue) ? numberValue : 0);
+  };
+
   const fetchServices = async () => {
     try {
       const data = await serviceService.getAll();
@@ -41,7 +51,7 @@ const ServicesPage = () => {
       setFilteredServices(data);
       setLoading(false);
     } catch (error) {
-      toast.error(t('staff.services.toasts.fetchError'));
+      toast.error(t('admin.pages.services.toast.loadError'));
       setLoading(false);
     }
   };
@@ -61,7 +71,7 @@ const ServicesPage = () => {
       // Faqat checked_in va confirmed statusdagi bronlar
       setBookings(data.filter(b => b.status === 'checked_in' || b.status === 'confirmed'));
     } catch (error) {
-      toast.error(t('staff.services.toasts.bookingsFetchError'));
+      toast.error(t('admin.pages.services.toast.bookingsLoadError'));
     }
   };
 
@@ -69,11 +79,11 @@ const ServicesPage = () => {
     e.preventDefault();
     try {
       await serviceService.addToBooking(addToBookingData);
-      toast.success(t('staff.services.toasts.addedToBooking'));
+      toast.success(t('admin.pages.services.toast.addedToBooking'));
       setShowAddToBookingModal(false);
       resetAddToBookingForm();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('staff.services.toasts.addToBookingError'));
+      toast.error(error.response?.data?.message || t('admin.pages.services.toast.genericError'));
     }
   };
 
@@ -101,16 +111,16 @@ const ServicesPage = () => {
     try {
       if (editingService) {
         await serviceService.update(editingService.id, formData);
-        toast.success(t('staff.services.toasts.updated'));
+        toast.success(t('admin.pages.services.toast.updated'));
       } else {
         await serviceService.create(formData);
-        toast.success(t('staff.services.toasts.created'));
+        toast.success(t('admin.pages.services.toast.created'));
       }
       setShowModal(false);
       resetForm();
       fetchServices();
     } catch (error) {
-      toast.error(t('staff.services.toasts.genericError'));
+      toast.error(t('admin.pages.services.toast.genericError'));
     }
   };
 
@@ -127,13 +137,13 @@ const ServicesPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(t('staff.services.confirmations.delete'))) {
+    if (window.confirm(t('admin.pages.services.confirmDelete'))) {
       try {
         await serviceService.delete(id);
-        toast.success(t('staff.services.toasts.deleted'));
+        toast.success(t('admin.pages.services.toast.deleted'));
         fetchServices();
       } catch (error) {
-        toast.error(t('staff.services.toasts.deleteError'));
+        toast.error(t('admin.pages.services.toast.deleteError'));
       }
     }
   };
@@ -150,33 +160,26 @@ const ServicesPage = () => {
   };
 
   const getCategoryLabel = (category) => {
-    const labels = {
-      room_service: t('staff.services.categories.room_service'),
-      laundry: t('staff.services.categories.laundry'),
-      restaurant: t('staff.services.categories.restaurant'),
-      spa: t('staff.services.categories.spa'),
-      transport: t('staff.services.categories.transport'),
-      other: t('staff.services.categories.other')
-    };
-    return labels[category] || category;
+    return t(`admin.pages.services.category.${category}`) || category;
   };
 
   if (loading) return <Loader />;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">{t('nav.services')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + {t('staff.services.new')}
+            + {t('admin.pages.services.addNew')}
           </button>
         </div>
 
         <div className="mb-4">
-          <SearchBar onSearch={handleSearch} placeholder={t('staff.services.searchPlaceholder')} />
+          <SearchBar onSearch={handleSearch} placeholder={t('admin.pages.services.searchPlaceholder')} />
         </div>
 
         {/* Services Grid */}
@@ -193,14 +196,14 @@ const ServicesPage = () => {
                     ? 'bg-green-100 text-green-800' 
                     : 'bg-red-100 text-red-800'
                 }`}>
-                  {service.is_active ? t('staff.services.status.active') : t('staff.services.status.inactive')}
+                  {service.is_active ? t('admin.pages.services.status.active') : t('admin.pages.services.status.inactive')}
                 </span>
               </div>
               
               <p className="text-gray-600 mb-4 text-sm">{service.description}</p>
               
               <div className="flex justify-between items-center mb-4">
-                <span className="text-2xl font-bold text-blue-600">${service.price}</span>
+                <span className="text-2xl font-bold text-blue-600">{formatUsd(service.price)}</span>
               </div>
               
               <div className="flex gap-2 mb-2">
@@ -208,7 +211,7 @@ const ServicesPage = () => {
                   onClick={() => openAddToBookingModal(service)}
                   className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
                 >
-                  {t('staff.services.actions.addToBooking')}
+                  {t('admin.pages.services.actions.addToBooking')}
                 </button>
               </div>
               
@@ -232,20 +235,21 @@ const ServicesPage = () => {
 
         {services.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">{t('staff.services.empty')}</p>
+            <p className="text-gray-500 text-lg">{t('admin.pages.services.empty')}</p>
           </div>
         )}
+      </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingService ? t('staff.services.modal.editTitle') : t('staff.services.modal.newTitle')}
+              {editingService ? t('admin.pages.services.editTitle') : t('admin.pages.services.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.fields.name')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.name')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -256,7 +260,7 @@ const ServicesPage = () => {
               </div>
               
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.fields.description')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.description')}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -266,7 +270,7 @@ const ServicesPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.fields.price')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.price')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -278,19 +282,19 @@ const ServicesPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.fields.category')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.category')}</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
                 >
-                  <option value="room_service">{t('staff.services.categories.room_service')}</option>
-                  <option value="laundry">{t('staff.services.categories.laundry')}</option>
-                  <option value="restaurant">{t('staff.services.categories.restaurant')}</option>
-                  <option value="spa">{t('staff.services.categories.spa')}</option>
-                  <option value="transport">{t('staff.services.categories.transport')}</option>
-                  <option value="other">{t('staff.services.categories.other')}</option>
+                  <option value="room_service">{t('admin.pages.services.category.room_service')}</option>
+                  <option value="laundry">{t('admin.pages.services.category.laundry')}</option>
+                  <option value="restaurant">{t('admin.pages.services.category.restaurant')}</option>
+                  <option value="spa">{t('admin.pages.services.category.spa')}</option>
+                  <option value="transport">{t('admin.pages.services.category.transport')}</option>
+                  <option value="other">{t('admin.pages.services.category.other')}</option>
                 </select>
               </div>
 
@@ -302,7 +306,7 @@ const ServicesPage = () => {
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                     className="mr-2"
                   />
-                  <span className="text-gray-700">{t('staff.services.fields.active')}</span>
+                  <span className="text-gray-700">{t('admin.pages.services.form.active')}</span>
                 </label>
               </div>
 
@@ -330,36 +334,36 @@ const ServicesPage = () => {
       {showAddToBookingModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4">{t('staff.services.addToBookingModal.title')}</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('admin.pages.services.addToBookingTitle')}</h2>
             
             {selectedService && (
               <div className="mb-4 p-4 bg-blue-50 rounded-lg">
                 <h3 className="font-semibold text-lg">{selectedService.name}</h3>
                 <p className="text-sm text-gray-600">{selectedService.description}</p>
-                <p className="text-xl font-bold text-blue-600 mt-2">${selectedService.price}</p>
+                <p className="text-xl font-bold text-blue-600 mt-2">{formatUsd(selectedService.price)}</p>
               </div>
             )}
 
             <form onSubmit={handleAddToBooking}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.addToBookingModal.booking')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.booking')}</label>
                 <select
                   value={addToBookingData.booking_id}
                   onChange={(e) => setAddToBookingData({ ...addToBookingData, booking_id: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
                 >
-                  <option value="">{t('staff.services.addToBookingModal.select')}</option>
+                  <option value="">{t('common.select')}</option>
                   {bookings.map((booking) => (
                     <option key={booking.id} value={booking.id}>
-                      #{booking.id} - {booking.guest?.first_name} {booking.guest?.last_name} - {t('staff.services.addToBookingModal.roomLabel')} {booking.room?.room_number}
+                      #{booking.id} - {booking.guest?.first_name} {booking.guest?.last_name} - {t('admin.pages.services.form.roomPrefix')} {booking.room?.room_number}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.services.addToBookingModal.quantity')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.services.form.quantity')}</label>
                 <input
                   type="number"
                   min="1"
@@ -372,9 +376,9 @@ const ServicesPage = () => {
 
               {selectedService && addToBookingData.quantity && (
                 <div className="mb-4 p-3 bg-gray-50 rounded">
-                  <p className="text-sm text-gray-600">{t('staff.services.addToBookingModal.total')}:</p>
+                  <p className="text-sm text-gray-600">{t('admin.pages.services.form.total')}</p>
                   <p className="text-2xl font-bold text-green-600">
-                    ${(selectedService.price * addToBookingData.quantity).toFixed(2)}
+                    {formatUsd(selectedService.price * addToBookingData.quantity)}
                   </p>
                 </div>
               )}
@@ -384,7 +388,7 @@ const ServicesPage = () => {
                   type="submit"
                   className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
                 >
-                  {t('staff.services.addToBookingModal.add')}
+                  {t('admin.pages.services.actions.add')}
                 </button>
                 <button
                   type="button"

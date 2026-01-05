@@ -32,7 +32,7 @@ const UsersPage = () => {
       setFilteredUsers(data);
       setLoading(false);
     } catch (error) {
-      toast.error(t('staff.users.toasts.fetchError'));
+      toast.error(t('admin.pages.users.toast.loadError'));
       setLoading(false);
     }
   };
@@ -51,7 +51,7 @@ const UsersPage = () => {
       const data = await roleService.getAll();
       setRoles(data);
     } catch (error) {
-      toast.error(t('staff.users.toasts.rolesFetchError'));
+      toast.error(t('admin.pages.users.toast.rolesLoadError'));
     }
   };
 
@@ -67,16 +67,16 @@ const UsersPage = () => {
 
       if (editingUser) {
         await userService.update(editingUser.id, submitData);
-        toast.success(t('staff.users.toasts.updated'));
+        toast.success(t('admin.pages.users.toast.updated'));
       } else {
         await userService.create(submitData);
-        toast.success(t('staff.users.toasts.created'));
+        toast.success(t('admin.pages.users.toast.created'));
       }
       setShowModal(false);
       resetForm();
       fetchUsers();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('staff.users.toasts.genericError'));
+      toast.error(error.response?.data?.message || t('admin.pages.users.toast.genericError'));
     }
   };
 
@@ -92,22 +92,21 @@ const UsersPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(t('staff.users.confirmations.delete'))) {
+    if (window.confirm(t('admin.pages.users.confirmDelete'))) {
       try {
         await userService.delete(id);
-        toast.success(t('staff.users.toasts.deleted'));
+        toast.success(t('admin.pages.users.toast.deleted'));
         fetchUsers();
       } catch (error) {
-        toast.error(error.response?.data?.message || t('staff.users.toasts.deleteError'));
+        toast.error(error.response?.data?.message || t('admin.pages.users.toast.deleteError'));
       }
     }
   };
 
-  const getDateLocale = () => {
-    const lang = (i18n.language || 'en').toLowerCase();
-    if (lang.startsWith('ru')) return 'ru-RU';
-    if (lang.startsWith('uz')) return 'uz-UZ';
-    return 'en-US';
+  const formatDate = (date) => {
+    const locale =
+      i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'uz' ? 'uz-UZ' : 'en-US';
+    return new Date(date).toLocaleDateString(locale);
   };
 
   const resetForm = () => {
@@ -130,7 +129,7 @@ const UsersPage = () => {
     
     return (
       <span className={`px-2 py-1 rounded-full text-xs ${badges[role?.name] || 'bg-gray-100 text-gray-800'}`}>
-        {role?.name || 'N/A'}
+        {role?.name || t('admin.pages.users.notAvailable')}
       </span>
     );
   };
@@ -138,39 +137,41 @@ const UsersPage = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">{t('nav.users')}</h1>
           <button
             onClick={() => { resetForm(); setShowModal(true); }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + {t('staff.users.new')}
+            + {t('admin.pages.users.addNew')}
           </button>
         </div>
 
         <div className="mb-4">
-          <SearchBar onSearch={handleSearch} placeholder={t('staff.users.searchPlaceholder')} />
+          <SearchBar onSearch={handleSearch} placeholder={t('admin.pages.users.searchPlaceholder')} />
         </div>
 
         {/* Statistics */}
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ism</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Yaratilgan</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amallar</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.id')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.name')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.email')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.role')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.createdAt')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.pages.users.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {users.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                    {t('staff.users.empty')}
+                    {t('admin.pages.users.empty')}
                   </td>
                 </tr>
               ) : (
@@ -181,7 +182,7 @@ const UsersPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getRoleBadge(user.role)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.created_at).toLocaleDateString(getDateLocale())}
+                      {formatDate(user.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
@@ -201,45 +202,47 @@ const UsersPage = () => {
                 ))
               )}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
         {/* Statistics */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-lg shadow">
-            <p className="text-sm text-gray-600">Jami foydalanuvchilar</p>
+            <p className="text-sm text-gray-600">{t('admin.pages.users.total')}</p>
             <p className="text-2xl font-bold">{users.length}</p>
           </div>
           <div className="bg-purple-50 p-4 rounded-lg shadow">
-            <p className="text-sm text-gray-600">Adminlar</p>
+            <p className="text-sm text-gray-600">{t('admin.pages.users.stats.admins')}</p>
             <p className="text-2xl font-bold text-purple-600">
               {users.filter(u => u.role?.name === 'admin').length}
             </p>
           </div>
           <div className="bg-blue-50 p-4 rounded-lg shadow">
-            <p className="text-sm text-gray-600">Menejerlar</p>
+            <p className="text-sm text-gray-600">{t('admin.pages.users.stats.managers')}</p>
             <p className="text-2xl font-bold text-blue-600">
               {users.filter(u => u.role?.name === 'manager').length}
             </p>
           </div>
           <div className="bg-green-50 p-4 rounded-lg shadow">
-            <p className="text-sm text-gray-600">Xodimlar</p>
+            <p className="text-sm text-gray-600">{t('admin.pages.users.stats.staff')}</p>
             <p className="text-2xl font-bold text-green-600">
               {users.filter(u => u.role?.name === 'receptionist' || u.role?.name === 'staff').length}
             </p>
           </div>
         </div>
+      </div>
 
       {/* User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {editingUser ? t('staff.users.modal.editTitle') : t('staff.users.modal.newTitle')}
+              {editingUser ? t('admin.pages.users.editTitle') : t('admin.pages.users.createTitle')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.users.fields.name')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.users.form.name')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -250,7 +253,7 @@ const UsersPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.users.fields.email')}</label>
+                <label className="block text-gray-700 mb-2">{t('auth.email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -262,7 +265,7 @@ const UsersPage = () => {
 
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">
-                  {t('staff.users.fields.password')} {editingUser && `(${t('staff.users.fields.passwordHint')})`}
+                  {t('auth.password')} {editingUser ? `(${t('admin.pages.users.form.passwordOptional')})` : ''}
                 </label>
                 <input
                   type="password"
@@ -270,19 +273,23 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required={!editingUser}
-                  placeholder={editingUser ? t('staff.users.placeholders.newPassword') : t('staff.users.placeholders.password')}
+                  placeholder={
+                    editingUser
+                      ? t('admin.pages.users.form.newPasswordPlaceholder')
+                      : t('admin.pages.users.form.passwordPlaceholder')
+                  }
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">{t('staff.users.fields.role')}</label>
+                <label className="block text-gray-700 mb-2">{t('admin.pages.users.form.role')}</label>
                 <select
                   value={formData.role_id}
                   onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
                 >
-                  <option value="">{t('staff.users.selectRole')}</option>
+                  <option value="">{t('common.select')}</option>
                   {roles.map((role) => (
                     <option key={role.id} value={role.id}>
                       {role.name} - {role.description}

@@ -1,12 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { GuestAuthProvider } from './context/GuestAuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import GuestPrivateRoute from './components/GuestPrivateRoute';
 import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
 import DashboardLayout from './components/dashboard/DashboardLayout';
-import DashboardPage from './pages/DashboardPage';
 import RoomsPage from './pages/RoomsPage';
 import BookingsPage from './pages/BookingsPage';
 import GuestsPage from './pages/GuestsPage';
@@ -16,6 +16,7 @@ import RoomTypesPage from './pages/RoomTypesPage';
 import UsersPage from './pages/UsersPage';
 import ReviewsPage from './pages/ReviewsPage';
 import ReportsPage from './pages/ReportsPage';
+import DiscountsPage from './pages/DiscountsPage';
 import ContactMessagesPage from './pages/ContactMessagesPage';
 import GuestDetailsPage from './pages/GuestDetailsPage';
 import GuestLogin from './components/guest/GuestLogin';
@@ -26,6 +27,7 @@ import MyBookingsPage from './pages/guest/MyBookingsPage';
 import GuestProfile from './pages/guest/GuestProfile';
 import BookRoomPage from './pages/guest/BookRoomPage';
 import ChangePassword from './pages/guest/ChangePassword';
+import PaymentHistory from './pages/guest/PaymentHistory';
 import PublicLayout from './components/public/PublicLayout';
 import HomePage from './pages/public/HomePage';
 import PublicRoomsPage from './pages/public/PublicRoomsPage';
@@ -69,90 +71,29 @@ function App() {
 
             {/* Staff routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <DashboardPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/admin/rooms" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <RoomsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/bookings" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <BookingsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/guests" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <GuestsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/guests/:id" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <GuestDetailsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/payments" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <PaymentsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/services" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ServicesPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/room-types" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <RoomTypesPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/users" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <UsersPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/reviews" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ReviewsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/reports" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ReportsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
-            <Route path="/messages" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ContactMessagesPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
+            <Route
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <Outlet />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin/rooms" element={<RoomsPage />} />
+              <Route path="/bookings" element={<BookingsPage />} />
+              <Route path="/guests" element={<GuestsPage />} />
+              <Route path="/guests/:id" element={<GuestDetailsPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/room-types" element={<RoomTypesPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/discounts" element={<DiscountsPage />} />
+              <Route path="/messages" element={<ContactMessagesPage />} />
+            </Route>
 
             {/* Guest routes */}
             <Route path="/guest/login" element={<GuestLogin />} />
@@ -189,6 +130,14 @@ function App() {
               <GuestPrivateRoute>
                 <GuestLayout>
                   <ChangePassword />
+                </GuestLayout>
+              </GuestPrivateRoute>
+            } />
+
+            <Route path="/guest/payment-history" element={
+              <GuestPrivateRoute>
+                <GuestLayout>
+                  <PaymentHistory />
                 </GuestLayout>
               </GuestPrivateRoute>
             } />

@@ -6,36 +6,47 @@ use Illuminate\Database\Seeder;
 use App\Models\RoomType;
 use App\Models\Room;
 use App\Models\RoomImage;
+use Illuminate\Support\Facades\Schema;
 
 class RoomSeeder extends Seeder
 {
     public function run(): void
     {
+        // Idempotent seeding: clear existing data first
+        Schema::disableForeignKeyConstraints();
+        RoomImage::truncate();
+        Room::truncate();
+        RoomType::truncate();
+        Schema::enableForeignKeyConstraints();
+
         // Xona turlarini yaratish
         $standardType = RoomType::create([
-            'name' => 'Standard Room',
-            'description' => 'Comfortable room with basic amenities',
+            // Stable key (translated in frontend)
+            'name' => 'standard',
+            'description' => null,
             'capacity' => 2,
             'base_price' => 100.00,
-            'amenities' => ['WiFi', 'TV', 'Air Conditioning'],
+            'amenities' => ['wifi', 'tv', 'airConditioning'],
             'image_url' => 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800'
         ]);
 
         $deluxeType = RoomType::create([
-            'name' => 'Deluxe Room',
-            'description' => 'Spacious room with premium amenities',
+            // Stable key (translated in frontend)
+            'name' => 'deluxe',
+            'description' => null,
             'capacity' => 3,
             'base_price' => 200.00,
-            'amenities' => ['WiFi', 'TV', 'Air Conditioning', 'Mini Bar', 'Balcony'],
+            'amenities' => ['wifi', 'tv', 'airConditioning', 'miniBar', 'balcony'],
             'image_url' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
         ]);
 
-        $suiteType = RoomType::create([
-            'name' => 'Suite',
-            'description' => 'Luxurious suite with living area',
+        $presidentialType = RoomType::create([
+            // Stable key (translated in frontend)
+            'name' => 'presidential',
+            'description' => null,
             'capacity' => 4,
             'base_price' => 350.00,
-            'amenities' => ['WiFi', 'TV', 'Air Conditioning', 'Mini Bar', 'Balcony', 'Kitchen', 'Jacuzzi'],
+            'amenities' => ['wifi', 'tv', 'airConditioning', 'miniBar', 'balcony', 'kitchen', 'jacuzzi'],
             'image_url' => 'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800'
         ]);
 
@@ -103,7 +114,7 @@ class RoomSeeder extends Seeder
         for ($i = 301; $i <= 302; $i++) {
             $room = Room::create([
                 'room_number' => (string)$i,
-                'room_type_id' => $suiteType->id,
+                'room_type_id' => $presidentialType->id,
                 'floor' => 3,
                 'status' => 'available',
                 'description' => 'Luxury suite on third floor'

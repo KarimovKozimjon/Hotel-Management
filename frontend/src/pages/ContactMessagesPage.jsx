@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { motion } from 'framer-motion';
+import Loader from '../components/common/Loader';
 
 function ContactMessagesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState('all'); // 'all', 'read', 'unread'
+
+  const dateLocale = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'uz' ? 'uz-UZ' : 'en-US';
 
   useEffect(() => {
     fetchMessages();
@@ -61,11 +64,7 @@ function ContactMessagesPage() {
   const unreadCount = messages.filter(m => !m.is_read).length;
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-xl text-gray-600">Yuklanmoqda...</div>
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   return (
@@ -73,10 +72,10 @@ function ContactMessagesPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Xabarlar
+            {t('admin.pages.messages.title')}
           </h1>
           <p className="text-gray-600 mt-1">
-            Jami: {messages.length} ta, O'qilmagan: {unreadCount} ta
+            {t('admin.pages.messages.summary', { total: messages.length, unread: unreadCount })}
           </p>
         </div>
         
@@ -89,7 +88,7 @@ function ContactMessagesPage() {
                 : 'bg-gray-200 text-gray-700'
             }`}
           >
-            Barchasi
+            {t('admin.pages.messages.filters.all')}
           </button>
           <button
             onClick={() => setFilter('unread')}
@@ -99,7 +98,7 @@ function ContactMessagesPage() {
                 : 'bg-gray-200 text-gray-700'
             }`}
           >
-            O'qilmagan
+            {t('admin.pages.messages.filters.unread')}
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full">
                 {unreadCount}
@@ -114,40 +113,41 @@ function ContactMessagesPage() {
                 : 'bg-gray-200 text-gray-700'
             }`}
           >
-            O'qilgan
+            {t('admin.pages.messages.filters.read')}
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow">
         {filteredMessages.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            Xabarlar topilmadi
+            {t('admin.pages.messages.empty')}
           </div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Holat
+                  {t('admin.pages.messages.table.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ism
+                  {t('admin.pages.messages.table.name')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
+                  {t('admin.pages.messages.table.email')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Telefon
+                  {t('admin.pages.messages.table.phone')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Xabar
+                  {t('admin.pages.messages.table.message')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sana
+                  {t('admin.pages.messages.table.date')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amallar
+                  {t('admin.pages.messages.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -163,11 +163,11 @@ function ContactMessagesPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {!message.is_read ? (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Yangi
+                        {t('admin.pages.messages.badges.new')}
                       </span>
                     ) : (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        O'qilgan
+                        {t('admin.pages.messages.badges.read')}
                       </span>
                     )}
                   </td>
@@ -188,7 +188,7 @@ function ContactMessagesPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(message.created_at).toLocaleDateString('uz-UZ', {
+                    {new Date(message.created_at).toLocaleDateString(dateLocale, {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric',
@@ -204,13 +204,14 @@ function ContactMessagesPage() {
                       }}
                       className="text-red-600 hover:text-red-900"
                     >
-                      O'chirish
+                      {t('common.delete')}
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         )}
       </div>
 
@@ -223,7 +224,7 @@ function ContactMessagesPage() {
             className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-start mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Xabar tafsilotlari</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('admin.pages.messages.modal.title')}</h2>
               <button
                 onClick={() => setShowModal(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -236,12 +237,12 @@ function ContactMessagesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-500">Ism</label>
+                <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.name')}</label>
                 <p className="mt-1 text-lg text-gray-900">{selectedMessage.name}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500">Email</label>
+                <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.email')}</label>
                 <a href={`mailto:${selectedMessage.email}`} className="mt-1 text-lg text-indigo-600 hover:underline">
                   {selectedMessage.email}
                 </a>
@@ -249,7 +250,7 @@ function ContactMessagesPage() {
 
               {selectedMessage.phone && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-500">Telefon</label>
+                  <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.phone')}</label>
                   <a href={`tel:${selectedMessage.phone}`} className="mt-1 text-lg text-indigo-600 hover:underline">
                     {selectedMessage.phone}
                   </a>
@@ -257,14 +258,14 @@ function ContactMessagesPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-500">Xabar</label>
+                <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.message')}</label>
                 <p className="mt-1 text-gray-900 whitespace-pre-wrap">{selectedMessage.message}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500">Yuborilgan vaqti</label>
+                <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.sentAt')}</label>
                 <p className="mt-1 text-gray-900">
-                  {new Date(selectedMessage.created_at).toLocaleString('uz-UZ', {
+                  {new Date(selectedMessage.created_at).toLocaleString(dateLocale, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -276,7 +277,7 @@ function ContactMessagesPage() {
 
               {selectedMessage.ip_address && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-500">IP Manzil</label>
+                  <label className="block text-sm font-medium text-gray-500">{t('admin.pages.messages.fields.ipAddress')}</label>
                   <p className="mt-1 text-gray-900">{selectedMessage.ip_address}</p>
                 </div>
               )}
@@ -287,13 +288,13 @@ function ContactMessagesPage() {
                 onClick={() => setShowModal(false)}
                 className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
               >
-                Yopish
+                {t('common.close')}
               </button>
               <button
                 onClick={() => handleDelete(selectedMessage.id)}
                 className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
-                O'chirish
+                {t('common.delete')}
               </button>
             </div>
           </motion.div>

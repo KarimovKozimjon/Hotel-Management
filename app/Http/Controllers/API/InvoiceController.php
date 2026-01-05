@@ -12,18 +12,26 @@ class InvoiceController extends Controller
 {
     public function generateBookingInvoice($bookingId)
     {
-        $booking = Booking::with(['guest', 'room.roomType', 'payments', 'services'])
-            ->findOrFail($bookingId);
+        try {
+            $booking = Booking::with(['guest', 'room.roomType', 'payments', 'services'])
+                ->findOrFail($bookingId);
 
-        $pdf = Pdf::loadView('invoices.booking-invoice', [
-            'booking' => $booking,
-            'guest' => $booking->guest,
-            'room' => $booking->room,
-            'payments' => $booking->payments,
-            'services' => $booking->services,
-        ]);
+            $pdf = Pdf::loadView('invoices.booking-invoice', [
+                'booking' => $booking,
+                'guest' => $booking->guest,
+                'room' => $booking->room,
+                'payments' => $booking->payments,
+                'services' => $booking->services,
+            ]);
 
-        return $pdf->download('invoice-' . $booking->booking_number . '.pdf');
+            return $pdf->download('invoice-' . $booking->booking_number . '.pdf');
+        } catch (\Throwable $e) {
+            \Log::error('Invoice PDF generation error: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'error' => 'Invoice generation failed',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function generatePaymentReceipt($paymentId)

@@ -6,10 +6,12 @@ import { motion } from 'framer-motion';
 import { FiUser, FiEdit3, FiLock, FiCheckCircle, FiKey, FiAlertTriangle } from 'react-icons/fi';
 import { FaUserCircle } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 function GuestProfile() {
-  const { guest, setGuest } = useGuestAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { guest, setGuest } = useGuestAuth();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -41,15 +43,15 @@ function GuestProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!guest) {
-      toast.error(t('guest.sessionExpired') || 'Sessiya tugagan. Qayta login qiling.');
-      window.location.href = '/guest/login';
+      toast.error(t('guest.toast.sessionExpired'));
+      navigate('/guest/login');
       return;
     }
     setLoading(true);
 
     try {
       const response = await api.put(`/guest/profile`, formData);
-      toast.success(t('guest.profilePage.updateSuccess') || 'Profil muvaffaqiyatli yangilandi');
+      toast.success(t('guest.profilePage.toast.updated'));
 
       // Update guest in context and localStorage
       const updatedGuest = response.data;
@@ -60,20 +62,20 @@ function GuestProfile() {
 
       // Check if guest is still valid after update
       if (!updatedGuest || !updatedGuest.id) {
-        toast.error(t('guest.sessionExpired') || 'Sessiya tugagan. Qayta login qiling.');
-        window.location.href = '/guest/login';
+        toast.error(t('guest.toast.sessionExpired'));
+        navigate('/guest/login');
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error(t('guest.sessionExpired') || 'Sessiya tugagan. Qayta login qiling.');
-        window.location.href = '/guest/login';
+        toast.error(t('guest.toast.sessionExpired'));
+        navigate('/guest/login');
         return;
       }
       const errors = error.response?.data?.errors;
       if (errors) {
         Object.values(errors).forEach(err => toast.error(err[0]));
       } else {
-        toast.error(t('guest.profilePage.updateError') || 'Profilni yangilashda xatolik');
+        toast.error(t('guest.profilePage.toast.updateError'));
       }
     } finally {
       setLoading(false);
@@ -114,9 +116,9 @@ function GuestProfile() {
             className="flex-1"
           >
             <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-700 via-indigo-500 to-purple-600 bg-clip-text text-transparent flex items-center gap-3 mb-1 drop-shadow-lg">
-              {t('guest.profilePage.title') || 'Profilim'}
+              {t('guest.profile')}
             </h1>
-            <p className="text-base text-blue-500 font-medium">{t('guest.profilePage.subtitle') || "Shaxsiy ma'lumotlarni ko'ring va tahrirlang"}</p>
+            <p className="text-base text-blue-500 font-medium">{t('guest.profilePage.subtitle')}</p>
           </motion.div>
         </div>
       </div>
@@ -129,14 +131,14 @@ function GuestProfile() {
                 <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
                   <FiUser className="w-5 h-5 text-white" />
                 </span>
-                {t('guest.personalInfo') || "Shaxsiy ma'lumotlar"}
+                {t('guest.personalInfo')}
               </h2>
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
                   className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold px-5 py-2 rounded-xl shadow hover:from-purple-600 hover:to-indigo-500 hover:scale-105 transition-all border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 text-sm"
                 >
-                  <FiEdit3 className="w-5 h-5 mr-1 inline" /> {t('common.edit') || 'Tahrirlash'}
+                  <FiEdit3 className="w-5 h-5 mr-1 inline" /> {t('common.edit')}
                 </button>
               )}
             </div>
@@ -150,7 +152,7 @@ function GuestProfile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* ...existing code... */}
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.firstName') || 'Ism'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.firstName')}</label>
                   <input
                     type="text"
                     value={formData.first_name}
@@ -161,7 +163,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.lastName') || 'Familiya'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.lastName')}</label>
                   <input
                     type="text"
                     value={formData.last_name}
@@ -172,7 +174,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.email') || 'Email'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.email')}</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -183,11 +185,11 @@ function GuestProfile() {
                   />
                   <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                     <FiLock className="w-5 h-5" />
-                    {t('guest.profilePage.emailReadOnly') || "Email o'zgartirib bo'lmaydi"}
+                    {t('guest.profilePage.emailReadOnly')}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.phone') || 'Telefon'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.phone')}</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -198,7 +200,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.passportNumber') || 'Pasport raqami'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.passportNumber')}</label>
                   <input
                     type="text"
                     value={formData.passport_number}
@@ -209,7 +211,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.dateOfBirth') || "Tug'ilgan sana"}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.dateOfBirth')}</label>
                   <input
                     type="date"
                     value={formData.date_of_birth ? formData.date_of_birth.slice(0, 10) : ''}
@@ -220,7 +222,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.nationality') || 'Millati'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.nationality')}</label>
                   <input
                     type="text"
                     value={formData.nationality}
@@ -231,7 +233,7 @@ function GuestProfile() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.fields.address') || 'Manzil'}</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">{t('guest.profilePage.address')}</label>
                   <textarea
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -249,14 +251,14 @@ function GuestProfile() {
                     className="bg-gray-100 text-gray-700 font-semibold px-5 py-2 rounded-xl shadow hover:bg-gray-200 transition-all border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 text-sm"
                     disabled={loading}
                   >
-                    {t('common.cancel') || 'Bekor qilish'}
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold px-5 py-2 rounded-xl shadow hover:from-purple-600 hover:to-indigo-500 hover:scale-105 transition-all border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 text-sm"
                     disabled={loading}
                   >
-                    {loading ? (t('common.loading') || 'Yuklanmoqda...') : (t('common.save') || 'Saqlash')}
+                    {loading ? t('common.loading') : t('common.save')}
                   </button>
                 </div>
               )}
@@ -278,7 +280,7 @@ function GuestProfile() {
             >
               <h2 className="text-lg font-extrabold bg-gradient-to-r from-blue-700 via-indigo-500 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2 drop-shadow-lg">
                 <FiLock className="w-5 h-5 text-indigo-500 drop-shadow-lg" />
-                {t('guest.account.title') || "Hisob ma'lumotlari"}
+                {t('guest.profilePage.accountInfoTitle')}
               </h2>
               <div className="space-y-4">
                 <motion.div
@@ -288,12 +290,12 @@ function GuestProfile() {
                   <div>
                     <p className="font-semibold text-indigo-600 flex items-center gap-2">
                       <FiCheckCircle className="w-5 h-5 text-green-400" />
-                      {t('guest.account.statusLabel') || 'Hisob holati'}
+                      {t('guest.profilePage.accountStatusTitle')}
                     </p>
-                    <p className="text-sm text-gray-400">{t('guest.account.activeHint') || 'Akkauntingiz faol'}</p>
+                    <p className="text-sm text-gray-400">{t('guest.profilePage.accountStatusSubtitle')}</p>
                   </div>
                   <span className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-green-900 to-emerald-800 text-green-200 shadow-sm border border-green-400">
-                    {t('guest.account.activeBadge') || 'Faol'}
+                    {t('guest.profilePage.accountStatusActive')}
                   </span>
                 </motion.div>
 
@@ -304,17 +306,17 @@ function GuestProfile() {
                   <div>
                     <p className="font-semibold text-indigo-600 flex items-center gap-2">
                       <FiKey className="w-5 h-5 text-indigo-500" />
-                      {t('guest.changePassword') || "Parolni o'zgartirish"}
+                      {t('guest.changePassword')}
                     </p>
-                    <p className="text-sm text-gray-400">{t('guest.account.changePasswordHint') || 'Parolingizni yangilang'}</p>
+                    <p className="text-sm text-gray-400">{t('guest.profilePage.changePasswordSubtitle')}</p>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => window.location.href = '/guest/change-password'}
+                    onClick={() => navigate('/guest/change-password')}
                     className="text-indigo-500 hover:text-purple-600 font-semibold flex items-center gap-1 border-b-2 border-indigo-300 hover:border-purple-400 transition-all"
                   >
-                    {t('guest.account.change') || "O'zgartirish"} →
+                    {t('guest.profilePage.changeAction')}
                   </motion.button>
                 </motion.div>
 
@@ -325,29 +327,29 @@ function GuestProfile() {
                   <div>
                     <p className="font-semibold text-indigo-600 flex items-center gap-2">
                       <FiAlertTriangle className="w-5 h-5 text-red-400" />
-                      {t('guest.account.deleteTitle') || "Hisobni o'chirish"}
+                      {t('guest.profilePage.deleteAccountTitle')}
                     </p>
-                    <p className="text-sm text-gray-400">{t('guest.account.deleteHint') || "Akkauntingizni butunlay o'chirish"}</p>
+                    <p className="text-sm text-gray-400">{t('guest.profilePage.deleteAccountSubtitle')}</p>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={async () => {
-                      if (confirm(t('guest.account.deleteConfirm') || "Haqiqatan ham hisobingizni o'chirmoqchimisiz?")) {
+                      if (window.confirm(t('guest.profilePage.deleteConfirm'))) {
                         try {
                           await api.delete('/guest/delete-account');
-                          toast.success(t('guest.account.deleteSuccess') || "Hisob muvaffaqiyatli o'chirildi");
+                          toast.success(t('guest.profilePage.toast.deleted'));
                           localStorage.removeItem('guestToken');
                           localStorage.removeItem('guest');
-                          window.location.href = '/guest/login';
+                          navigate('/guest/login');
                         } catch (error) {
-                          toast.error(error.response?.data?.message || (t('guest.account.deleteError') || "Hisobni o'chirishda xatolik"));
+                          toast.error(error.response?.data?.message || t('guest.profilePage.toast.deleteError'));
                         }
                       }
                     }}
                     className="text-red-400 hover:text-purple-600 font-semibold border-b-2 border-red-300 hover:border-purple-400 transition-all"
                   >
-                    {t('common.delete') || "O'chirish"}
+                    {t('common.delete')}
                   </motion.button>
                 </motion.div>
               </div>

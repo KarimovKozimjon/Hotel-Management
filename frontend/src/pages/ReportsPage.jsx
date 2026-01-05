@@ -6,15 +6,20 @@ import {
 import { format, subDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { getRoomTypeLabel } from '../utils/roomTypeLabel';
+import Loader from '../components/common/Loader';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 function ReportsPage() {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('month'); // month, week, custom
-  const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
-  
+
+  const [dateRange, setDateRange] = useState('month'); // 'week' | 'month' | 'custom'
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const [revenueData, setRevenueData] = useState([]);
   const [bookingStats, setBookingStats] = useState([]);
   const [roomTypeStats, setRoomTypeStats] = useState([]);
@@ -28,6 +33,27 @@ function ReportsPage() {
     cancelledBookings: 0,
     completedPayments: 0
   });
+
+  const formatUsd = (value) =>
+    new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Number(value || 0));
+
+  const formatChartDate = (date) =>
+    new Intl.DateTimeFormat(i18n.language, {
+      month: 'short',
+      day: '2-digit'
+    }).format(date);
+
+  const resolveBookingStatusLabel = (status) => {
+    const translated = t(`booking.status.${status}`);
+    if (translated && !translated.startsWith('booking.status.')) return translated;
+
+    return String(status || '')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
 
   useEffect(() => {
     if (dateRange === 'week') {
@@ -104,7 +130,7 @@ function ReportsPage() {
         const revenue = dayPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
         
         return {
-          date: format(day, 'MMM dd'),
+          date: formatChartDate(day),
           revenue: parseFloat(revenue.toFixed(2)),
           bookings: filteredBookings.filter(b => 
             format(new Date(b.check_in_date), 'yyyy-MM-dd') === dayStr
@@ -126,16 +152,18 @@ function ReportsPage() {
           statusCounts[b.status]++;
         }
       });
-      const bookingStatsData = Object.keys(statusCounts).map(status => ({
-        name: status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' '),
-        value: statusCounts[status]
-      })).filter(s => s.value > 0);
+      const bookingStatsData = Object.keys(statusCounts)
+        .map((status) => ({
+          name: resolveBookingStatusLabel(status),
+          value: statusCounts[status]
+        }))
+        .filter((s) => s.value > 0);
       setBookingStats(bookingStatsData);
 
       // Room type popularity
       const roomTypeCounts = {};
       filteredBookings.forEach(b => {
-        const typeName = b.room?.room_type?.name || 'Unknown';
+        const typeName = b.room?.room_type ? getRoomTypeLabel(b.room.room_type, t) : t('admin.pages.reports.unknown');
         roomTypeCounts[typeName] = (roomTypeCounts[typeName] || 0) + 1;
       });
       const roomTypeData = Object.keys(roomTypeCounts).map(type => ({
@@ -158,14 +186,14 @@ function ReportsPage() {
         const occupancyRate = rooms.length > 0 ? ((activeBookings / rooms.length) * 100).toFixed(1) : 0;
         
         return {
-          date: format(day, 'MMM dd'),
+          date: formatChartDate(day),
           occupancy: parseFloat(occupancyRate)
         };
       });
       setOccupancyData(occupancyByDay);
 
     } catch (error) {
-      toast.error('Ma\'lumotlarni yuklashda xatolik');
+      toast.error(t('admin.pages.reports.toast.loadError'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -174,16 +202,16 @@ function ReportsPage() {
 
   const exportToCSV = () => {
     const csvData = [
-      ['Hisobot', `${startDate} - ${endDate}`],
+      [t('admin.pages.reports.export.report'), `${startDate} - ${endDate}`],
       [''],
-      ['Umumiy daromad', `$${summary.totalRevenue.toFixed(2)}`],
-      ['Jami bronlar', summary.totalBookings],
-      ['Band xonalar (%)', summary.averageOccupancy],
-      ['Jami mehmonlar', summary.totalGuests],
-      ['Bekor qilingan bronlar', summary.cancelledBookings],
-      ['To\'langan to\'lovlar', summary.completedPayments],
+      [t('admin.pages.reports.summary.totalRevenue'), formatUsd(summary.totalRevenue)],
+      [t('admin.pages.reports.summary.totalBookings'), summary.totalBookings],
+      [t('admin.pages.reports.summary.averageOccupancy'), summary.averageOccupancy],
+      [t('admin.pages.reports.summary.totalGuests'), summary.totalGuests],
+      [t('admin.pages.reports.summary.cancelledBookings'), summary.cancelledBookings],
+      [t('admin.pages.reports.summary.completedPayments'), summary.completedPayments],
       [''],
-      ['Sana', 'Daromad', 'Bronlar'],
+      [t('admin.pages.reports.table.date'), t('admin.pages.reports.table.revenue'), t('admin.pages.reports.table.bookings')],
       ...revenueData.map(d => [d.date, d.revenue, d.bookings])
     ];
 
@@ -191,24 +219,20 @@ function ReportsPage() {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `hisobot_${startDate}_${endDate}.csv`;
+    link.download = `${t('admin.pages.reports.export.filenamePrefix')}_${startDate}_${endDate}.csv`;
     link.click();
-    toast.success('Hisobot yuklab olindi!');
+    toast.success(t('admin.pages.reports.toast.downloaded'));
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Loader className="h-96" />;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Hisobotlar va Tahlil</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('admin.pages.reports.title')}</h1>
         <button
           onClick={exportToCSV}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
@@ -216,7 +240,7 @@ function ReportsPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          CSV yuklab olish
+          {t('admin.pages.reports.exportCsv')}
         </button>
       </div>
 
@@ -228,19 +252,19 @@ function ReportsPage() {
               onClick={() => setDateRange('week')}
               className={`px-4 py-2 rounded-lg ${dateRange === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
             >
-              7 kun
+              {t('admin.pages.reports.range.week')}
             </button>
             <button
               onClick={() => setDateRange('month')}
               className={`px-4 py-2 rounded-lg ${dateRange === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
             >
-              Oy
+              {t('admin.pages.reports.range.month')}
             </button>
             <button
               onClick={() => setDateRange('custom')}
               className={`px-4 py-2 rounded-lg ${dateRange === 'custom' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
             >
-              Boshqa
+              {t('admin.pages.reports.range.custom')}
             </button>
           </div>
           
@@ -267,27 +291,27 @@ function ReportsPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">Umumiy daromad</p>
-          <p className="text-3xl font-bold text-green-600">${summary.totalRevenue.toFixed(2)}</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.totalRevenue')}</p>
+          <p className="text-3xl font-bold text-green-600">{formatUsd(summary.totalRevenue)}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">Jami bronlar</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.totalBookings')}</p>
           <p className="text-3xl font-bold text-blue-600">{summary.totalBookings}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">Band xonalar</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.averageOccupancy')}</p>
           <p className="text-3xl font-bold text-purple-600">{summary.averageOccupancy}%</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">Jami mehmonlar</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.totalGuests')}</p>
           <p className="text-3xl font-bold text-yellow-600">{summary.totalGuests}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">Bekor qilingan</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.cancelledBookings')}</p>
           <p className="text-3xl font-bold text-red-600">{summary.cancelledBookings}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-1">To'langan to'lovlar</p>
+          <p className="text-gray-600 text-sm mb-1">{t('admin.pages.reports.summary.completedPayments')}</p>
           <p className="text-3xl font-bold text-green-600">{summary.completedPayments}</p>
         </div>
       </div>
@@ -296,7 +320,7 @@ function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Kunlik daromad</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.pages.reports.charts.dailyRevenue')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -304,14 +328,14 @@ function ReportsPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#10b981" name="Daromad ($)" />
+              <Line type="monotone" dataKey="revenue" stroke="#10b981" name={t('admin.pages.reports.charts.legend.revenueUsd')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Bookings Chart */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Kunlik bronlar</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.pages.reports.charts.dailyBookings')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -319,14 +343,14 @@ function ReportsPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="bookings" fill="#3b82f6" name="Bronlar" />
+              <Bar dataKey="bookings" fill="#3b82f6" name={t('admin.pages.reports.charts.legend.bookings')} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Booking Status Distribution */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Bronlar holati</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.pages.reports.charts.bookingStatus')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -350,7 +374,7 @@ function ReportsPage() {
 
         {/* Room Type Popularity */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Xona turlari mashhurligi</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.pages.reports.charts.roomTypePopularity')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -374,7 +398,7 @@ function ReportsPage() {
 
         {/* Occupancy Rate */}
         <div className="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Band xonalar foizi</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.pages.reports.charts.occupancyRate')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={occupancyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -382,7 +406,7 @@ function ReportsPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="occupancy" stroke="#8b5cf6" name="Band (%)" />
+              <Line type="monotone" dataKey="occupancy" stroke="#8b5cf6" name={t('admin.pages.reports.charts.legend.occupancyPercent')} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import Pusher from 'pusher-js';
 import toast from 'react-hot-toast';
+import api from '../services/api';
+import i18n from '../i18n';
 
 const NotificationContext = createContext();
 
@@ -11,6 +13,29 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [pusher, setPusher] = useState(null);
 
+  const isLikelyUuid = (value) => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+
+  const recomputeUnread = (items) => items.filter(n => !n.read).length;
+
+  const loadLocalNotifications = () => {
+    const savedNotifications = localStorage.getItem('notifications');
+    if (!savedNotifications) return [];
+    try {
+      const parsed = JSON.parse(savedNotifications);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const fetchServerNotifications = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    const res = await api.get('/notifications');
+    return res.data?.data || [];
+  };
+
   useEffect(() => {
     // Initialize Pusher (hozircha local simulation)
     // Real Pusher uchun: PUSHER_APP_KEY kerak
@@ -19,16 +44,37 @@ export const NotificationProvider = ({ children }) => {
     //   encrypted: true
     // });
 
-    // Load notifications from localStorage
-    const savedNotifications = localStorage.getItem('notifications');
-    if (savedNotifications) {
-      const parsed = JSON.parse(savedNotifications);
-      setNotifications(parsed);
-      setUnreadCount(parsed.filter(n => !n.read).length);
-    }
+    // Load local notifications first (demo/local events)
+    const local = loadLocalNotifications();
+    setNotifications(local);
+    setUnreadCount(recomputeUnread(local));
+
+    // If staff token exists, also load server notifications (admin bell)
+    let intervalId;
+    const hydrateFromServer = async () => {
+      try {
+        const server = await fetchServerNotifications();
+        if (!server) return;
+
+        // Merge: server notifications first, then local (avoid duplicates by id)
+        const merged = [...server, ...local].filter((n, idx, arr) => {
+          const id = n?.id;
+          return arr.findIndex(x => x?.id === id) === idx;
+        });
+
+        setNotifications(merged);
+        setUnreadCount(recomputeUnread(merged));
+      } catch {
+        // Keep local-only if server not available
+      }
+    };
+
+    hydrateFromServer();
+    intervalId = setInterval(hydrateFromServer, 20000);
 
     // Cleanup
     return () => {
+      if (intervalId) clearInterval(intervalId);
       if (pusher) {
         pusher.disconnect();
       }
@@ -49,9 +95,19 @@ export const NotificationProvider = ({ children }) => {
 
   // Add notification
   const addNotification = (notification) => {
+    const resolvedMessage = notification?.i18nKey
+      ? i18n.t(notification.i18nKey, notification.i18nParams)
+      : notification?.message;
+
+    const resolvedDescription = notification?.i18nDescriptionKey
+      ? i18n.t(notification.i18nDescriptionKey, notification.i18nDescriptionParams)
+      : notification?.description;
+
     const newNotification = {
       id: Date.now(),
       ...notification,
+      message: resolvedMessage,
+      description: resolvedDescription,
       read: false,
       timestamp: new Date().toISOString()
     };
@@ -66,13 +122,13 @@ export const NotificationProvider = ({ children }) => {
 
     // Show toast
     if (notification.type === 'success') {
-      toast.success(notification.message);
+      toast.success(resolvedMessage);
     } else if (notification.type === 'error') {
-      toast.error(notification.message);
+      toast.error(resolvedMessage);
     } else if (notification.type === 'info') {
-      toast(notification.message, { icon: 'ℹ️' });
+      toast(resolvedMessage, { icon: 'ℹ️' });
     } else {
-      toast(notification.message);
+      toast(resolvedMessage);
     }
 
     // Play sound
@@ -83,26 +139,44 @@ export const NotificationProvider = ({ children }) => {
 
   // Mark as read
   const markAsRead = (notificationId) => {
+    if (isLikelyUuid(notificationId)) {
+      api.post(`/notifications/${notificationId}/read`)
+        .catch(() => {})
+        .finally(() => {
+          setNotifications(prev => {
+            const updated = prev.map(n =>
+              n.id === notificationId ? { ...n, read: true } : n
+            );
+            setUnreadCount(recomputeUnread(updated));
+            return updated;
+          });
+        });
+      return;
+    }
+
+    // local notification
     setNotifications(prev => {
       const updated = prev.map(n =>
         n.id === notificationId ? { ...n, read: true } : n
       );
-      localStorage.setItem('notifications', JSON.stringify(updated));
+      localStorage.setItem('notifications', JSON.stringify(updated.filter(n => !isLikelyUuid(n.id))));
+      setUnreadCount(recomputeUnread(updated));
       return updated;
     });
-
-    setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
   // Mark all as read
   const markAllAsRead = () => {
-    setNotifications(prev => {
-      const updated = prev.map(n => ({ ...n, read: true }));
-      localStorage.setItem('notifications', JSON.stringify(updated));
-      return updated;
-    });
-
-    setUnreadCount(0);
+    api.post('/notifications/read-all')
+      .catch(() => {})
+      .finally(() => {
+        setNotifications(prev => {
+          const updated = prev.map(n => ({ ...n, read: true }));
+          localStorage.setItem('notifications', JSON.stringify(updated.filter(n => !isLikelyUuid(n.id))));
+          setUnreadCount(0);
+          return updated;
+        });
+      });
   };
 
   // Clear all
@@ -114,15 +188,27 @@ export const NotificationProvider = ({ children }) => {
 
   // Delete notification
   const deleteNotification = (notificationId) => {
+    if (isLikelyUuid(notificationId)) {
+      api.delete(`/notifications/${notificationId}`)
+        .catch(() => {})
+        .finally(() => {
+          setNotifications(prev => {
+            const target = prev.find(n => n.id === notificationId);
+            const updated = prev.filter(n => n.id !== notificationId);
+            setUnreadCount(recomputeUnread(updated));
+            return updated;
+          });
+        });
+      return;
+    }
+
     setNotifications(prev => {
       const notification = prev.find(n => n.id === notificationId);
       const updated = prev.filter(n => n.id !== notificationId);
-      localStorage.setItem('notifications', JSON.stringify(updated));
-      
+      localStorage.setItem('notifications', JSON.stringify(updated.filter(n => !isLikelyUuid(n.id))));
       if (notification && !notification.read) {
         setUnreadCount(c => Math.max(0, c - 1));
       }
-      
       return updated;
     });
   };

@@ -6,7 +6,13 @@ import uzTranslation from './locales/uz/translation.json';
 import ruTranslation from './locales/ru/translation.json';
 
 // Get language from localStorage or default to 'en'
-const savedLanguage = localStorage.getItem('language') || 'en';
+const savedLanguage = (() => {
+  try {
+    return localStorage.getItem('language');
+  } catch {
+    return null;
+  }
+})() || 'en';
 
 i18n
   .use(initReactI18next)
@@ -32,9 +38,16 @@ i18n
     }
   });
 
+// Ensure document lang is set on initial load too
+document.documentElement.lang = savedLanguage;
+
 // Save language preference when it changes
 i18n.on('languageChanged', (lng) => {
-  localStorage.setItem('language', lng);
+  try {
+    localStorage.setItem('language', lng);
+  } catch {
+    // ignore
+  }
   document.documentElement.lang = lng;
 });
 
