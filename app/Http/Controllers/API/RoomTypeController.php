@@ -4,33 +4,24 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\RoomType;
+use App\Services\RoomTypeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
+    public function __construct(private readonly RoomTypeService $roomTypeService)
+    {
+    }
+
     public function publicIndex()
     {
-        // Public endpoint for homepage
-        $roomTypes = RoomType::all()->map(function ($type) {
-            return [
-                'id' => $type->id,
-                'name' => $type->name,
-                'description' => $type->description,
-                'capacity' => $type->capacity,
-                'price' => $type->base_price,
-                'image' => $type->image_url ?? 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
-                'amenities' => $type->amenities ?? [],
-            ];
-        });
-        
-        return response()->json($roomTypes);
+        return response()->json($this->roomTypeService->publicRoomTypes());
     }
 
     public function index()
     {
-        $roomTypes = RoomType::withCount('rooms')->get();
-        return response()->json($roomTypes);
+        return response()->json($this->roomTypeService->indexWithRoomCounts());
     }
 
     public function store(Request $request)
@@ -61,6 +52,8 @@ class RoomTypeController extends Controller
         unset($validated['image']);
         $roomType = RoomType::create($validated);
 
+        $this->roomTypeService->invalidateCaches();
+
         return response()->json($roomType, 201);
     }
 
@@ -72,12 +65,14 @@ class RoomTypeController extends Controller
     public function update(Request $request, $id)
     {
         $roomType = RoomType::findOrFail($id);
-        
-        \Log::info('Updating room type', [
-            'id' => $id,
-            'request_data' => $request->all(),
-            'amenities_raw' => $request->input('amenities')
-        ]);
+
+        if (config('app.debug')) {
+            \Log::info('Updating room type', [
+                'id' => $id,
+                'request_data' => $request->all(),
+                'amenities_raw' => $request->input('amenities'),
+            ]);
+        }
         
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -94,7 +89,9 @@ class RoomTypeController extends Controller
             $validated['amenities'] = json_decode($validated['amenities'], true);
         }
         
-        \Log::info('Parsed amenities', ['amenities' => $validated['amenities'] ?? null]);
+        if (config('app.debug')) {
+            \Log::info('Parsed amenities', ['amenities' => $validated['amenities'] ?? null]);
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -114,8 +111,12 @@ class RoomTypeController extends Controller
 
         // Refresh the model to get updated data
         $roomType->refresh();
-        
-        \Log::info('Room type updated', ['result' => $roomType->toArray()]);
+
+        $this->roomTypeService->invalidateCaches();
+
+        if (config('app.debug')) {
+            \Log::info('Room type updated', ['result' => $roomType->toArray()]);
+        }
 
         return response()->json($roomType);
     }
@@ -123,6 +124,8 @@ class RoomTypeController extends Controller
     public function destroy(RoomType $roomType)
     {
         $roomType->delete();
+
+        $this->roomTypeService->invalidateCaches();
 
         return response()->json(['message' => 'Room type deleted successfully']);
     }

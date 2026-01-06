@@ -4,36 +4,26 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\Room;
+use App\Services\BookingService;
+use App\Services\BookingQueryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingConfirmation;
-use App\Mail\BookingCancelled;
-use App\Mail\CheckInReminder;
 
 class BookingController extends Controller
 {
+    public function __construct(
+        private readonly BookingService $bookingService,
+        private readonly BookingQueryService $bookingQueryService,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Booking::with(['guest', 'room.roomType', 'payments']);
-
-        // Filter by status
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by guest
-        if ($request->has('guest_id')) {
-            $query->where('guest_id', $request->guest_id);
-        }
-
-        // Filter by date range
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $query->whereBetween('check_in_date', [$request->start_date, $request->end_date]);
-        }
-
-        $bookings = $query->latest()->get();
+        $bookings = $this->bookingQueryService->list($request->only([
+            'status',
+            'guest_id',
+            'start_date',
+            'end_date',
+        ]));
 
         return response()->json($bookings);
     }
@@ -49,46 +39,12 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string',
         ]);
 
-        // Check room availability
-        $isAvailable = !Booking::where('room_id', $validated['room_id'])
-            ->whereIn('status', ['confirmed', 'checked_in'])
-            // Overlap check using a half-open interval: [check_in, check_out)
-            ->where('check_in_date', '<', $validated['check_out_date'])
-            ->where('check_out_date', '>', $validated['check_in_date'])
-            ->exists();
-
-        if (!$isAvailable) {
-            return response()->json(['message' => 'Room is not available for selected dates'], 422);
+        $result = $this->bookingService->create($validated);
+        if ($result['error']) {
+            return response()->json(['message' => $result['error']], 422);
         }
 
-        // Calculate total amount
-        $room = Room::with('roomType')->find($validated['room_id']);
-        $checkIn = new \DateTime($validated['check_in_date']);
-        $checkOut = new \DateTime($validated['check_out_date']);
-        $nights = $checkOut->diff($checkIn)->days;
-        $totalAmount = $nights * $room->roomType->base_price;
-
-        $booking = Booking::create([
-            'booking_number' => 'BK-' . strtoupper(Str::random(8)),
-            'guest_id' => $validated['guest_id'],
-            'room_id' => $validated['room_id'],
-            'check_in_date' => $validated['check_in_date'],
-            'check_out_date' => $validated['check_out_date'],
-            'number_of_guests' => $validated['number_of_guests'],
-            'total_amount' => $totalAmount,
-            'special_requests' => $validated['special_requests'] ?? null,
-            'status' => 'pending',
-        ]);
-
-        // Send booking confirmation email
-        $booking->load(['guest', 'room.roomType']);
-        try {
-            Mail::to($booking->guest->email)->send(new BookingConfirmation($booking));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
-        }
-
-        return response()->json($booking, 201);
+        return response()->json($result['booking'], 201);
     }
 
     public function show(Booking $booking)
@@ -106,17 +62,8 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string',
         ]);
 
-        if (isset($validated['status']) && $validated['status'] === 'confirmed') {
-            $hasCompletedPayment = $booking->payments()
-                ->where('status', 'completed')
-                ->exists();
-
-            if (!$hasCompletedPayment) {
-                return response()->json([
-                    'message' => 'Booking cannot be confirmed until payment is completed',
-                ], 422);
-            }
-        }
+        // Confirmation does not require payment (cash/card payments may be recorded later).
+        // Payment enforcement remains in the dedicated check-in endpoint.
 
         $booking->update($validated);
 
@@ -125,69 +72,32 @@ class BookingController extends Controller
 
     public function checkIn(Booking $booking)
     {
-        if ($booking->status !== 'confirmed') {
-            return response()->json(['message' => 'Only confirmed bookings can be checked in'], 422);
+        $result = $this->bookingService->checkIn($booking);
+        if ($result['error']) {
+            return response()->json(['message' => $result['error']], 422);
         }
 
-        $hasCompletedPayment = $booking->payments()
-            ->where('status', 'completed')
-            ->exists();
-
-        if (!$hasCompletedPayment) {
-            return response()->json(['message' => 'Booking cannot be checked in until payment is completed'], 422);
-        }
-
-        $booking->update([
-            'status' => 'checked_in',
-            'checked_in_at' => now(),
-        ]);
-
-        $booking->room->update(['status' => 'occupied']);
-
-        // Send check-in confirmation email
-        $booking->load(['guest', 'room.roomType']);
-        try {
-            Mail::to($booking->guest->email)->send(new CheckInReminder($booking));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send check-in email: ' . $e->getMessage());
-        }
-
-        return response()->json($booking->load(['guest', 'room']));
+        return response()->json($result['booking']);
     }
 
     public function checkOut(Booking $booking)
     {
-        if ($booking->status !== 'checked_in') {
-            return response()->json(['message' => 'Only checked-in bookings can be checked out'], 422);
+        $result = $this->bookingService->checkOut($booking);
+        if ($result['error']) {
+            return response()->json(['message' => $result['error']], 422);
         }
 
-        $booking->update([
-            'status' => 'checked_out',
-            'checked_out_at' => now(),
-        ]);
-
-        $booking->room->update(['status' => 'cleaning']);
-
-        return response()->json($booking->load(['guest', 'room']));
+        return response()->json($result['booking']);
     }
 
     public function cancel(Booking $booking)
     {
-        if (in_array($booking->status, ['checked_in', 'checked_out'])) {
-            return response()->json(['message' => 'Cannot cancel checked-in or checked-out bookings'], 422);
+        $result = $this->bookingService->cancel($booking);
+        if ($result['error']) {
+            return response()->json(['message' => $result['error']], 422);
         }
 
-        $booking->update(['status' => 'cancelled']);
-
-        // Send cancellation email
-        $booking->load(['guest', 'room.roomType']);
-        try {
-            Mail::to($booking->guest->email)->send(new BookingCancelled($booking));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send cancellation email: ' . $e->getMessage());
-        }
-
-        return response()->json($booking);
+        return response()->json($result['booking']);
     }
 
     public function destroy(Booking $booking)

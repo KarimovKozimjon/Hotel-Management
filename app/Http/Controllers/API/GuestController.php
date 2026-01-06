@@ -4,27 +4,21 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
+use App\Services\GuestQueryService;
+use App\Services\GuestService;
 use Illuminate\Http\Request;
 
 class GuestController extends Controller
 {
+    public function __construct(
+        private readonly GuestQueryService $guestQueryService,
+        private readonly GuestService $guestService,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Guest::query();
-
-        // Search
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('passport_number', 'like', "%{$search}%");
-            });
-        }
-
-        $guests = $query->withCount('bookings')->get();
+        $guests = $this->guestQueryService->list($request->only(['search']));
 
         return response()->json($guests);
     }
@@ -42,7 +36,7 @@ class GuestController extends Controller
             'address' => 'nullable|string',
         ]);
 
-        $guest = Guest::create($validated);
+        $guest = $this->guestService->create($validated);
 
         return response()->json($guest, 201);
     }
@@ -65,14 +59,14 @@ class GuestController extends Controller
             'address' => 'nullable|string',
         ]);
 
-        $guest->update($validated);
+        $guest = $this->guestService->update($guest, $validated);
 
         return response()->json($guest);
     }
 
     public function destroy(Guest $guest)
     {
-        $guest->delete();
+        $this->guestService->delete($guest);
 
         return response()->json(['message' => 'Guest deleted successfully']);
     }

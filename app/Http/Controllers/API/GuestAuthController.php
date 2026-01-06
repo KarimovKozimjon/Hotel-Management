@@ -2,13 +2,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Guest;
+use App\Services\GuestAuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class GuestAuthController extends Controller
 {
+    public function __construct(private readonly GuestAuthService $guestAuthService)
+    {
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -27,23 +30,11 @@ class GuestAuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $guest = Guest::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'passport_number' => $request->passport_number,
-            'date_of_birth' => $request->date_of_birth,
-            'nationality' => $request->nationality,
-            'address' => $request->address,
-        ]);
-
-        $token = $guest->createToken('guest-token')->plainTextToken;
+        $payload = $this->guestAuthService->register($validator->validated());
 
         return response()->json([
-            'guest' => $guest,
-            'token' => $token,
+            'guest' => $payload['guest'],
+            'token' => $payload['token'],
             'message' => 'Registration successful'
         ], 201);
     }
@@ -59,24 +50,27 @@ class GuestAuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $guest = Guest::where('email', $request->email)->first();
+        $payload = $this->guestAuthService->login(
+            $request->email,
+            $request->password,
+            $request->ip(),
+            $request->userAgent(),
+        );
 
-        if (!$guest || !Hash::check($request->password, $guest->password)) {
+        if (!$payload['guest']) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        $token = $guest->createToken('guest-token')->plainTextToken;
-
         return response()->json([
-            'guest' => $guest,
-            'token' => $token,
+            'guest' => $payload['guest'],
+            'token' => $payload['token'],
             'message' => 'Login successful'
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->guestAuthService->logout($request->user());
 
         return response()->json(['message' => 'Logged out successfully']);
     }
@@ -98,27 +92,19 @@ class GuestAuthController extends Controller
             'nationality' => 'sometimes|string',
             'address' => 'nullable|string',
         ]);
-        $guest->update($validated);
-        return response()->json($guest);
+
+        return response()->json($this->guestAuthService->updateProfile($guest, $validated));
     }
 
     public function myBookings(Request $request)
     {
-        $bookings = $request->user()->bookings()
-            ->with(['room.roomType', 'payments', 'services', 'reviews'])
-            ->latest()
-            ->get();
-
+        $bookings = $this->guestAuthService->myBookings($request->user());
         return response()->json(['data' => $bookings]);
     }
 
     public function myReviews(Request $request)
     {
-        $reviews = $request->user()->reviews()
-            ->with(['booking.room'])
-            ->latest()
-            ->get();
-
+        $reviews = $this->guestAuthService->myReviews($request->user());
         return response()->json(['data' => $reviews]);
     }
 }

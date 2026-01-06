@@ -4,15 +4,21 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\UserQueryService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private readonly UserQueryService $userQueryService,
+        private readonly UserService $userService,
+    ) {
+    }
+
     public function index()
     {
-        $users = User::with('role')->get();
-        return response()->json($users);
+        return response()->json($this->userQueryService->list());
     }
 
     public function store(Request $request)
@@ -24,12 +30,7 @@ class UserController extends Controller
             'role_id' => 'required|exists:roles,id',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role_id' => $validated['role_id'],
-        ]);
+        $user = $this->userService->create($validated);
 
         return response()->json($user->load('role'), 201);
     }
@@ -48,11 +49,7 @@ class UserController extends Controller
             'role_id' => 'sometimes|exists:roles,id',
         ]);
 
-        if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        }
-
-        $user->update($validated);
+        $user = $this->userService->update($user, $validated);
 
         return response()->json($user->load('role'));
     }
@@ -64,7 +61,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Cannot delete your own account'], 403);
         }
 
-        $user->delete();
+        $this->userService->delete($user);
 
         return response()->json(['message' => 'User deleted successfully']);
     }

@@ -4,15 +4,19 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Discount;
+use App\Services\DiscountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class DiscountController extends Controller
 {
+    public function __construct(private readonly DiscountService $discountService)
+    {
+    }
+
     public function index()
     {
-        $discounts = Discount::orderBy('created_at', 'desc')->get();
-        return response()->json($discounts);
+        return response()->json($this->discountService->list());
     }
 
     public function store(Request $request)
@@ -35,7 +39,7 @@ class DiscountController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $discount = Discount::create($request->all());
+        $discount = $this->discountService->create($validator->validated());
         return response()->json($discount, 201);
     }
 
@@ -76,8 +80,7 @@ class DiscountController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $discount->update($request->all());
-        return response()->json($discount);
+        return response()->json($this->discountService->update($discount, $validator->validated()));
     }
 
     public function destroy($id)
@@ -88,7 +91,7 @@ class DiscountController extends Controller
             return response()->json(['message' => 'Discount not found'], 404);
         }
 
-        $discount->delete();
+        $this->discountService->delete($discount);
         return response()->json(['message' => 'Discount deleted successfully']);
     }
 
@@ -103,30 +106,7 @@ class DiscountController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $discount = Discount::where('code', $request->code)->first();
-        
-        if (!$discount) {
-            return response()->json([
-                'valid' => false,
-                'message' => 'Chegirma kodi topilmadi'
-            ], 404);
-        }
-
-        if (!$discount->isValid($request->amount)) {
-            return response()->json([
-                'valid' => false,
-                'message' => 'Chegirma kodi yaroqsiz yoki muddati o\'tgan'
-            ], 400);
-        }
-
-        $discountAmount = $discount->calculateDiscount($request->amount);
-
-        return response()->json([
-            'valid' => true,
-            'discount' => $discount,
-            'discount_amount' => $discountAmount,
-            'final_amount' => $request->amount - $discountAmount,
-            'message' => 'Chegirma muvaffaqiyatli qo\'llanildi'
-        ]);
+        $result = $this->discountService->validateCode($request->code, (float) $request->amount);
+        return response()->json($result['payload'], $result['status']);
     }
 }

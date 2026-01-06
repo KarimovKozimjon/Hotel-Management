@@ -4,32 +4,25 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Services\PaymentQueryService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\PaymentReceipt;
 
 class PaymentController extends Controller
 {
+    public function __construct(
+        private readonly PaymentQueryService $paymentQueryService,
+        private readonly PaymentService $paymentService,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Payment::with('booking.guest');
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by payment method
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
-
-        // Filter by booking
-        if ($request->filled('booking_id')) {
-            $query->where('booking_id', $request->booking_id);
-        }
-
-        $payments = $query->latest()->get();
+        $payments = $this->paymentQueryService->list($request->only([
+            'status',
+            'payment_method',
+            'booking_id',
+        ]));
 
         return response()->json($payments);
     }
@@ -44,23 +37,7 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $payment = Payment::create([
-            'booking_id' => $validated['booking_id'],
-            'amount' => $validated['amount'],
-            'payment_method' => $validated['payment_method'],
-            'transaction_id' => $validated['transaction_id'] ?? null,
-            'notes' => $validated['notes'] ?? null,
-            'status' => 'completed',
-            'paid_at' => now(),
-        ]);
-
-        // Send payment receipt email
-        $payment->load('booking.guest');
-        try {
-            Mail::to($payment->booking->guest->email)->send(new PaymentReceipt($payment));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send payment receipt email: ' . $e->getMessage());
-        }
+        $payment = $this->paymentService->create($validated);
 
         return response()->json($payment->load('booking'), 201);
     }
@@ -80,14 +57,14 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $payment->update($validated);
+        $payment = $this->paymentService->update($payment, $validated);
 
         return response()->json($payment->load('booking'));
     }
 
     public function destroy(Payment $payment)
     {
-        $payment->delete();
+        $this->paymentService->delete($payment);
 
         return response()->json(['message' => 'Payment deleted successfully']);
     }
@@ -103,12 +80,7 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $payments = Payment::whereHas('booking', function ($query) use ($guest) {
-            $query->where('guest_id', $guest->id);
-        })
-        ->with(['booking.room.roomType'])
-        ->latest()
-        ->get();
+        $payments = $this->paymentQueryService->listForGuest($guest->id);
 
         return response()->json([
             'data' => $payments,

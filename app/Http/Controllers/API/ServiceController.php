@@ -4,26 +4,21 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Services\ServiceQueryService;
+use App\Services\ServiceService;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
+    public function __construct(
+        private readonly ServiceQueryService $serviceQueryService,
+        private readonly ServiceService $serviceService,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Service::query();
-
-        // Filter by category
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
-
-        // Filter by active status
-        if ($request->has('is_active')) {
-            $query->where('is_active', $request->boolean('is_active'));
-        }
-
-        $services = $query->get();
-
+        $services = $this->serviceQueryService->list($request->only(['category', 'is_active']));
         return response()->json($services);
     }
 
@@ -77,63 +72,19 @@ class ServiceController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $booking = \App\Models\Booking::find($validated['booking_id']);
-        
-        // Check if booking is in valid status
-        if (in_array($booking->status, ['cancelled', 'completed'])) {
-            return response()->json([
-                'message' => 'Cannot add service to a cancelled or completed booking'
-            ], 422);
+        $result = $this->serviceService->addToBooking(
+            (int) $validated['booking_id'],
+            (int) $validated['service_id'],
+            (int) $validated['quantity'],
+        );
+
+        if (isset($result['error'])) {
+            return response()->json(['message' => $result['error']], $result['status']);
         }
-
-        $service = Service::findOrFail($validated['service_id']);
-        
-        // Check if service is active
-        if (!$service->is_active) {
-            return response()->json([
-                'message' => 'This service is currently not available'
-            ], 422);
-        }
-
-        // Check if service already exists in booking
-        if ($booking->services()->where('service_id', $validated['service_id'])->exists()) {
-            // Update quantity instead of creating duplicate
-            $existingService = $booking->services()->where('service_id', $validated['service_id'])->first();
-            $oldTotal = $existingService->pivot->total;
-            $newQuantity = $existingService->pivot->quantity + $validated['quantity'];
-            $newTotal = $service->price * $newQuantity;
-            
-            $booking->services()->updateExistingPivot($validated['service_id'], [
-                'quantity' => $newQuantity,
-                'price' => $service->price,
-                'total' => $newTotal,
-            ]);
-            
-            // Update booking total amount
-            $booking->total_amount = $booking->total_amount - $oldTotal + $newTotal;
-            $booking->save();
-            
-            return response()->json([
-                'message' => 'Service quantity updated successfully',
-                'booking' => $booking->load('services')
-            ]);
-        }
-
-        $total = $service->price * $validated['quantity'];
-
-        $booking->services()->attach($validated['service_id'], [
-            'quantity' => $validated['quantity'],
-            'price' => $service->price,
-            'total' => $total,
-        ]);
-
-        // Update booking total amount
-        $booking->total_amount = $booking->total_amount + $total;
-        $booking->save();
 
         return response()->json([
-            'message' => 'Service added to booking successfully',
-            'booking' => $booking->load('services')
+            'message' => $result['message'],
+            'booking' => $result['booking'],
         ]);
     }
 }

@@ -4,14 +4,21 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Services\RoleQueryService;
+use App\Services\RoleService;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+    public function __construct(
+        private readonly RoleQueryService $roleQueryService,
+        private readonly RoleService $roleService,
+    ) {
+    }
+
     public function index()
     {
-        $roles = Role::withCount('users')->get();
-        return response()->json($roles);
+        return response()->json($this->roleQueryService->list());
     }
 
     public function store(Request $request)
@@ -21,7 +28,7 @@ class RoleController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $role = Role::create($validated);
+        $role = $this->roleService->create($validated);
 
         return response()->json($role, 201);
     }
@@ -38,19 +45,17 @@ class RoleController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $role->update($validated);
+        $role = $this->roleService->update($role, $validated);
 
         return response()->json($role);
     }
 
     public function destroy(Role $role)
     {
-        // Check if role has users
-        if ($role->users()->count() > 0) {
-            return response()->json(['message' => 'Cannot delete role with existing users'], 403);
+        $result = $this->roleService->delete($role);
+        if (!$result['ok']) {
+            return response()->json(['message' => $result['message']], 403);
         }
-
-        $role->delete();
 
         return response()->json(['message' => 'Role deleted successfully']);
     }

@@ -3,31 +3,24 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    public function __construct(private readonly NotificationService $notificationService)
+    {
+    }
+
     public function index(Request $request)
     {
         $user = $request->user();
 
-        $notifications = $user->notifications()
-            ->orderBy('created_at', 'desc')
-            ->limit(50)
-            ->get()
-            ->map(function ($notification) {
-                $data = is_array($notification->data) ? $notification->data : [];
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
 
-                return [
-                    'id' => $notification->id,
-                    'type' => $data['type'] ?? 'info',
-                    'message' => $data['message'] ?? ($data['title'] ?? 'Notification'),
-                    'description' => $data['description'] ?? null,
-                    'read' => (bool) $notification->read_at,
-                    'timestamp' => $notification->created_at?->toISOString(),
-                    'data' => $data,
-                ];
-            });
+        $notifications = $this->notificationService->listForUser($user);
 
         return response()->json(['data' => $notifications]);
     }
@@ -35,13 +28,15 @@ class NotificationController extends Controller
     public function markAsRead(Request $request, string $id)
     {
         $user = $request->user();
-        $notification = $user->notifications()->where('id', $id)->first();
 
-        if (!$notification) {
-            return response()->json(['error' => 'Notification not found'], 404);
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        $notification->markAsRead();
+        $ok = $this->notificationService->markAsRead($user, $id);
+        if (!$ok) {
+            return response()->json(['error' => 'Notification not found'], 404);
+        }
 
         return response()->json(['message' => 'OK']);
     }
@@ -49,7 +44,12 @@ class NotificationController extends Controller
     public function markAllAsRead(Request $request)
     {
         $user = $request->user();
-        $user->unreadNotifications->markAsRead();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $this->notificationService->markAllAsRead($user);
 
         return response()->json(['message' => 'OK']);
     }
@@ -57,13 +57,15 @@ class NotificationController extends Controller
     public function destroy(Request $request, string $id)
     {
         $user = $request->user();
-        $notification = $user->notifications()->where('id', $id)->first();
 
-        if (!$notification) {
-            return response()->json(['error' => 'Notification not found'], 404);
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        $notification->delete();
+        $ok = $this->notificationService->delete($user, $id);
+        if (!$ok) {
+            return response()->json(['error' => 'Notification not found'], 404);
+        }
 
         return response()->json(['message' => 'Deleted']);
     }

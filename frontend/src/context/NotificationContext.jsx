@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import Pusher from 'pusher-js';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -12,6 +12,8 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [pusher, setPusher] = useState(null);
+  const didInitRef = useRef(false);
+  const pollInFlightRef = useRef(false);
 
   const isLikelyUuid = (value) => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
@@ -37,6 +39,9 @@ export const NotificationProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (didInitRef.current) return;
+    didInitRef.current = true;
+
     // Initialize Pusher (hozircha local simulation)
     // Real Pusher uchun: PUSHER_APP_KEY kerak
     // const pusherInstance = new Pusher('YOUR_PUSHER_KEY', {
@@ -52,6 +57,10 @@ export const NotificationProvider = ({ children }) => {
     // If staff token exists, also load server notifications (admin bell)
     let intervalId;
     const hydrateFromServer = async () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+      if (pollInFlightRef.current) return;
+
+      pollInFlightRef.current = true;
       try {
         const server = await fetchServerNotifications();
         if (!server) return;
@@ -66,15 +75,26 @@ export const NotificationProvider = ({ children }) => {
         setUnreadCount(recomputeUnread(merged));
       } catch {
         // Keep local-only if server not available
+      } finally {
+        pollInFlightRef.current = false;
       }
     };
 
     hydrateFromServer();
     intervalId = setInterval(hydrateFromServer, 20000);
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        hydrateFromServer();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     // Cleanup
     return () => {
       if (intervalId) clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (pusher) {
         pusher.disconnect();
       }

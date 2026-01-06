@@ -3,28 +3,19 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Payment;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function generateBookingInvoice($bookingId)
+    public function __construct(private readonly InvoiceService $invoiceService)
+    {
+    }
+
+    public function generateBookingInvoice(Request $request, $bookingId)
     {
         try {
-            $booking = Booking::with(['guest', 'room.roomType', 'payments', 'services'])
-                ->findOrFail($bookingId);
-
-            $pdf = Pdf::loadView('invoices.booking-invoice', [
-                'booking' => $booking,
-                'guest' => $booking->guest,
-                'room' => $booking->room,
-                'payments' => $booking->payments,
-                'services' => $booking->services,
-            ]);
-
-            return $pdf->download('invoice-' . $booking->booking_number . '.pdf');
+            return $this->invoiceService->bookingInvoiceDownload($bookingId, $request->user());
         } catch (\Throwable $e) {
             \Log::error('Invoice PDF generation error: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([
@@ -34,43 +25,18 @@ class InvoiceController extends Controller
         }
     }
 
-    public function generatePaymentReceipt($paymentId)
+    public function generatePaymentReceipt(Request $request, $paymentId)
     {
-        $payment = Payment::with(['booking.guest', 'booking.room.roomType'])
-            ->findOrFail($paymentId);
-
-        $pdf = Pdf::loadView('invoices.payment-receipt', [
-            'payment' => $payment,
-            'booking' => $payment->booking,
-            'guest' => $payment->booking->guest,
-        ]);
-
-        return $pdf->download('receipt-' . $payment->id . '.pdf');
+        return $this->invoiceService->paymentReceiptDownload($paymentId, $request->user());
     }
 
-    public function previewBookingInvoice($bookingId)
+    public function previewBookingInvoice(Request $request, $bookingId)
     {
-        $booking = Booking::with(['guest', 'room.roomType', 'payments', 'services'])
-            ->findOrFail($bookingId);
-
-        return view('invoices.booking-invoice', [
-            'booking' => $booking,
-            'guest' => $booking->guest,
-            'room' => $booking->room,
-            'payments' => $booking->payments,
-            'services' => $booking->services,
-        ]);
+        return $this->invoiceService->bookingInvoiceView($bookingId, $request->user());
     }
 
-    public function previewPaymentReceipt($paymentId)
+    public function previewPaymentReceipt(Request $request, $paymentId)
     {
-        $payment = Payment::with(['booking.guest', 'booking.room.roomType'])
-            ->findOrFail($paymentId);
-
-        return view('invoices.payment-receipt', [
-            'payment' => $payment,
-            'booking' => $payment->booking,
-            'guest' => $payment->booking->guest,
-        ]);
+        return $this->invoiceService->paymentReceiptView($paymentId, $request->user());
     }
 }

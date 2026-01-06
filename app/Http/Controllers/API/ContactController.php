@@ -4,15 +4,21 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
+use App\Services\ContactMessageQueryService;
+use App\Services\ContactMessageService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
+    public function __construct(
+        private readonly ContactMessageQueryService $contactMessageQueryService,
+        private readonly ContactMessageService $contactMessageService,
+    ) {
+    }
+
     public function index()
     {
-        $messages = ContactMessage::orderBy('created_at', 'desc')->get();
-        return response()->json($messages);
+        return response()->json($this->contactMessageQueryService->list());
     }
 
     public function store(Request $request)
@@ -24,22 +30,7 @@ class ContactController extends Controller
             'message' => 'required|string|max:2000'
         ]);
 
-        // Save to database
-        $contactMessage = ContactMessage::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'message' => $validated['message'],
-            'ip_address' => $request->ip()
-        ]);
-
-        // Log the contact message
-        Log::info('Contact form submission', [
-            'id' => $contactMessage->id,
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'timestamp' => now()
-        ]);
+        $this->contactMessageService->create($validated, $request);
 
         return response()->json([
             'success' => true,
@@ -50,27 +41,26 @@ class ContactController extends Controller
     public function show($id)
     {
         $message = ContactMessage::findOrFail($id);
-        $message->markAsRead();
+        $this->contactMessageService->markAsRead($message);
         return response()->json($message);
     }
 
     public function destroy($id)
     {
         $message = ContactMessage::findOrFail($id);
-        $message->delete();
+        $this->contactMessageService->delete($message);
         return response()->json(['message' => 'Xabar o\'chirildi']);
     }
 
     public function markAsRead($id)
     {
         $message = ContactMessage::findOrFail($id);
-        $message->markAsRead();
+        $this->contactMessageService->markAsRead($message);
         return response()->json(['message' => 'Xabar o\'qilgan deb belgilandi']);
     }
 
     public function getUnreadCount()
     {
-        $count = ContactMessage::where('is_read', false)->count();
-        return response()->json(['count' => $count]);
+        return response()->json(['count' => $this->contactMessageQueryService->unreadCount()]);
     }
 }

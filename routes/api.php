@@ -16,17 +16,18 @@ use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\DiscountController;
+use App\Http\Controllers\API\SecurityController;
 use App\Http\Controllers\RoomImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public routes - Staff Login
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
 // Public routes - Guest Portal
-Route::post('/guest/register', [GuestAuthController::class, 'register']);
-Route::post('/guest/login', [GuestAuthController::class, 'login']);
+Route::post('/guest/register', [GuestAuthController::class, 'register'])->middleware('throttle:register');
+Route::post('/guest/login', [GuestAuthController::class, 'login'])->middleware('throttle:guest-login');
 
 // Public routes - Room information for homepage
 Route::get('/public/rooms', [RoomController::class, 'publicIndex']);
@@ -38,10 +39,23 @@ Route::post('/contact', [ContactController::class, 'store']);
 // Payment gateways removed. Only cash/card payments are supported.
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'sanctum.user'])->group(function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    // Two-Factor Auth (Admin only)
+    Route::middleware('role:admin')->group(function () {
+        Route::post('/2fa/setup', [AuthController::class, 'twoFactorSetup']);
+        Route::post('/2fa/enable', [AuthController::class, 'twoFactorEnable']);
+        Route::post('/2fa/disable', [AuthController::class, 'twoFactorDisable']);
+
+        // Security
+        Route::get('/security/login-attempts', [SecurityController::class, 'loginAttempts']);
+        Route::get('/security/blocked-ips', [SecurityController::class, 'blockedIps']);
+        Route::post('/security/blocked-ips', [SecurityController::class, 'blockIp']);
+        Route::delete('/security/blocked-ips/{ip}', [SecurityController::class, 'unblockIp']);
+    });
 
     // Dashboard - All authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -131,22 +145,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/discounts/validate', [DiscountController::class, 'validate_code']);
     Route::get('/discounts', [DiscountController::class, 'index']);
 
-    // Users - Temporarily accessible to all for testing (should be Admin only in production)
-    Route::apiResource('users', UserController::class);
-
-
-    // Roles - Temporarily accessible to all for testing (should be Admin only in production)
-    Route::apiResource('roles', RoleController::class);
+    // Users - Admin only
+    Route::middleware('role:admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+        Route::apiResource('roles', RoleController::class);
+    });
 });
 
-// Invoices - Generate and download PDFs (public, middleware yo'q!)
-Route::get('/invoices/booking/{bookingId}', [InvoiceController::class, 'generateBookingInvoice']);
-Route::get('/invoices/payment/{paymentId}', [InvoiceController::class, 'generatePaymentReceipt']);
-Route::get('/invoices/preview/booking/{bookingId}', [InvoiceController::class, 'previewBookingInvoice']);
-Route::get('/invoices/preview/payment/{paymentId}', [InvoiceController::class, 'previewPaymentReceipt']);
+// Invoices - Generate and download PDFs (auth required)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/invoices/booking/{bookingId}', [InvoiceController::class, 'generateBookingInvoice']);
+    Route::get('/invoices/payment/{paymentId}', [InvoiceController::class, 'generatePaymentReceipt']);
+    Route::get('/invoices/preview/booking/{bookingId}', [InvoiceController::class, 'previewBookingInvoice']);
+    Route::get('/invoices/preview/payment/{paymentId}', [InvoiceController::class, 'previewPaymentReceipt']);
+});
 
 // Guest Portal Routes (separate auth guard)
-Route::prefix('guest')->middleware('auth:sanctum')->group(function () {
+Route::prefix('guest')->middleware(['auth:sanctum', 'sanctum.guest'])->group(function () {
     Route::post('/logout', [GuestAuthController::class, 'logout']);
     Route::get('/me', [GuestAuthController::class, 'me']);
 

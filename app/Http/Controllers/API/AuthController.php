@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\AuthService;
+use App\Services\TwoFactorService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly AuthService $authService,
+        private readonly TwoFactorService $twoFactorService,
+    )
+    {
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -20,69 +26,113 @@ class AuthController extends Controller
             'role_id' => 'nullable|exists:roles,id',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role_id' => $validated['role_id'] ?? null,
-        ]);
+        $payload = $this->authService->register($validated);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user->load('role'),
-            'token' => $token,
-        ], 201);
+        return response()->json($payload, 201);
     }
 
     public function login(Request $request)
     {
-        \Log::info('Login attempt', [
-            'email' => $request->email, 
-            'has_password' => !empty($request->password),
-            'password_length' => strlen($request->password ?? ''),
-            'all_data' => $request->all()
-        ]);
-        
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'two_factor_code' => 'nullable|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
-        \Log::info('Attempting authentication', ['credentials' => ['email' => $credentials['email'], 'password_length' => strlen($credentials['password'])]]);
-
-        if (!Auth::attempt($credentials)) {
-            \Log::warning('Login failed - invalid credentials', [
-                'email' => $request->email,
-                'user_exists' => \App\Models\User::where('email', $request->email)->exists(),
-                'password_provided' => !empty($request->password)
-            ]);
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        try {
+            $payload = $this->authService->login(
+                $request->email,
+                $request->password,
+                $request->input('two_factor_code'),
+                $request->ip(),
+                $request->userAgent()
+            );
+        } catch (ValidationException $e) {
+            throw $e;
         }
 
-        $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
-        
-        \Log::info('Login successful', ['user_id' => $user->id]);
-
-        return response()->json([
-            'user' => $user->load('role'),
-            'token' => $token,
-        ]);
+        return response()->json($payload);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request->user());
 
         return response()->json(['message' => 'Successfully logged out']);
     }
 
     public function me(Request $request)
     {
-        return response()->json($request->user()->load('role'));
+        return response()->json($this->authService->me($request->user()));
+    }
+
+    public function twoFactorSetup(Request $request)
+    {
+        $user = $request->user();
+
+        $secret = $this->twoFactorService->generateSecret();
+
+        $user->forceFill([
+            'two_factor_secret' => $this->twoFactorService->encryptSecret($secret),
+            'two_factor_enabled_at' => null,
+        ])->save();
+
+        $issuer = (string) config('app.name', 'Hotel');
+        $label = (string) $user->email;
+
+        return response()->json([
+            'secret' => $secret,
+            'otpauth_url' => $this->twoFactorService->getOtpAuthUrl($issuer, $label, $secret),
+            'message' => 'Two-factor setup created. Verify to enable.',
+        ]);
+    }
+
+    public function twoFactorEnable(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $secret = $this->twoFactorService->decryptSecret($user->two_factor_secret);
+
+        if (!$secret) {
+            return response()->json(['message' => 'Two-factor is not set up.'], 422);
+        }
+
+        if (!$this->twoFactorService->verifyCode($secret, $validated['code'])) {
+            return response()->json(['message' => 'Invalid two-factor code.'], 422);
+        }
+
+        $user->forceFill([
+            'two_factor_enabled_at' => now(),
+        ])->save();
+
+        return response()->json(['message' => 'Two-factor enabled successfully.']);
+    }
+
+    public function twoFactorDisable(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $secret = $this->twoFactorService->decryptSecret($user->two_factor_secret);
+
+        if (!$secret) {
+            return response()->json(['message' => 'Two-factor is not enabled.'], 422);
+        }
+
+        if (!$this->twoFactorService->verifyCode($secret, $validated['code'])) {
+            return response()->json(['message' => 'Invalid two-factor code.'], 422);
+        }
+
+        $user->forceFill([
+            'two_factor_secret' => null,
+            'two_factor_enabled_at' => null,
+        ])->save();
+
+        return response()->json(['message' => 'Two-factor disabled successfully.']);
     }
 }
