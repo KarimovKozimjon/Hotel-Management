@@ -214,7 +214,7 @@ function MyBookingsPage() {
   };
 
   const handleDownloadInvoice = (bookingId) => {
-    const url = `http://localhost:8000/api/invoices/booking/${bookingId}`;
+    const url = `/api/invoices/booking/${bookingId}`;
     window.open(url, '_blank');
     toast.success(t('guest.invoice.toast.downloading'));
   };

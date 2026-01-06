@@ -6,6 +6,7 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
+import Loader from '../common/Loader';
 
 const localizer = momentLocalizer(moment);
 
@@ -116,11 +117,7 @@ function RoomAvailabilityCalendar() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Loader className="h-96 p-0" />;
   }
 
   return (

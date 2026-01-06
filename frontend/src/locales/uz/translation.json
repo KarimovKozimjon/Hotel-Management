@@ -828,7 +828,8 @@
         "phonePlaceholder": "+998 90 123 45 67",
         "message": "Xabar",
         "messagePlaceholder": "Xabaringizni yozing...",
-        "submit": "Yuborish"
+        "submit": "Yuborish",
+        "sending": "Yuborilmoqda..."
       },
       "info": {
         "title": "Aloqa Ma'lumotlari",

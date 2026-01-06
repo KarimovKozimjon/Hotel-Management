@@ -10,6 +10,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import { getAmenityLabel, getRoomTypeDescription } from '../../utils/roomTypeLabel';
 import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
+import { resolveAssetUrl } from '../../services/api';
 
 function HomePage() {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ function HomePage() {
     const fetchRooms = async () => {
       try {
         console.log('🔄 Fetching room types from backend...');
-        const response = await fetch('http://localhost:8000/api/public/room-types');
+        const response = await fetch('/api/public/room-types');
         
         if (!response.ok) {
           console.error('❌ Backend response not OK:', response.status, response.statusText);
@@ -46,9 +47,13 @@ function HomePage() {
           // Map the data to ensure proper image URLs
           const mappedRooms = data.map(room => ({
             ...room,
-            image: room.image?.startsWith('http') 
-              ? room.image 
-              : `http://localhost:8000/storage/${room.image}`
+            image: resolveAssetUrl(
+              room.image?.startsWith('http')
+                ? room.image
+                : room.image
+                  ? `/storage/${room.image}`
+                  : room.image
+            )
           }));
           console.log('🖼️ Rooms with proper image URLs:', mappedRooms);
           setRooms(mappedRooms);
@@ -149,7 +154,7 @@ function HomePage() {
     setSubmitMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('http://localhost:8000/api/contact', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -869,7 +874,7 @@ function HomePage() {
                   disabled={submitting}
                   className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? t('home.contact.form.sending') || 'Yuborilmoqda...' : t('home.contact.form.submit')}
+                  {submitting ? t('home.contact.form.sending') : t('home.contact.form.submit')}
                 </motion.button>
               </form>
             </motion.div>

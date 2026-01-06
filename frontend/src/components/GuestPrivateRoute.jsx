@@ -12,7 +12,7 @@ const GuestPrivateRoute = ({ children }) => {
       <Loader
         fullScreen
         className="bg-gradient-to-br from-indigo-50 to-purple-50"
-        message={t('common.loading') || 'Yuklanmoqda...'}
+        message={t('common.loading')}
       />
     );
   }

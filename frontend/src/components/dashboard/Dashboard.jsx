@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { dashboardService } from '../../services/dashboardService';
 import Loader from '../common/Loader';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
 import {
   LineChart,
   Line,
@@ -31,37 +32,47 @@ const Dashboard = () => {
     }).format(Number(value || 0));
 
   // Sample data for charts (backend dan kelishi kerak)
-  const revenueData = [
-    { name: t('admin.dashboard.monthsShort.jan'), revenue: 4000 },
-    { name: t('admin.dashboard.monthsShort.feb'), revenue: 3000 },
-    { name: t('admin.dashboard.monthsShort.mar'), revenue: 5000 },
-    { name: t('admin.dashboard.monthsShort.apr'), revenue: 4500 },
-    { name: t('admin.dashboard.monthsShort.may'), revenue: 6000 },
-    { name: t('admin.dashboard.monthsShort.jun'), revenue: 5500 },
-    { name: t('admin.dashboard.monthsShort.jul'), revenue: 7000 },
-    { name: t('admin.dashboard.monthsShort.aug'), revenue: 6500 },
-    { name: t('admin.dashboard.monthsShort.sep'), revenue: 8000 },
-    { name: t('admin.dashboard.monthsShort.oct'), revenue: 7500 },
-    { name: t('admin.dashboard.monthsShort.nov'), revenue: 9000 },
-    { name: t('admin.dashboard.monthsShort.dec'), revenue: 8500 },
-  ];
+  const chartKey = i18n.language;
 
-  const occupancyData = [
-    { name: t('admin.dashboard.weekdaysShort.mon'), value: 15 },
-    { name: t('admin.dashboard.weekdaysShort.tue'), value: 10 },
-    { name: t('admin.dashboard.weekdaysShort.wed'), value: 20 },
-    { name: t('admin.dashboard.weekdaysShort.thu'), value: 18 },
-    { name: t('admin.dashboard.weekdaysShort.fri'), value: 25 },
-    { name: t('admin.dashboard.weekdaysShort.sat'), value: 30 },
-    { name: t('admin.dashboard.weekdaysShort.sun'), value: 28 },
-  ];
+  const revenueData = useMemo(
+    () => [
+      { name: t('admin.dashboard.monthsShort.jan'), revenue: 4000 },
+      { name: t('admin.dashboard.monthsShort.feb'), revenue: 3000 },
+      { name: t('admin.dashboard.monthsShort.mar'), revenue: 5000 },
+      { name: t('admin.dashboard.monthsShort.apr'), revenue: 4500 },
+      { name: t('admin.dashboard.monthsShort.may'), revenue: 6000 },
+      { name: t('admin.dashboard.monthsShort.jun'), revenue: 5500 },
+      { name: t('admin.dashboard.monthsShort.jul'), revenue: 7000 },
+      { name: t('admin.dashboard.monthsShort.aug'), revenue: 6500 },
+      { name: t('admin.dashboard.monthsShort.sep'), revenue: 8000 },
+      { name: t('admin.dashboard.monthsShort.oct'), revenue: 7500 },
+      { name: t('admin.dashboard.monthsShort.nov'), revenue: 9000 },
+      { name: t('admin.dashboard.monthsShort.dec'), revenue: 8500 },
+    ],
+    [chartKey, t]
+  );
 
-  const roomTypeData = [
-    { name: 'Standard', value: 30, color: '#3B82F6' },
-    { name: 'Deluxe', value: 20, color: '#10B981' },
-    { name: 'Suite', value: 15, color: '#F59E0B' },
-    { name: 'VIP', value: 5, color: '#EF4444' },
-  ];
+  const occupancyData = useMemo(
+    () => [
+      { name: t('admin.dashboard.weekdaysShort.mon'), value: 15 },
+      { name: t('admin.dashboard.weekdaysShort.tue'), value: 10 },
+      { name: t('admin.dashboard.weekdaysShort.wed'), value: 20 },
+      { name: t('admin.dashboard.weekdaysShort.thu'), value: 18 },
+      { name: t('admin.dashboard.weekdaysShort.fri'), value: 25 },
+      { name: t('admin.dashboard.weekdaysShort.sat'), value: 30 },
+      { name: t('admin.dashboard.weekdaysShort.sun'), value: 28 },
+    ],
+    [chartKey, t]
+  );
+
+  const roomTypeData = useMemo(
+    () => [
+      { name: getRoomTypeLabel('standard', t), value: 30, color: '#3B82F6' },
+      { name: getRoomTypeLabel('deluxe', t), value: 20, color: '#10B981' },
+      { name: getRoomTypeLabel('presidential', t), value: 15, color: '#F59E0B' },
+    ],
+    [chartKey, t]
+  );
 
   useEffect(() => {
     fetchStats();
@@ -142,7 +153,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.monthlyRevenueTitle')}</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={revenueData}>
+              <LineChart key={chartKey} data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -163,7 +174,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.weeklyOccupancyTitle')}</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={occupancyData}>
+              <BarChart key={chartKey} data={occupancyData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -180,7 +191,7 @@ const Dashboard = () => {
           <h3 className="text-xl font-bold mb-4">{t('admin.dashboard.charts.roomTypesDistributionTitle')}</h3>
           <div className="flex justify-center">
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+              <PieChart key={chartKey}>
                 <Pie
                   data={roomTypeData}
                   cx="50%"

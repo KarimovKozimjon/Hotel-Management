@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { guestAuthService } from '../services/guestAuthService';
+import Loader from '../components/common/Loader';
 
 const GuestAuthContext = createContext(null);
 
@@ -31,7 +32,7 @@ export const GuestAuthProvider = ({ children }) => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <Loader fullScreen />;
   }
 
   return (

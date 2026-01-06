@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useGuestAuth } from '../../context/GuestAuthContext';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 function GuestRegister() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register } = useGuestAuth();
   const [formData, setFormData] = useState({
@@ -175,7 +177,7 @@ function GuestRegister() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {loading ? 'Ro\'yxatdan o\'tmoqda...' : 'Ro\'yxatdan o\'tish'}
+              {loading ? t('common.loading') : 'Ro\'yxatdan o\'tish'}
             </button>
           </div>
         </form>

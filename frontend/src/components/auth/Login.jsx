@@ -88,7 +88,7 @@ const Login = () => {
             disabled={loading}
             className="w-full px-6 py-3 rounded-xl font-bold text-white shadow-lg hover:shadow-xl transition disabled:opacity-60 bg-gradient-to-r from-indigo-600 to-purple-600"
           >
-            {loading ? (t('auth.loggingIn') || 'Yuklanmoqda...') : (t('auth.login') || 'Kirish')}
+            {loading ? t('auth.loggingIn') : (t('auth.login') || 'Kirish')}
           </motion.button>
         </form>
       </motion.div>

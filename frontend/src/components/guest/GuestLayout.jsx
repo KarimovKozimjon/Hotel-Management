@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import Loader from '../common/Loader';
 
 function GuestLayout({ children }) {
   const { t } = useTranslation();
@@ -74,7 +75,7 @@ function GuestLayout({ children }) {
               className="bg-white rounded-2xl shadow-xl border border-indigo-100 px-8 py-7 text-center"
             >
               <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                <div className="w-8 h-8 rounded-full border-2 border-white/70 border-t-white animate-spin" />
+                <Loader showText={false} className="p-0" />
               </div>
               <div className="mt-4 text-lg font-bold text-gray-900">
                 {t('nav.logout')}

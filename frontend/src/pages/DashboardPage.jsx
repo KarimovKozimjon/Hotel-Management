@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import RoomAvailabilityCalendar from '../components/admin/RoomAvailabilityCalendar';
 import NotificationDemo from '../components/demo/NotificationDemo';
+import Loader from '../components/common/Loader';
 
 function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -80,11 +81,7 @@ function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Loader className="h-96" />;
   }
 
   return (

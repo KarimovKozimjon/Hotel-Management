@@ -823,7 +823,8 @@
         "phonePlaceholder": "+998 90 123 45 67",
         "message": "Message",
         "messagePlaceholder": "Write your message...",
-        "submit": "Send"
+        "submit": "Send",
+        "sending": "Sending..."
       },
       "info": {
         "title": "Contact Information",

@@ -8,7 +8,7 @@ const PrivateRoute = ({ children }) => {
   const { t } = useTranslation();
 
   if (loading) {
-    return <Loader fullScreen message={t('common.loading') || 'Yuklanmoqda...'} />;
+    return <Loader fullScreen message={t('common.loading')} />;
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;

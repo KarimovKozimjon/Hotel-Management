@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { FiCalendar, FiBell, FiDollarSign, FiStar, FiUser } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function GuestDashboard() {
   const { t, i18n } = useTranslation();
@@ -82,18 +83,7 @@ function GuestDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-blue-900 to-yellow-100 flex items-center justify-center">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mx-auto"></div>
-          <p className="mt-4 text-yellow-200 font-serif">{t('common.loading')}</p>
-        </motion.div>
-      </div>
-    );
+    return <Loader fullScreen message={t('common.loading')} />;
   }
 
   return (

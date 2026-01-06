@@ -208,7 +208,9 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationBell />
+            <div className="hidden xl:block">
+              <NotificationBell />
+            </div>
             <div className="hidden xl:block">
               <LanguageSwitcher variant="dropdown" scrolled={scrolled} />
             </div>
@@ -253,7 +255,10 @@ const Navbar = () => {
           <div className="xl:hidden border-t border-gray-100">
             <div className="px-4 py-5 space-y-4">
               <div className="flex items-center justify-between">
-                <LanguageSwitcher variant="dropdown" scrolled={true} />
+                <div className="flex items-center gap-3">
+                  <NotificationBell />
+                  <LanguageSwitcher variant="dropdown" scrolled={true} />
+                </div>
                 <div className="text-sm font-semibold text-gray-700 truncate max-w-[50%]">{user?.name}</div>
               </div>
 

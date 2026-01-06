@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getRoomTypeAmenities, getRoomTypeDescription, getRoomTypeLabel } from '../../utils/roomTypeLabel';
+import Loader from '../../components/common/Loader';
 
 function BookRoomPage() {
   const { t, i18n } = useTranslation();
@@ -259,10 +260,7 @@ function BookRoomPage() {
 
         {/* Rooms Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-blue-700">{t('common.loading')}</p>
-          </div>
+          <Loader className="py-12 px-0" message={t('common.loading')} />
         ) : rooms.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <span className="text-6xl mb-4 block" aria-hidden="true">—</span>

@@ -71,8 +71,52 @@
         "viewStats": "Статистика",
         "newBooking": "Новая бронь",
         "addGuest": "Добавить гостя"
-      }
       },
+      "monthsShort": {
+        "jan": "Янв",
+        "feb": "Фев",
+        "mar": "Мар",
+        "apr": "Апр",
+        "may": "Май",
+        "jun": "Июн",
+        "jul": "Июл",
+        "aug": "Авг",
+        "sep": "Сен",
+        "oct": "Окт",
+        "nov": "Ноя",
+        "dec": "Дек"
+      },
+      "weekdaysShort": {
+        "mon": "Пн",
+        "tue": "Вт",
+        "wed": "Ср",
+        "thu": "Чт",
+        "fri": "Пт",
+        "sat": "Сб",
+        "sun": "Вс"
+      },
+      "charts": {
+        "monthlyRevenueTitle": "Доход по месяцам",
+        "weeklyOccupancyTitle": "Загрузка по дням",
+        "roomTypesDistributionTitle": "Распределение типов номеров",
+        "legend": {
+          "revenueUsd": "Доход (USD)",
+          "occupiedRooms": "Занятые номера"
+        }
+      },
+      "recentBookings": {
+        "title": "Последние бронирования",
+        "table": {
+          "bookingNumber": "Бронь #",
+          "guest": "Гость",
+          "room": "Номер",
+          "status": "Статус"
+        }
+      },
+      "toast": {
+        "loadError": "Ошибка загрузки данных панели"
+      }
+    },
       "pages": {
         "rooms": {
           "addNew": "Добавить номер",
@@ -724,7 +768,8 @@
         "phonePlaceholder": "+998 90 123 45 67",
         "message": "Сообщение",
         "messagePlaceholder": "Напишите ваше сообщение...",
-        "submit": "Отправить"
+        "submit": "Отправить",
+        "sending": "Отправка..."
       },
       "info": {
         "title": "Контактная информация",
