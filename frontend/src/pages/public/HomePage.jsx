@@ -10,7 +10,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import { getAmenityLabel, getRoomTypeDescription } from '../../utils/roomTypeLabel';
 import { getRoomTypeLabel } from '../../utils/roomTypeLabel';
-import { resolveAssetUrl } from '../../services/api';
+import api, { resolveAssetUrl } from '../../services/api';
 
 function HomePage() {
   const { t } = useTranslation();
@@ -32,14 +32,8 @@ function HomePage() {
     const fetchRooms = async () => {
       try {
         console.log('🔄 Fetching room types from backend...');
-        const response = await fetch('/api/public/room-types');
-        
-        if (!response.ok) {
-          console.error('❌ Backend response not OK:', response.status, response.statusText);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        const response = await api.get('/public/room-types');
+        const data = response?.data;
         console.log('✅ Fetched room types:', data);
         console.log('📊 Number of rooms:', data?.length || 0);
         
@@ -154,33 +148,22 @@ function HomePage() {
     setSubmitMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contactForm)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      await api.post('/contact', contactForm);
         setSubmitMessage({ 
           type: 'success', 
           text: t('home.contact.form.successMessage') || 'Xabaringiz muvaffaqiyatli yuborildi!' 
         });
         setContactForm({ name: '', email: '', phone: '', message: '' });
-      } else {
-        setSubmitMessage({ 
-          type: 'error', 
-          text: data.message || t('home.contact.form.errorMessage') || 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.' 
-        });
-      }
     } catch (error) {
       console.error('Contact form error:', error);
+
+      const serverMessage =
+        error?.response?.data?.message ||
+        (typeof error?.response?.data === 'string' ? error.response.data : null);
+
       setSubmitMessage({ 
         type: 'error', 
-        text: t('home.contact.form.errorMessage') || 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.' 
+        text: serverMessage || t('home.contact.form.errorMessage') || 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.' 
       });
     } finally {
       setSubmitting(false);
