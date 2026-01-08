@@ -5,14 +5,14 @@ import enTranslation from './locales/en/translation.json';
 import uzTranslation from './locales/uz/translation.json';
 import ruTranslation from './locales/ru/translation.json';
 
-// Get language from localStorage or default to 'en'
+// Get language from localStorage or default to 'uz'
 const savedLanguage = (() => {
   try {
     return localStorage.getItem('language');
   } catch {
     return null;
   }
-})() || 'en';
+})() || 'uz';
 
 i18n
   .use(initReactI18next)

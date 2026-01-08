@@ -46,7 +46,7 @@ return [
     /*
      | Regex orqali origin ruxsat berish (kerak emas)
      */
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['https://*.netlify.app'],
 
     /*
      | Ruxsat etilgan headerlar
