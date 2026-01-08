@@ -62,8 +62,15 @@ return new class extends Migration
             }
         }, 3);
 
-        $existing = DB::select("SHOW INDEX FROM booking_services WHERE Key_name = 'booking_services_booking_id_service_id_unique'");
-        if (empty($existing)) {
+        $indexExists = false;
+        if (DB::getDriverName() === 'mysql') {
+            $existing = DB::select("SHOW INDEX FROM booking_services WHERE Key_name = 'booking_services_booking_id_service_id_unique'");
+            $indexExists = !empty($existing);
+        } elseif (DB::getDriverName() === 'sqlite') {
+            $existing = DB::select("PRAGMA index_list(booking_services)");
+            $indexExists = collect($existing)->contains('name', 'booking_services_booking_id_service_id_unique');
+        }
+        if (!$indexExists) {
             Schema::table('booking_services', function (Blueprint $table) {
                 $table->unique(['booking_id', 'service_id'], 'booking_services_booking_id_service_id_unique');
             });
@@ -75,8 +82,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $existing = DB::select("SHOW INDEX FROM booking_services WHERE Key_name = 'booking_services_booking_id_service_id_unique'");
-        if (!empty($existing)) {
+        $indexExists = false;
+        if (DB::getDriverName() === 'mysql') {
+            $existing = DB::select("SHOW INDEX FROM booking_services WHERE Key_name = 'booking_services_booking_id_service_id_unique'");
+            $indexExists = !empty($existing);
+        } elseif (DB::getDriverName() === 'sqlite') {
+            $existing = DB::select("PRAGMA index_list(booking_services)");
+            $indexExists = collect($existing)->contains('name', 'booking_services_booking_id_service_id_unique');
+        }
+        if ($indexExists) {
             Schema::table('booking_services', function (Blueprint $table) {
                 $table->dropUnique('booking_services_booking_id_service_id_unique');
             });

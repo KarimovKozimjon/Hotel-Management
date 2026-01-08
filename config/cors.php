@@ -3,7 +3,7 @@
 
 $allowedOrigins = (string) env(
     'CORS_ALLOWED_ORIGINS',
-    '*'
+    'https://comfort-hub.netlify.app,https://695f1950d3dc73b92294fedd--comfort-hub.netlify.app,http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000'
 );
 
 $allowedOriginsList = array_values(array_filter(array_map(
@@ -41,9 +41,7 @@ return [
      | RUXSAT ETILGAN FRONTEND DOMENLAR
      | env() YO‘Q — InfinityFree uchun to‘g‘ridan-to‘g‘ri yozilgan
      */
-    'allowed_origins' => [
-        '*',
-    ],
+    'allowed_origins' => $allowedOriginsList,
 
     /*
      | Regex orqali origin ruxsat berish (kerak emas)
