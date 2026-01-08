@@ -22,29 +22,55 @@ return [
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
-    |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    /*
+     | Qaysi URL’lar CORS ishlatishi mumkin
+     */
+    'paths' => [
+        'api/*',
+        'sanctum/csrf-cookie',
+    ],
 
+    /*
+     | Ruxsat etilgan HTTP methodlar
+     */
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => $allowedOriginsList,
+    /*
+     | RUXSAT ETILGAN FRONTEND DOMENLAR
+     | env() YO‘Q — InfinityFree uchun to‘g‘ridan-to‘g‘ri yozilgan
+     */
+    'allowed_origins' => [
+        'https://comfort-hub.netlify.app',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+    ],
 
+    /*
+     | Regex orqali origin ruxsat berish (kerak emas)
+     */
     'allowed_origins_patterns' => [],
 
+    /*
+     | Ruxsat etilgan headerlar
+     */
     'allowed_headers' => ['*'],
 
+    /*
+     | Frontend o‘qiy oladigan headerlar
+     */
     'exposed_headers' => [],
 
+    /*
+     | Preflight cache vaqti
+     */
     'max_age' => 0,
 
-    'supports_credentials' => (bool) env('CORS_SUPPORTS_CREDENTIALS', false),
-
+    /*
+     | Cookie / Authorization kerak emas → false
+     */
+    'supports_credentials' => false,
 ];
