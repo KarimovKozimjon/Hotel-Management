@@ -24,47 +24,22 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    /*
-     | Qaysi URL’lar CORS ishlatishi mumkin
-     */
     'paths' => [
         'api/*',
         'sanctum/csrf-cookie',
     ],
 
-    /*
-     | Ruxsat etilgan HTTP methodlar
-     */
     'allowed_methods' => ['*'],
 
-    /*
-     | RUXSAT ETILGAN FRONTEND DOMENLAR
-     | env() YO‘Q — InfinityFree uchun to‘g‘ridan-to‘g‘ri yozilgan
-     */
     'allowed_origins' => $allowedOriginsList,
 
-    /*
-     | Regex orqali origin ruxsat berish (kerak emas)
-     */
-    'allowed_origins_patterns' => ['https://*.netlify.app'],
+    'allowed_origins_patterns' => ['/^https:\/\/.*\.netlify\.app$/'],
 
-    /*
-     | Ruxsat etilgan headerlar
-     */
     'allowed_headers' => ['*'],
 
-    /*
-     | Frontend o‘qiy oladigan headerlar
-     */
     'exposed_headers' => [],
 
-    /*
-     | Preflight cache vaqti
-     */
     'max_age' => 0,
 
-    /*
-     | Cookie / Authorization kerak emas → false
-     */
     'supports_credentials' => false,
 ];
