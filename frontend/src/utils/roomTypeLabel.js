@@ -18,7 +18,7 @@ const ROOM_TYPE_DEFAULT_AMENITIES = {
   presidential: ['wifi', 'tv', 'airConditioning', 'miniBar', 'balcony', 'kitchen', 'jacuzzi'],
 };
 
-export function getRoomTypeKey(roomTypeOrName) {
+export function getRoomTypeKey(roomTypeOrName, t) {
   const rawName =
     typeof roomTypeOrName === 'object' && roomTypeOrName !== null
       ? roomTypeOrName.name
@@ -28,9 +28,9 @@ export function getRoomTypeKey(roomTypeOrName) {
 
   if (!name) return null;
 
+  // Basic English matches
   if (name === 'standard' || name === 'standard room') return 'standard';
   if (name === 'deluxe' || name === 'deluxe room') return 'deluxe';
-
   if (
     name === 'presidential' ||
     name === 'presidential suite' ||
@@ -39,11 +39,23 @@ export function getRoomTypeKey(roomTypeOrName) {
     return 'presidential';
   }
 
+  // If translation function is provided, try matching localized names
+  if (typeof t === 'function') {
+    const keys = ['standard', 'deluxe', 'presidential'];
+    for (const k of keys) {
+      const translated = normalize(t(`roomTypeNames.${k}`, { defaultValue: k }));
+      if (translated === name) return k;
+
+      // Also check a few common short forms (e.g., 'standart', 'lyuks')
+      if (translated.includes(name) || name.includes(translated)) return k;
+    }
+  }
+
   return null;
 }
 
 export function getRoomTypeLabel(roomTypeOrName, t) {
-  const key = getRoomTypeKey(roomTypeOrName);
+  const key = getRoomTypeKey(roomTypeOrName, t);
   const fallback =
     typeof roomTypeOrName === 'object' && roomTypeOrName !== null
       ? roomTypeOrName.name
@@ -57,7 +69,7 @@ export function getRoomTypeLabel(roomTypeOrName, t) {
 }
 
 export function getRoomTypeDescription(roomTypeOrName, t) {
-  const key = getRoomTypeKey(roomTypeOrName);
+  const key = getRoomTypeKey(roomTypeOrName, t);
   const fallback =
     typeof roomTypeOrName === 'object' && roomTypeOrName !== null
       ? roomTypeOrName.description
@@ -110,7 +122,7 @@ export function getAmenityLabel(value, t) {
 }
 
 export function getRoomTypeAmenities(roomTypeOrName, t) {
-  const key = getRoomTypeKey(roomTypeOrName);
+  const key = getRoomTypeKey(roomTypeOrName, t);
   const amenitiesRaw =
     typeof roomTypeOrName === 'object' && roomTypeOrName !== null
       ? roomTypeOrName.amenities

@@ -57,24 +57,24 @@ function HomePage() {
           setRooms([
             {
               id: 1,
-              name: t('home.roomsSection.standard'),
+              name: t('roomTypeNames.standard'),
               price: 100,
               image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800",
-              amenities: ["WiFi", "TV", "Air Conditioning"]
+              amenities: ["wifi", "tv", "airConditioning"]
             },
             {
               id: 2,
-              name: t('home.roomsSection.deluxe'),
+              name: t('roomTypeNames.deluxe'),
               price: 200,
               image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-              amenities: ["WiFi", "TV", "Air Conditioning", "Mini Bar", "Balcony"]
+              amenities: ["wifi", "tv", "airConditioning", "miniBar", "balcony"]
             },
             {
               id: 3,
-              name: t('home.roomsSection.presidential'),
+              name: t('roomTypeNames.presidential'),
               price: 350,
               image: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800",
-              amenities: ["WiFi", "TV", "Air Conditioning", "Mini Bar", "Balcony", "Kitchen", "Jacuzzi"]
+              amenities: ["wifi", "tv", "airConditioning", "miniBar", "balcony", "kitchen", "jacuzzi"]
             }
           ]);
         }
@@ -84,24 +84,24 @@ function HomePage() {
         setRooms([
           {
             id: 1,
-            name: t('home.roomsSection.standard'),
+            name: t('roomTypeNames.standard'),
             price: 100,
             image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800",
-            amenities: ["WiFi", "TV", "Air Conditioning"]
+            amenities: ["wifi", "tv", "airConditioning"]
           },
           {
             id: 2,
-            name: t('home.roomsSection.deluxe'),
+            name: t('roomTypeNames.deluxe'),
             price: 200,
             image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-            amenities: ["WiFi", "TV", "Air Conditioning", "Mini Bar", "Balcony"]
+            amenities: ["wifi", "tv", "airConditioning", "miniBar", "balcony"]
           },
           {
             id: 3,
-            name: t('home.roomsSection.presidential'),
+            name: t('roomTypeNames.presidential'),
             price: 350,
             image: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800",
-            amenities: ["WiFi", "TV", "Air Conditioning", "Mini Bar", "Balcony", "Kitchen", "Jacuzzi"]
+            amenities: ["wifi", "tv", "airConditioning", "miniBar", "balcony", "kitchen", "jacuzzi"]
           }
         ]);
       } finally {
