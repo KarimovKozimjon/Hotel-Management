@@ -1,3 +1,5 @@
+databases:
+envVarGroups:
 services:
   - type: web
     name: hotel-management-backend
@@ -16,12 +18,3 @@ services:
         value: https://your-backend.onrender.com
       - key: CORS_ALLOWED_ORIGINS
         value: https://comfort-hub.netlify.app
-
-  - type: static_site
-    name: hotel-management-frontend
-    branch: main
-    buildCommand: cd frontend && npm ci && npm run build
-    publishPath: frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://your-backend.onrender.com
