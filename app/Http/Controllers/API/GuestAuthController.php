@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Validator;
 
 class GuestAuthController extends Controller
 {
-    public function __construct(private readonly GuestAuthService $guestAuthService)
+    private GuestAuthService $guestAuthService;
+
+    public function __construct(GuestAuthService $guestAuthService)
     {
+        $this->guestAuthService = $guestAuthService;
     }
 
     public function register(Request $request)
