@@ -9,27 +9,26 @@ That means you have two clean deployment patterns:
 
 ## Option A (recommended): Frontend static hosting + Backend PHP hosting
 
-### Option A (practical free setup): InfinityFree (backend) + Netlify (frontend)
+### Option A (recommended): Shared PHP hosting (aHost/cPanel) + Netlify (frontend)
 
-This is the easiest free combo for this repo:
-- Backend: InfinityFree (PHP + MySQL)
+This is a common practical combo for this repo:
+- Backend: Shared PHP hosting (e.g., aHost/cPanel) with PHP + MySQL
 - Frontend: Netlify (static hosting)
 
 The repo already includes Netlify SPA routing config:
 - `frontend/public/_redirects`
 - `frontend/netlify.toml`
 
-### A1) Backend on shared PHP hosting (free)
+### A1) Backend on shared PHP hosting (aHost / cPanel)
 Works with providers that support **PHP + MySQL + Composer** (or allow uploading `vendor/`).
-Typical examples: InfinityFree / 000webhost (free tiers vary).
 
 **Backend steps**
 1. Create a MySQL database + user.
-2. Upload the Laravel project to hosting (InfinityFree file manager or FTP).
+2. Upload the Laravel project to hosting (File Manager or FTP).
 3. Make sure the domain/subdomain document root points to Laravel `public/`.
-    - On InfinityFree, the cleanest pattern is:
+    - A clean pattern is:
        - Upload the project into a folder like `hotel/`
-       - Create a (sub)domain directory that points to `hotel/public`
+       - Create a (sub)domain that points to `hotel/public`
        This keeps `.env`, `app/`, `vendor/` out of the web root.
 4. Set environment variables (or `.env` if allowed):
    - `APP_ENV=production`
@@ -44,7 +43,7 @@ Typical examples: InfinityFree / 000webhost (free tiers vary).
    - Security knobs you already have:
      - `FORCE_HTTPS=true`
      - `SESSION_SECURE_COOKIE=true`
-   - `CORS_ALLOWED_ORIGINS=https://YOUR_NETLIFY_DOMAIN`
+   - `CORS_ALLOWED_ORIGINS=https://YOUR_NETLIFY_DOMAIN` (add any other frontend domains you use)
      - `HSTS_ENABLED=true` (only if HTTPS is correctly configured)
      - `ADMIN_PASSWORD=...` (required in production)
 
@@ -58,10 +57,10 @@ Typical examples: InfinityFree / 000webhost (free tiers vary).
 
 If the host does not allow running `composer`/`artisan`, you can:
 - Build locally, upload the `vendor/` folder, and upload a ready `.env`.
-- Run migrations locally and then import the DB to InfinityFree using phpMyAdmin (practical on free hosts):
+- Run migrations locally and then import the DB using phpMyAdmin (practical on shared hosts):
    1) Locally: configure `.env` for local DB, run `php artisan migrate --force` (and seed if needed)
    2) Export SQL from your local DB
-   3) InfinityFree phpMyAdmin: import the SQL into the hosted database
+   3) Import the SQL into the hosted database via phpMyAdmin
 
 ### A2) Frontend on static hosting (free)
 Works with Netlify / Vercel / Cloudflare Pages / GitHub Pages (free tiers vary).

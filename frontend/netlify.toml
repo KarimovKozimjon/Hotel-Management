@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://comfort-hub.infinityfreeapp.com/api"
+  VITE_API_URL = "https://comforthub.uz/api"
 
 [[redirects]]
   from = "/*"
