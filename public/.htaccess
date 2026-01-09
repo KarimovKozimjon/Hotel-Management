@@ -1,9 +1,10 @@
 <IfModule mod_headers.c>
-    # Allow cross-origin requests (adjust origin instead of '*' for production security)
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
-    Header set Access-Control-Allow-Credentials "false"
+    # CORS is handled by Laravel (config/cors.php / Fruitcake middleware).
+    # Commented out to avoid duplicate Access-Control-* headers which cause browser errors.
+    # Header set Access-Control-Allow-Origin "*"
+    # Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    # Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+    # Header set Access-Control-Allow-Credentials "false"
 </IfModule>
 
 # Let Laravel handle rewriting as usual
