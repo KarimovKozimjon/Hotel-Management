@@ -2,7 +2,7 @@
 
 $allowedOrigins = (string) env(
     'CORS_ALLOWED_ORIGINS',
-    'https://comfort-hub.netlify.app,https://comfort-hub.infinityfreeapp.com,http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000'
+    'https://comfort-hub.netlify.app,https://comforthub.uz'
 );
 
 $allowedOriginsList = array_values(array_filter(array_map(
