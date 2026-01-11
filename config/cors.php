@@ -25,11 +25,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => $allowedOriginsList,
+    'allowed_origins' => [
+        'https://comforthub.uz',
+        'https://hotel-management-five-drab.vercel.app',
+        // boshqa kerakli domenlar
+    ],
 
     'allowed_origins_patterns' => [
-        '/^https?:\/\/localhost(:[0-9]+)?$/',
-        '/^https:\/\/hotel-management-[a-z0-9-]+\.vercel\.app$/',
+        '/^https?:\\/\\/localhost(:[0-9]+)?$/',
+        '/^https:\\/\\/hotel-management-[a-z0-9-]+\\.vercel\\.app$/',
     ],
 
     'allowed_headers' => ['*'],
