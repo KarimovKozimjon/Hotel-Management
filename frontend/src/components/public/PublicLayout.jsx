@@ -55,7 +55,7 @@ function PublicLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent">
+    <div className="min-h-screen flex flex-col bg-transparent w-full px-0">
       {/* Navbar */}
       <motion.nav 
         initial={{ y: -100 }}
