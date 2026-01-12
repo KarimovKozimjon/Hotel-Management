@@ -26,6 +26,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'https://comforthub.casa',
         'https://comforthub.uz',
         'https://hotel-management-five-drab.vercel.app',
         // boshqa kerakli domenlar

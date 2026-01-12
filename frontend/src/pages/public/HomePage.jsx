@@ -328,7 +328,7 @@ function HomePage() {
                     className="text-center max-w-4xl"
                   >
                     <h1 
-                      className="text-5xl md:text-7xl font-bold mb-6"
+                      className="text-5xl md:text-7xl font-bold mb-6 responsive-title"
                       data-swiper-parallax="-300"
                     >
                       {slide.title}
@@ -350,18 +350,18 @@ function HomePage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.5, delay: 0.6 }}
-                      className="flex flex-col sm:flex-row gap-4 justify-center"
+                      className="flex flex-col sm:flex-row gap-4 justify-center responsive-card"
                       data-swiper-parallax="-50"
                     >
                       <a
                         href="#rooms"
-                        className="px-8 py-4 bg-white text-indigo-700 rounded-lg font-bold hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl border-2 border-white"
+                        className="px-8 py-4 bg-white text-indigo-700 rounded-lg font-bold hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl border-2 border-white responsive-btn"
                       >
                         {t('home.viewRooms')}
                       </a>
                       <Link
                         to="/guest/login"
-                        className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-white text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl"
+                        className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-white text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl responsive-btn"
                       >
                         {t('home.bookNow')}
                       </Link>
@@ -372,7 +372,7 @@ function HomePage() {
                 {/* Stats Overlay */}
                 <div className="absolute bottom-20 left-0 right-0 z-20">
                   <div className="max-w-7xl mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 responsive-card">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
