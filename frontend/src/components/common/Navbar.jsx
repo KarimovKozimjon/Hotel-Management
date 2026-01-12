@@ -219,8 +219,8 @@ const Navbar = () => {
               type="button"
               whileTap={{ scale: 0.95 }}
               onClick={() => setMobileMenuOpen((v) => !v)}
-              className="xl:hidden p-2 rounded-lg text-gray-800 hover:bg-indigo-50 absolute top-4 right-4 z-50 bg-white/80 border border-gray-200 shadow-md"
-              style={{ transform: 'translateY(0)', padding: '10px' }}
+              className="xl:hidden p-2 rounded-lg text-gray-800 hover:bg-indigo-50 absolute top-4 z-50 bg-white/80 border border-gray-200 shadow-md"
+              style={{ right: '3rem', transform: 'translateY(0)', padding: '10px' }}
               aria-label="Menu"
               aria-expanded={mobileMenuOpen}
             >
