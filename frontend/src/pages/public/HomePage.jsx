@@ -372,7 +372,7 @@ function HomePage() {
                 {/* Stats Overlay */}
                 <div className="absolute bottom-20 left-0 right-0 z-20">
                   <div className="max-w-7xl mx-auto px-4 w-full sm:px-4 px-0">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 responsive-card">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 responsive-card home-stats-hide">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
