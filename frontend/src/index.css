@@ -1,3 +1,17 @@
+@media (max-width: 640px) {
+  /* Scroll indicator (Pastga) always centered on mobile */
+  .scroll-indicator-mobile-center,
+  .scroll-indicator-mobile-center * {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
 /* Xonalarni ko'rish tugmasi uchun zamonaviy gradient border va text */
 .view-rooms-btn {
   background: white;

@@ -423,7 +423,7 @@ function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.5 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce cursor-pointer"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce cursor-pointer scroll-indicator-mobile-center"
         >
           <div className="flex flex-col items-center text-white">
             <span className="text-sm mb-2">{t('home.hero.scrollDown')}</span>
