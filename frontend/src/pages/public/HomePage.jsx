@@ -316,8 +316,9 @@ function HomePage() {
                   }}
                 />
                 
-                {/* Gradient Overlay (matn o'qilishini yaxshilash uchun) */}
-                <div className="hero-gradient-overlay"></div>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                
                 {/* Content */}
                 <div className="relative h-full flex flex-col items-center justify-center text-white px-4 z-10">
                   <motion.div
@@ -327,19 +328,19 @@ function HomePage() {
                     className="text-center max-w-4xl"
                   >
                     <h1 
-                      className="text-5xl md:text-7xl font-bold mb-6 responsive-title hero-title"
+                      className="text-5xl md:text-7xl font-bold mb-6 responsive-title"
                       data-swiper-parallax="-300"
                     >
                       {slide.title}
                     </h1>
                     <p 
-                      className="text-2xl md:text-3xl mb-4 font-light hero-subtitle"
+                      className="text-2xl md:text-3xl mb-4 font-light"
                       data-swiper-parallax="-200"
                     >
                       {slide.subtitle}
                     </p>
                     <p 
-                      className="text-lg md:text-xl mb-12 text-gray-200 hero-subtitle"
+                      className="text-lg md:text-xl mb-12 text-gray-200"
                       data-swiper-parallax="-100"
                     >
                       {slide.description}
@@ -354,15 +355,13 @@ function HomePage() {
                     >
                       <a
                         href="#rooms"
-                        className="view-rooms-btn"
-                        style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
+                        className="px-8 py-4 bg-white text-indigo-700 rounded-lg font-bold hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl border-2 border-white responsive-btn"
                       >
                         {t('home.viewRooms')}
                       </a>
                       <Link
                         to="/guest/login"
-                        className="modern-btn"
-                        style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
+                        className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-white text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl responsive-btn"
                       >
                         {t('home.bookNow')}
                       </Link>
@@ -373,7 +372,7 @@ function HomePage() {
                 {/* Stats Overlay */}
                 <div className="absolute bottom-20 left-0 right-0 z-20">
                   <div className="max-w-7xl mx-auto px-4 w-full sm:px-4 px-0">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 responsive-card home-stats-hide">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 responsive-card">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
