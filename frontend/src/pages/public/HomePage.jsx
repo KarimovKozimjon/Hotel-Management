@@ -354,13 +354,15 @@ function HomePage() {
                     >
                       <a
                         href="#rooms"
-                        className="px-8 py-4 bg-white text-indigo-700 rounded-lg font-bold hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl border-2 border-white responsive-btn"
+                        className="modern-btn"
+                        style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.viewRooms')}
                       </a>
                       <Link
                         to="/guest/login"
-                        className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-white text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transform transition-all duration-300 text-center shadow-2xl responsive-btn"
+                        className="modern-btn"
+                        style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.bookNow')}
                       </Link>
