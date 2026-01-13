@@ -185,30 +185,27 @@ body {
 
 /* Muhim bo'lmagan button: oq fon, qalin purple border, matn purple gradient */
 .modern-btn-secondary {
+  border-radius: 16px;
   background: #fff;
   color: #6a5af9;
   border: 3px solid #6a5af9;
   font-weight: 700;
+  font-size: 18px;
+  padding: 16px 0;
+  margin: 12px 0;
   box-shadow: 0 4px 16px rgba(106, 90, 249, 0.10);
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  width: 100%;
+  max-width: 340px;
+  display: block;
 }
 .modern-btn-secondary:hover {
   background: #f3f0ff;
   color: #8f6af9;
   border-color: #8f6af9;
+  box-shadow: 0 6px 24px rgba(106, 90, 249, 0.18);
+  transform: translateY(-2px) scale(1.03);
 }
-
-.hero-title {
-  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-.hero-desc {
-  text-shadow: 0 1px 4px rgba(0,0,0,0.18);
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-
 @media (max-width: 640px) {
   .modern-btn, .modern-btn-secondary {
     font-size: 1rem;
