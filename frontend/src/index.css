@@ -86,6 +86,9 @@ code {
   height: 50px !important;
   border-radius: 50%;
   transition: all 0.3s ease;
+  top: 50% !important;
+  transform: translateY(-50%);
+  margin: 0 24px !important;
 }
 
 .swiper-button-next:hover,
@@ -135,6 +138,21 @@ code {
   .swiper-pagination {
     bottom: 120px !important;
   }
+}
+
+/* Matn o‘qilishini yaxshilash uchun gradient overlay */
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+/* Matnga text-shadow */
+.hero-title, .hero-subtitle {
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  position: relative;
+  z-index: 2;
 }
 
 html,

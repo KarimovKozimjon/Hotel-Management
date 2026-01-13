@@ -316,9 +316,8 @@ function HomePage() {
                   }}
                 />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-                
+                {/* Gradient Overlay (matn o'qilishini yaxshilash uchun) */}
+                <div className="hero-gradient-overlay"></div>
                 {/* Content */}
                 <div className="relative h-full flex flex-col items-center justify-center text-white px-4 z-10">
                   <motion.div
@@ -328,19 +327,19 @@ function HomePage() {
                     className="text-center max-w-4xl"
                   >
                     <h1 
-                      className="text-5xl md:text-7xl font-bold mb-6 responsive-title"
+                      className="text-5xl md:text-7xl font-bold mb-6 responsive-title hero-title"
                       data-swiper-parallax="-300"
                     >
                       {slide.title}
                     </h1>
                     <p 
-                      className="text-2xl md:text-3xl mb-4 font-light"
+                      className="text-2xl md:text-3xl mb-4 font-light hero-subtitle"
                       data-swiper-parallax="-200"
                     >
                       {slide.subtitle}
                     </p>
                     <p 
-                      className="text-lg md:text-xl mb-12 text-gray-200"
+                      className="text-lg md:text-xl mb-12 text-gray-200 hero-subtitle"
                       data-swiper-parallax="-100"
                     >
                       {slide.description}
