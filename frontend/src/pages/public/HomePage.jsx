@@ -354,14 +354,14 @@ function HomePage() {
                     >
                       <a
                         href="#rooms"
-                        className="modern-btn"
+                        className="modern-btn-secondary"
                         style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.viewRooms')}
                       </a>
                       <Link
                         to="/guest/login"
-                        className="modern-btn modern-btn-primary"
+                        className="modern-btn"
                         style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.bookNow')}

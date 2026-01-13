@@ -183,13 +183,18 @@ body {
   transform: translateY(-2px) scale(1.03);
 }
 
-/* Muhim (asosiy) button uchun alohida rang */
-.modern-btn-primary {
-  background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
-  color: #fff;
+/* Muhim bo'lmagan button: oq fon, qalin purple border, matn purple gradient */
+.modern-btn-secondary {
+  background: #fff;
+  color: #6a5af9;
+  border: 3px solid #6a5af9;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(106, 90, 249, 0.10);
 }
-.modern-btn-primary:hover {
-  background: linear-gradient(90deg, #feb47b 0%, #ff7e5f 100%);
+.modern-btn-secondary:hover {
+  background: #f3f0ff;
+  color: #8f6af9;
+  border-color: #8f6af9;
 }
 
 .hero-title {
@@ -205,7 +210,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  .modern-btn {
+  .modern-btn, .modern-btn-secondary {
     font-size: 1rem;
     padding: 14px 0;
     max-width: 100%;
