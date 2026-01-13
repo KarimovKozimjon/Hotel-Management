@@ -354,7 +354,7 @@ function HomePage() {
                     >
                       <a
                         href="#rooms"
-                        className="modern-btn-secondary"
+                        className="view-rooms-btn"
                         style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.viewRooms')}
