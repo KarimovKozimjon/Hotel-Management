@@ -361,7 +361,7 @@ function HomePage() {
                       </a>
                       <Link
                         to="/guest/login"
-                        className="modern-btn"
+                        className="modern-btn modern-btn-primary"
                         style={{ minWidth: '180px', fontSize: '1.1rem', letterSpacing: '0.01em' }}
                       >
                         {t('home.bookNow')}
