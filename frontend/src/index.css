@@ -1,4 +1,9 @@
 @media (max-width: 640px) {
+  .home-stats-mobile-hide {
+    display: none !important;
+  }
+}
+@media (max-width: 640px) {
   /* Scroll indicator (Pastga) always centered on mobile */
   .scroll-indicator-mobile-center,
   .scroll-indicator-mobile-center * {
