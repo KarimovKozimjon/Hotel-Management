@@ -259,8 +259,8 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(106, 90, 249, 0.18); /* purple, shaffof */
-  opacity: 0.5;
+  background: transparent;
+  opacity: 0;
   transition: background 0.2s, opacity 0.2s;
 }
 .slider-dot.active {
@@ -269,8 +269,8 @@ body {
 }
 @media (max-width: 640px) {
   .slider-dot {
-    background: rgba(106, 90, 249, 0.12);
-    opacity: 0.35;
+    background: transparent;
+    opacity: 0;
   }
   .slider-dot.active {
     background: #6a5af9;
