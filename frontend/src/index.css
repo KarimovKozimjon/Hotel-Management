@@ -64,7 +64,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
 /* Swiper Custom Styles */
 .swiper {
   width: 100%;
@@ -82,7 +81,8 @@ code {
   transition: all 0.3s ease;
 }
 
-.swiper-button-next:hover,
+
+    @tailwind utilities;
 .swiper-button-prev:hover {
   background: rgba(0, 0, 0, 0.5);
   transform: scale(1.1);
