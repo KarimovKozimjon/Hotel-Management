@@ -18,6 +18,13 @@
     font-size: 2rem !important;
     text-align: center !important;
   }
+
+  /* Telefon versiyada kartalarni yashirish */
+  .responsive-card,
+  .card,
+  .stat-card {
+    display: none !important;
+  }
 }
 
 @tailwind base;
