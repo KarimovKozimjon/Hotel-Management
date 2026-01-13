@@ -1,3 +1,31 @@
+/* Xonalarni ko'rish tugmasi uchun zamonaviy gradient border va text */
+.view-rooms-btn {
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  padding: 1rem 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #6d28d9;
+  box-shadow: 0 2px 16px 0 rgba(109,40,217,0.08);
+  background-clip: padding-box;
+  position: relative;
+  transition: border 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.view-rooms-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: 1.1rem;
+  background: linear-gradient(90deg, #6366f1 0%, #a21caf 100%);
+}
+.view-rooms-btn:hover, .view-rooms-btn:focus {
+  color: white;
+  background: linear-gradient(90deg, #6366f1 0%, #a21caf 100%);
+  box-shadow: 0 4px 24px 0 rgba(109,40,217,0.16);
+  border: 2px solid #a21caf;
+}
 @media (max-width: 640px) {
   .swiper-button-next,
   .swiper-button-prev {
