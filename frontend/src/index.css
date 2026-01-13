@@ -103,18 +103,9 @@ code {
   font-weight: bold;
 }
 
-.swiper-pagination-bullet {
-  background: transparent !important;
-  opacity: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
+.swiper-pagination-bullet,
 .swiper-pagination-bullet-active {
-  background: #6a5af9 !important;
-  opacity: 1 !important;
-  box-shadow: 0 0 8px #6a5af9 !important;
-  border-radius: 8px !important;
+  display: none !important;
 }
 
 .swiper-pagination {
