@@ -135,6 +135,21 @@ body {
   overflow-x: hidden;
 }
 
+/* Universal grid/flex fix for telefon versiya */
+@media (max-width: 600px) {
+  [class*="grid"], [class*="flex"] {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+  [class*="grid"] > *, [class*="flex"] > * {
+    width: 100% !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
 /* Mobil grid/flex layout to'g'irlash */
 @media (max-width: 600px) {
 
