@@ -16,6 +16,12 @@
     font-size: 2rem !important;
     text-align: center !important;
   }
+  /* 4lik statistik kartalarni yashirish */
+  .stat-card,
+  .stats-4lik,
+  .responsive-stats-4lik {
+    display: none !important;
+  }
 }
 @tailwind base;
 @tailwind components;
